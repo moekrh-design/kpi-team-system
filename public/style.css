@@ -1,0 +1,2787 @@
+:root{
+  /* Ministry of Education (KSA) inspired palette */
+  --primary:#07a869;        /* Green */
+  --primary-700:#058d57;
+  --primary-50:#e7f6ef;
+  --green:var(--primary);   /* Alias */
+  --navy:#15445a;           /* Dark Blue */
+  --blue:#3d7eb9;           /* Blue */
+  --sand:#c1b489;           /* Supporting (warm) */
+
+  --bg:#f5f8f7;
+  --card:#ffffff;
+  --line:#e6e9ea;
+  --text:#0b1f2a;
+  --muted:#5c6b73;
+
+  --good:var(--primary);
+  --warn:var(--sand);
+  --bad:#ef4444;
+  --info:var(--blue);
+
+  --radius:18px;
+  --shadow:0 10px 28px rgba(21,68,90,.10);
+}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+
+body{
+  margin:0;
+  font-family:"Tajawal", system-ui,-apple-system,"Segoe UI",Tahoma,Arial;
+  direction:rtl;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 600px at 85% -10%, color-mix(in srgb, var(--green) 14%, transparent), transparent 60%),
+    radial-gradient(900px 500px at 10% 0%, rgba(61,126,185,.12), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, var(--bg) 55%, #ffffff 100%);
+}
+
+a{color:inherit;text-decoration:none}
+
+.container{max-width:1200px;margin:0 auto;padding:18px}
+
+/* --- Top Navigation --- */
+.nav{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  justify-content:space-between;
+  padding:14px 16px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.92);
+  backdrop-filter: blur(10px);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+}
+
+.nav:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  background:linear-gradient(90deg, color-mix(in srgb, var(--green) 12%, transparent), rgba(61,126,185,.10));
+  mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+  -webkit-mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+  padding:1px;
+  box-sizing:border-box;
+}
+
+.brand{display:flex;align-items:center;gap:12px;min-width:260px}
+
+.logoDot{
+  width:14px;height:14px;border-radius:50%;
+  background:conic-gradient(from 180deg, var(--primary), var(--blue), var(--primary));
+  box-shadow:0 0 0 6px color-mix(in srgb, var(--green) 12%, transparent);
+}
+
+.logoImg{
+  width:44px;height:44px;object-fit:contain;
+  background:#fff;
+  border-radius:12px;
+  border:1px solid var(--line);
+  padding:6px;
+}
+
+.links{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+
+.link{
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid transparent;
+  color:var(--muted);
+  transition:.15s ease;
+}
+
+.link:hover{
+  border-color:color-mix(in srgb, var(--green) 35%, transparent);
+  background:color-mix(in srgb, var(--green) 6%, transparent);
+  color:var(--navy);
+}
+
+.userBox{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+
+.pill{
+  padding:6px 10px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  color:var(--muted);
+  background:rgba(255,255,255,.75);
+}
+
+/* --- Buttons --- */
+.btn{
+  border:none;
+  cursor:pointer;
+  padding:9px 12px;
+  border-radius:14px;
+  background:#fff;
+  color:var(--navy);
+  border:1px solid var(--line);
+  transition:.15s ease;
+}
+
+.btn:hover{
+  border-color:color-mix(in srgb, var(--green) 40%, transparent);
+  background:color-mix(in srgb, var(--green) 6%, transparent);
+  color:var(--primary);
+}
+
+.btnGood{
+  background:var(--primary);
+  color:#fff;
+  border:1px solid var(--primary);
+  box-shadow:0 10px 18px color-mix(in srgb, var(--green) 18%, transparent);
+}
+
+.btnGood:hover{
+  background:var(--primary-700);
+  border-color:var(--primary-700);
+  color:#fff;
+}
+
+.btnDanger{
+  background:#fff;
+  color:#b91c1c;
+  border:1px solid rgba(239,68,68,.35);
+}
+
+.btnDanger:hover{
+  background:rgba(239,68,68,.08);
+  border-color:rgba(239,68,68,.5);
+  color:#991b1b;
+}
+
+/* --- Cards / Layout --- */
+.card{
+  border:1px solid var(--line);
+  background:var(--card);
+  border-radius:var(--radius);
+  padding:14px;
+  box-shadow:var(--shadow);
+}
+
+.grid{display:grid;gap:12px}
+.grid4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}
+
+@media(max-width:1000px){
+  .grid4{grid-template-columns:repeat(2,1fr)}
+  .grid2{grid-template-columns:1fr}
+  .brand{min-width:auto}
+}
+
+.kpi{display:flex;flex-direction:column;gap:6px}
+.kpi .label{color:var(--muted);font-size:13px}
+.kpi .value{font-size:28px;font-weight:900;color:var(--navy)}
+
+/* --- Tables --- */
+.table{width:100%;border-collapse:collapse}
+.table th,.table td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.table th{color:var(--navy);font-weight:800;text-align:right;font-size:13px;background:color-mix(in srgb, var(--green) 6%, transparent)}
+.table tr:hover td{background:rgba(21,68,90,.02)}
+
+/* --- Badges --- */
+.badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 10px;border-radius:999px;
+  border:1px solid var(--line);
+  font-size:12px;color:var(--muted);
+  background:rgba(21,68,90,.03)
+}
+.bGood{border-color:color-mix(in srgb, var(--green) 35%, transparent);color:var(--primary);background:color-mix(in srgb, var(--green) 10%, transparent)}
+.bWarn{border-color:rgba(193,180,137,.55);color:#7a6a35;background:rgba(193,180,137,.18)}
+.bBad{border-color:rgba(239,68,68,.35);color:#b91c1c;background:rgba(239,68,68,.08)}
+.bInfo{border-color:rgba(61,126,185,.35);color:var(--kiosk-accent);background:rgba(61,126,185,.10)}
+
+.rowActions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* --- Forms --- */
+.input, select, textarea{
+  width:100%;
+  padding:10px;
+  border-radius:14px;
+  border:1px solid var(--line);
+  background:#fff;
+  color:var(--text);
+  outline:none;
+  transition:.15s ease;
+}
+
+.input:focus, select:focus, textarea:focus{
+  border-color:color-mix(in srgb, var(--green) 55%, transparent);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--green) 12%, transparent);
+}
+
+select option{color:var(--text);background:#fff}
+
+textarea{min-height:90px;resize:vertical}
+.formRow{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(max-width:900px){.formRow{grid-template-columns:1fr}}
+
+.help{color:var(--muted);font-size:12px;margin-top:6px}
+.tag{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(61,126,185,.08);color:var(--navy);font-size:12px;margin-left:6px;margin-top:4px;white-space:nowrap}
+.code{border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;font-size:12px;direction:ltr}
+.hr{height:1px;background:var(--line);margin:12px 0}
+
+.notice{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid color-mix(in srgb, var(--green) 35%, transparent);
+  background:color-mix(in srgb, var(--green) 10%, transparent);
+  color:var(--navy)
+}
+
+.error{
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(239,68,68,.35);
+  background:rgba(239,68,68,.08);
+  color:#991b1b
+}
+
+.progressWrap{display:flex;align-items:center;gap:10px}
+.bar{flex:1;height:10px;border-radius:999px;background:rgba(21,68,90,.10);overflow:hidden}
+.bar > span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--blue))}
+
+/* Task completion workflow colors */
+.progressWrap.status-pending_approval .bar > span{background:linear-gradient(90deg,#f59e0b,#fbbf24)}
+.progressWrap.status-completed .bar > span{background:linear-gradient(90deg,#16a34a,#22c55e)}
+.progressWrap.status-overdue .bar > span{background:linear-gradient(90deg,#ef4444,#f97316)}
+.progressWrap.status-cancelled .bar > span,.progressWrap.status-new .bar > span{background:linear-gradient(90deg,#94a3b8,#cbd5e1)}
+
+.small{color:var(--muted);font-size:12px}
+.printBtn{display:inline-flex;align-items:center;gap:8px}
+
+/* --- Kiosk tweaks --- */
+
+/* Kiosk / Auto-slideshow (fullscreen friendly) */
+.kioskRoot{
+  max-width:1200px;
+  margin:0 auto;
+  padding:14px;
+}
+
+body.kioskMode{
+  /* MOE palette for the display mode (from official slide template) */
+  --navy:#003944;
+  --blue:#1673a4;
+  --primary:#208caa;
+  --accent:#382972;
+  --accent2:#7030A0;
+  color:rgba(255,255,255,.92);
+  background:
+    radial-gradient(1200px 680px at 85% -10%, rgba(32,140,170,.40), transparent 65%),
+    radial-gradient(1000px 560px at 12% 0%, rgba(56,41,114,.22), transparent 66%),
+    radial-gradient(900px 520px at 10% 110%, color-mix(in srgb, var(--blue) 20%, transparent), transparent 66%),
+    linear-gradient(180deg, #00181f 0%, #00232d 55%, #00181f 100%);  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+
+body.kioskMode .container{
+  max-width:none;
+  margin:0;
+  padding:0;
+}
+
+body.kioskMode .nav,
+body.kioskMode .notice,
+body.kioskMode .appFooterNote{
+  display:none !important;
+}
+
+body.kioskMode .container > div[style*='height:16px'],
+body.kioskMode .container > div[style*='height:18px']{
+  display:none !important;
+}
+
+body.kioskMode{
+  /* Bigger by default for large wall screens */
+  --kiosk-ring-size: 420px;
+  --kiosk-ring-inner: 330px;
+}
+body.kioskMode.kioskSizeL{--kiosk-ring-size:340px;--kiosk-ring-inner:265px;}
+body.kioskMode.kioskSizeXL{--kiosk-ring-size:420px;--kiosk-ring-inner:330px;}
+body.kioskMode.kioskSizeXXL{--kiosk-ring-size:520px;--kiosk-ring-inner:410px;}
+
+body.kioskMode .kioskRoot{
+  max-width:none;
+  margin:0;
+  padding:0;
+}
+
+/* Kiosk: keep the top controls visible (selection + fullscreen) */
+body.kioskMode .kioskFooter{
+  display:none !important;
+}
+
+body.kioskMode .kioskTop{
+  display:flex !important;
+  position:fixed;
+  top:12px;
+  left:12px;
+  right:12px;
+  z-index:999;
+  padding:10px 12px;
+  border-radius:18px;
+  border:1px solid var(--kiosk-ticker-border, rgba(255,255,255,.14));
+  background:rgba(0,0,0,.28);
+  backdrop-filter: blur(10px);
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+body.kioskMode[class*="kioskTheme-light"] .kioskTop,
+body.kioskMode.kioskLight .kioskTop{
+  background:rgba(255,255,255,.82);
+  border-color:color-mix(in srgb, var(--green) 18%, transparent);
+}
+
+body.kioskMode .kioskStage{
+  min-height:100vh;
+  /* account for fixed top bar */
+  padding:112px 22px 38px;
+}
+
+/* When fullscreen hides the top bar, reduce top padding */
+body.kioskFull .kioskStage{
+  padding-top:38px;
+}
+
+/* Top bar layout */
+body.kioskMode .kioskBrand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+}
+
+body.kioskMode .kioskLogo{
+  width:44px;
+  height:44px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  flex:0 0 auto;
+}
+
+body.kioskMode .kioskLogo img{
+  max-width:34px;
+  max-height:34px;
+  object-fit:contain;
+  display:block;
+}
+
+body.kioskMode .kioskLogoPlaceholder{
+  font-weight:1000;
+  font-size:14px;
+  opacity:.85;
+}
+
+body.kioskMode .kioskOrg{
+  font-weight:1000;
+  font-size:16px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:42vw;
+}
+
+body.kioskMode .kioskHint{
+  margin-top:2px;
+  font-size:12px;
+  opacity:.78;
+  white-space:nowrap;
+}
+
+body.kioskMode .kioskActions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex:0 0 auto;
+}
+
+body.kioskMode .kioskActions .btn{
+  padding:10px 14px;
+  border-radius:14px;
+  font-weight:900;
+}
+
+/* Fullscreen floating controls (always available even when top bar is hidden) */
+.kioskFabWrap{
+  position:fixed;
+  left:14px;
+  top:14px;
+  z-index:1000;
+  display:none;
+  flex-direction:column;
+  gap:10px;
+}
+
+body.kioskFull .kioskFabWrap{display:flex;}
+
+.kioskFab{
+  width:52px;
+  height:52px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(0,0,0,.22);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+  backdrop-filter: blur(10px);
+}
+
+body.kioskFull[class*="kioskTheme-light"] .kioskFab,
+body.kioskFull.kioskLight .kioskFab{
+  background:rgba(255,255,255,.85);
+  border-color:rgba(21,68,90,.16);
+  color:var(--navy);
+}
+
+.kioskFab:hover{transform:translateY(-1px);}
+.kioskFabDanger{border-color:rgba(239,68,68,.38);}
+
+/* Chooser modal */
+.kioskChooser{
+  position:fixed;
+  inset:0;
+  z-index:1100;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(0,0,0,.55);
+  backdrop-filter: blur(6px);
+}
+
+.kioskChooserCard{
+  width:min(760px, 96vw);
+  border-radius:24px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(10,15,20,.92);
+  color:#fff;
+  padding:20px 18px;
+  box-shadow:0 26px 70px rgba(0,0,0,.42);
+}
+
+body.kioskMode[class*="kioskTheme-light"] .kioskChooserCard,
+body.kioskMode.kioskLight .kioskChooserCard{
+  background:rgba(255,255,255,.94);
+  color:#111;
+  border-color:rgba(21,68,90,.12);
+  box-shadow:0 22px 60px rgba(0,0,0,.16);
+}
+
+.kioskChooserTitle{font-weight:1000;font-size:20px;margin-bottom:6px;}
+.kioskChooserSub{opacity:.8;font-weight:800;font-size:13px;margin-bottom:14px;}
+
+.kioskChooserGrid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:10px;
+}
+
+@media(max-width:720px){
+  .kioskChooserGrid{grid-template-columns:1fr;}
+  body.kioskMode .kioskOrg{max-width:58vw;}
+  body.kioskMode .kioskHint{display:none;}
+}
+
+.kioskChoice{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 12px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  font-weight:900;
+}
+
+body.kioskMode[class*="kioskTheme-light"] .kioskChoice,
+body.kioskMode.kioskLight .kioskChoice{
+  background:rgba(21,68,90,.04);
+  border-color:rgba(21,68,90,.12);
+}
+
+.kioskChoice input{width:18px;height:18px;}
+
+.kioskChooserActions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:14px;
+}
+
+body.kioskMode .kioskCard{
+  background:rgba(8,20,26,.58);
+  border-color:color-mix(in srgb, var(--blue) 45%, transparent);
+  box-shadow:0 18px 46px color-mix(in srgb, var(--blue) 28%, transparent);
+  text-align:center;
+}
+
+body.kioskMode .kioskTitle{
+  color:var(--kiosk-accent);
+  text-shadow:0 6px 28px color-mix(in srgb, var(--blue) 38%, transparent), 0 1px 0 color-mix(in srgb, var(--blue) 65%, transparent);
+  font-weight:900;
+  letter-spacing:.2px;
+  font-size:clamp(46px, 5.4vw, 92px);
+}
+
+body.kioskMode .kioskMeta{
+  color:rgba(255,255,255,.72);
+  font-size:clamp(18px, 2vw, 30px);
+}
+
+body.kioskMode .kioskInfo{
+  color:rgba(255,255,255,.90);
+  font-size:clamp(20px, 2.4vw, 34px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+
+body.kioskMode .kioskBadges{
+  justify-content:center;
+}
+
+body.kioskMode .kioskNames{
+  text-align:center;
+  font-size:clamp(24px, 2.6vw, 40px);
+  font-weight:900;
+  color:rgba(255,255,255,.94);
+}
+
+body.kioskMode .kioskDue{
+  font-size:clamp(18px, 2.1vw, 30px);
+  font-weight:900;
+  color:rgba(255,255,255,.92);
+  display:inline-flex;
+  align-items:center;
+  padding:8px 14px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb, var(--blue) 45%, transparent);
+  background:rgba(255,255,255,.08);
+}
+
+body.kioskMode .kioskBadge{
+  background:rgba(255,255,255,.08);
+  border-color:rgba(255,255,255,.14);
+  color:rgba(255,255,255,.90);
+  font-size:18px;
+}
+
+body.kioskMode .kioskRing{
+  width:var(--kiosk-ring-size);
+  height:var(--kiosk-ring-size);
+  box-shadow:0 22px 62px rgba(0,0,0,.35);
+}
+
+body.kioskMode .kioskRingInner{
+  width:var(--kiosk-ring-inner);
+  height:var(--kiosk-ring-inner);
+  background:rgba(4,14,18,.92);
+  border-color:rgba(255,255,255,.10);
+}
+
+body.kioskMode .kioskRingPct{
+  color:#fff;
+  font-weight:900;
+  font-size:clamp(44px, 4vw, 78px);
+}
+
+body.kioskMode .kioskRingLabel{
+  color:rgba(255,255,255,.75);
+  font-size:clamp(16px, 1.7vw, 26px);
+}
+
+body.kioskMode .kioskBar{
+  background:rgba(255,255,255,.14);
+}
+
+body.kioskMode .kioskBar > span{
+  background:linear-gradient(90deg, var(--primary), var(--blue));
+}
+
+body.kioskMode .kioskExitBtn{
+  position:fixed;
+  left:14px;
+  bottom:14px;
+  z-index:50;
+  width:52px;
+  height:52px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(0,0,0,.22);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  cursor:pointer;
+  backdrop-filter: blur(10px);
+}
+body.kioskMode .kioskExitBtn:hover{
+  background:rgba(0,0,0,.32);
+}
+
+body.kioskMode.kioskFull .kioskExitBtn{
+  opacity:.85;
+}
+
+.kioskTop{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.kioskStage{
+  min-height:520px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.kioskCard{
+  width:100%;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:28px;
+  padding:28px;
+  background:rgba(255,255,255,.86);
+  backdrop-filter: blur(10px);
+  box-shadow:0 18px 45px rgba(21,68,90,.16);
+}
+
+.kioskMeta{
+  color:var(--navy);
+  font-size:18px;
+  font-weight:800;
+  opacity:.9;
+}
+
+.kioskTitle{
+  margin:14px 0 10px;
+  font-size:52px;
+  line-height:1.15;
+  font-weight:900;
+  color:var(--navy);
+}
+
+.kioskInfo{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.kioskNames{font-size:18px;color:rgba(11,31,42,.82);font-weight:700}
+.kioskBadges{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.kioskDue{font-size:14px;color:var(--muted)}
+
+.kioskProgressRow{margin-top:18px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.kioskBarWrap{flex:1;min-width:340px}
+.kioskBar{height:16px;border-radius:999px;background:rgba(21,68,90,.10);overflow:hidden}
+.kioskBar > span{display:block;height:100%;background:linear-gradient(90deg,var(--primary),var(--blue))}
+
+.kioskRingWrap{display:flex;align-items:center;justify-content:center}
+.kioskRing{
+  width:160px;
+  height:160px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 16px 30px color-mix(in srgb, var(--green) 15%, transparent);
+}
+.kioskRingInner{
+  width:124px;
+  height:124px;
+  border-radius:50%;
+  background:rgba(255,255,255,.95);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(21,68,90,.08);
+}
+.kioskRingValue{font-size:36px;font-weight:900;color:var(--navy)}
+.kioskRingLabel{font-size:13px;color:var(--muted);font-weight:800}
+
+/* World Days scene (kiosk) */
+.kioskWorld{
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  min-height:78vh;
+  overflow:hidden;
+}
+body.kioskMode .kioskWorld{
+  min-height:calc(100vh - 140px);
+}
+.kioskWorldLabel{
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:.2px;
+  opacity:.85;
+  margin-bottom:12px;  color:var(--kiosk-accent2);
+}
+
+.kioskWorldHero{
+  text-align:center;
+  padding:18px 12px 12px;
+  border-radius:18px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.06);
+  box-shadow: 0 18px 50px rgba(0,0,0,.10);
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskWorldHero,
+body.kioskMode.kioskLight .kioskWorldHero{background:rgba(11,31,42,.04)}
+
+.kioskWorldTitle{
+  font-size:clamp(32px, 3.8vw, 72px);
+  font-weight:1000;
+  letter-spacing:.2px;
+  line-height:1.1;
+  margin:6px 0 10px;  color:var(--kiosk-accent);
+}
+
+.kioskWorldDate{
+  font-size:clamp(18px, 2vw, 28px);
+  font-weight:900;
+  opacity:.85;
+  margin-bottom:12px;  color:var(--kiosk-accent2);
+}
+
+
+.kioskCountdown{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin:10px 0 0}
+.cdBox{
+  min-width:clamp(90px, 9vw, 130px);
+  padding:clamp(10px, 1vw, 14px) clamp(12px, 1.2vw, 18px);
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:rgba(0,0,0,.08);
+}
+body.kioskMode[class*="kioskTheme-light"] .cdBox,
+body.kioskMode.kioskLight .cdBox{background:rgba(11,31,42,.05)}
+
+.cdNum{font-size:clamp(32px, 3vw, 56px);font-weight:1000;line-height:1}
+.cdLbl{font-size:clamp(12px, 1.2vw, 16px);font-weight:900;opacity:.75;margin-top:6px}
+
+.kioskWorldTicker{
+  position:relative;
+  margin-top:16px;
+  padding:14px 18px 18px;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  border-top:1px solid rgba(255,255,255,.10);  color:var(--kiosk-accent);
+}
+
+body.kioskMode[class*="kioskTheme-light"] .kioskWorldTicker,
+body.kioskMode.kioskLight .kioskWorldTicker{border-top:1px solid rgba(11,31,42,.10)}
+
+.kioskWorldTickerTitle{
+  font-weight:1000;
+  font-size:18px;
+  opacity:.92;
+}
+
+.kioskTickerMask{
+  position:relative;
+  overflow:hidden;
+  border-radius:16px;
+  height:clamp(140px, 22vh, 340px);
+}
+body.kioskMode .kioskTickerMask{height:clamp(200px, 26vh, 440px)}
+.kioskWorldTicker:before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;height:26px;
+  background:linear-gradient(to bottom, rgba(0,0,0,.00), rgba(0,0,0,.18));
+  pointer-events:none;
+}
+.kioskWorldTicker:after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:0;height:46px;
+  background:linear-gradient(to top, rgba(0,0,0,.00), rgba(0,0,0,.22));
+  pointer-events:none;
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskWorldTicker:before,
+body.kioskMode.kioskLight .kioskWorldTicker:before{
+  background:linear-gradient(to bottom, rgba(255,255,255,.00), rgba(11,31,42,.06));
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskWorldTicker:after,
+body.kioskMode.kioskLight .kioskWorldTicker:after{
+  background:linear-gradient(to top, rgba(255,255,255,.00), rgba(11,31,42,.08));
+}
+
+.kioskTickerTrack{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  will-change:transform;
+  animation: kioskTickerUp 30s linear infinite;
+}
+
+.kioskTickerTrack:hover{animation-play-state:paused}
+.kioskTickerItem{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.05);
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskTickerItem,
+body.kioskMode.kioskLight .kioskTickerItem{background:rgba(11,31,42,.04)}
+.kioskTickerDate{font-weight:1000;font-size:clamp(13px, 1.4vw, 20px);opacity:.85;white-space:nowrap}
+.kioskTickerTitle{font-weight:900;font-size:clamp(15px, 1.6vw, 26px);opacity:.95}
+
+@keyframes kioskTickerUp{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+
+
+.kioskFooter{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-top:12px;
+  opacity:.85;  color:var(--kiosk-accent2);
+}
+
+
+
+.kioskControls{
+  position:fixed;
+  left:14px;
+  top:14px;
+  display:flex;
+  gap:10px;
+  z-index:9999;
+}
+
+/* Simple modal (used for kiosk view chooser) */
+.modalOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.38);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:90;
+}
+.modalCard{
+  width:min(720px, calc(100vw - 24px));
+  background:rgba(255,255,255,.96);
+  border:1px solid rgba(21,68,90,.14);
+  border-radius:22px;
+  padding:18px;
+  box-shadow:0 24px 70px rgba(0,0,0,.22);
+}
+.radioRow{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  padding:12px 12px;
+  border:1px solid rgba(21,68,90,.12);
+  border-radius:16px;
+  background:rgba(21,68,90,.04);
+  cursor:pointer;
+}
+.radioRow:hover{background:rgba(21,68,90,.06)}
+.radioRow input{margin-top:3px}
+.kioskCtlBtn{
+  width:54px;
+  height:54px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  font-size:22px;
+  cursor:pointer;
+  box-shadow:0 10px 25px rgba(0,0,0,.25);
+}
+.kioskCtlBtn:hover{
+  background:rgba(0,0,0,.7);
+}
+
+/* Kiosk transitions between cards */
+.kioskAnim{
+  animation-duration: .65s;
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(.2,.8,.2,1);
+}
+.kioskAnim-fade{ animation-name: kioskFadeIn; }
+.kioskAnim-slide{ animation-name: kioskSlideIn; }
+.kioskAnim-slide_up{ animation-name: kioskSlideUpIn; }
+.kioskAnim-zoom{ animation-name: kioskZoomIn; }
+.kioskAnim-flip{ animation-name: kioskFlipIn; transform-style: preserve-3d; }
+.kioskAnim-none{ animation-name: none; }
+
+@keyframes kioskFadeIn{
+  from{ opacity:0; transform: translateY(10px); }
+  to{ opacity:1; transform: none; }
+}
+@keyframes kioskSlideIn{
+  from{ opacity:0; transform: translateX(40px); }
+  to{ opacity:1; transform: none; }
+}
+@keyframes kioskSlideUpIn{
+  from{ opacity:0; transform: translateY(40px); }
+  to{ opacity:1; transform: none; }
+}
+@keyframes kioskZoomIn{
+  from{ opacity:0; transform: scale(.92); }
+  to{ opacity:1; transform: scale(1); }
+}
+@keyframes kioskFlipIn{
+  from{ opacity:0; transform: perspective(800px) rotateX(-18deg) translateY(14px); }
+  to{ opacity:1; transform: perspective(800px) rotateX(0deg) translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .kioskAnim{ animation-duration: 0s !important; }
+}
+
+.kioskExitBtn{
+  position:fixed;
+  left:16px;
+  bottom:16px;
+  width:58px;
+  height:58px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.32);
+  background:rgba(255,255,255,.75);
+  box-shadow:0 18px 40px rgba(21,68,90,.18);
+  color:var(--navy);
+  cursor:pointer;
+  font-size:26px;
+  font-weight:900;
+  backdrop-filter: blur(10px);
+}
+
+.kioskExitBtn:hover{
+  background:rgba(255,255,255,.92);
+  border-color:color-mix(in srgb, var(--green) 35%, transparent);
+}
+
+/* Fullscreen (clean look: hide header + controls, center the content) */
+body.kioskFull .nav{display:none !important}
+body.kioskFull .container{max-width:none;margin:0;padding:0}
+body.kioskFull .kioskRoot{max-width:none;padding:0}
+body.kioskFull .kioskTop{display:none !important}
+
+body.kioskFull{
+  /* Slightly darker in fullscreen to look premium on screens */
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--green) 28%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 10% 5%, rgba(61,126,185,.20), transparent 60%),
+    linear-gradient(180deg, #030a10 0%, #041018 55%, #030a10 100%);
+}
+
+/* Kiosk color schemes */
+body.kioskMode.kioskTheme-dark,
+body.kioskMode.kioskDark{
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--green) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 10% 5%, rgba(61,126,185,.18), transparent 60%),
+    linear-gradient(180deg, #030a10 0%, #041018 55%, #030a10 100%);
+  color:#fff;
+}
+body.kioskMode[class*="kioskTheme-light"],
+body.kioskMode.kioskLight{
+  background: linear-gradient(180deg, #f6f8fb 0%, #ffffff 55%, #f3f6fa 100%);
+  color:#111;
+}
+
+/* Light variants (same identity, different accents) */
+body.kioskMode.kioskTheme-light_mint{
+  --blue: var(--green);
+  background: linear-gradient(180deg, #f2fff9 0%, #ffffff 55%, #effdf6 100%);
+}
+body.kioskMode.kioskTheme-light_sky{
+  background: linear-gradient(180deg, #eef7ff 0%, #ffffff 55%, #ecf4ff 100%);
+}
+body.kioskMode.kioskTheme-light_sand{
+  background: linear-gradient(180deg, #fff8ee 0%, #ffffff 55%, #fff3e2 100%);
+}
+body.kioskMode.kioskTheme-light_lavender{
+  background: linear-gradient(180deg, #f6f2ff 0%, #ffffff 55%, #f1ecff 100%);
+}
+body.kioskMode.kioskTheme-light_contrast{
+  --blue: var(--navy);
+  background: #ffffff;
+  color:#000;
+}
+
+/* Dark variants */
+body.kioskMode.kioskTheme-dark_navy{
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 14%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #02060d 0%, #041427 55%, #02060d 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_teal{
+  --blue: #1aa6a6;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(26,166,166,.18), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #020b0e 0%, #052127 55%, #020b0e 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_emerald{
+  --blue: var(--green);
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--green) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--blue) 12%, transparent), transparent 58%),
+    linear-gradient(180deg, #020b06 0%, #0a1f15 55%, #020b06 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_slate{
+  --blue: #4aa3d7;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(74,163,215,.16), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 8%, transparent), transparent 58%),
+    linear-gradient(180deg, #06080c 0%, #0f1620 55%, #06080c 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_glass{
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(255,255,255,.08), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--blue) 12%, transparent), transparent 58%),
+    linear-gradient(180deg, #020a10 0%, #06131b 55%, #020a10 100%);
+  color:#fff;
+}
+
+/* Extra dark accent variants */
+body.kioskMode.kioskTheme-dark_blue{
+  --blue: #2f9bff;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(47,155,255,.18), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #02060d 0%, #061a2f 55%, #02060d 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_green{
+  --blue: #16c98d;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(22,201,141,.18), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, rgba(61,126,185,.10), transparent 58%),
+    linear-gradient(180deg, #020b06 0%, #071f16 55%, #020b06 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_purple{
+  --blue: #a78bfa;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(167,139,250,.18), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 9%, transparent), transparent 58%),
+    linear-gradient(180deg, #050313 0%, #140b2a 55%, #050313 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_amber{
+  --blue: #fbbf24;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(251,191,36,.18), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #090603 0%, #221507 55%, #090603 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_rose{
+  --blue: #fb7185;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(251,113,133,.18), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 8%, transparent), transparent 58%),
+    linear-gradient(180deg, #0a0506 0%, #2a0b11 55%, #0a0506 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_indigo{
+  --blue: #6366f1;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(99,102,241,.20), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 8%, transparent), transparent 58%),
+    linear-gradient(180deg, #040514 0%, #0b0f2e 55%, #040514 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_cyan{
+  --blue: #22d3ee;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(34,211,238,.20), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 8%, transparent), transparent 58%),
+    linear-gradient(180deg, #031014 0%, #053241 55%, #031014 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_orange{
+  --blue: #fb923c;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(251,146,60,.20), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 8%, transparent), transparent 58%),
+    linear-gradient(180deg, #120803 0%, #321607 55%, #120803 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_red{
+  --blue: #f87171;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(248,113,113,.20), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 8%, transparent), transparent 58%),
+    linear-gradient(180deg, #110404 0%, #2a0b0b 55%, #110404 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-dark_lime{
+  --blue: #84cc16;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(132,204,22,.20), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--blue) 8%, transparent), transparent 58%),
+    linear-gradient(180deg, #061004 0%, #132a0b 55%, #061004 100%);
+  color:#fff;
+}
+
+/* Hybrid themes: dark background + light cards */
+body.kioskMode.kioskTheme-hybrid_navy{
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 12%, transparent), transparent 58%),
+    linear-gradient(180deg, #02060d 0%, #041427 55%, #02060d 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-hybrid_blue{
+  --blue:#3b82f6;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(59,130,246,.22), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--blue) 14%, transparent), transparent 58%),
+    linear-gradient(180deg, #02060f 0%, #071b3d 55%, #02060f 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-hybrid_teal{
+  --blue: #1aa6a6;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(26,166,166,.20), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 12%, transparent), transparent 58%),
+    linear-gradient(180deg, #020b0e 0%, #052127 55%, #020b0e 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-hybrid_emerald{
+  --blue: var(--green);
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--green) 20%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--blue) 12%, transparent), transparent 58%),
+    linear-gradient(180deg, #020b06 0%, #0a1f15 55%, #020b06 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-hybrid_purple{
+  --blue:#a78bfa;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(167,139,250,.22), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, rgba(236,72,153,.10), transparent 58%),
+    linear-gradient(180deg, #06010c 0%, #1b0b2e 55%, #06010c 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-hybrid_slate{
+  --blue: #4aa3d7;
+  background:
+    radial-gradient(900px 600px at 10% 5%, rgba(74,163,215,.18), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #06080c 0%, #0f1620 55%, #06080c 100%);
+  color:#fff;
+}
+body.kioskMode.kioskTheme-hybrid_contrast{
+  --blue: var(--navy);
+  background: #05070a;
+  color:#fff;
+}
+
+body.kioskMode[class*="kioskTheme-hybrid"] .kioskCard{
+  background:rgba(255,255,255,.93);
+  border-color:color-mix(in srgb, var(--blue) 35%, transparent);
+  box-shadow:0 18px 46px color-mix(in srgb, var(--blue) 18%, transparent);
+  color:#111;
+}
+body.kioskMode[class*="kioskTheme-hybrid"] .kioskMeta{color:rgba(0,57,68,.85)}
+body.kioskMode[class*="kioskTheme-hybrid"] .kioskInfo{color:rgba(11,31,42,.92)}
+body.kioskMode[class*="kioskTheme-hybrid"] .kioskNames{color:rgba(11,31,42,.92)}
+body.kioskMode[class*="kioskTheme-hybrid"] .kioskDue{
+  color:rgba(11,31,42,.92);
+  background:color-mix(in srgb, var(--blue) 8%, transparent);
+  border-color:color-mix(in srgb, var(--blue) 35%, transparent);
+}
+body.kioskMode[class*="kioskTheme-hybrid"] .kioskRingInner{
+  background:rgba(255,255,255,.92);
+  border-color:color-mix(in srgb, var(--blue) 20%, transparent);
+}
+body.kioskMode[class*="kioskTheme-hybrid"] .kioskRingPct{color:var(--navy)}
+body.kioskMode[class*="kioskTheme-hybrid"] .kioskRingLabel{color:rgba(11,31,42,.65)}
+
+/* Paper themes: light background + dark cards */
+body.kioskMode.kioskTheme-paper_ink{
+  --blue: var(--navy);
+  background: linear-gradient(180deg, #f6f8fb 0%, #ffffff 55%, #f3f6fa 100%);
+  color:#111;
+}
+body.kioskMode.kioskTheme-paper_navy{
+  --blue: #1673a4;
+  background: linear-gradient(180deg, #eef7ff 0%, #ffffff 55%, #ecf4ff 100%);
+  color:#111;
+}
+body.kioskMode.kioskTheme-paper_emerald{
+  --blue: var(--green);
+  background: linear-gradient(180deg, #f2fff9 0%, #ffffff 55%, #effdf6 100%);
+  color:#111;
+}
+
+body.kioskMode[class*="kioskTheme-light"] .kioskCard,
+body.kioskMode.kioskLight .kioskCard{
+  background:rgba(255,255,255,.92);
+  border-color:color-mix(in srgb, var(--blue) 35%, transparent);
+  box-shadow:0 18px 46px color-mix(in srgb, var(--blue) 18%, transparent);
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskMeta,
+body.kioskMode.kioskLight .kioskMeta{color:rgba(0,57,68,.85)}
+body.kioskMode[class*="kioskTheme-light"] .kioskInfo,
+body.kioskMode.kioskLight .kioskInfo{color:rgba(11,31,42,.92)}
+body.kioskMode[class*="kioskTheme-light"] .kioskNames,
+body.kioskMode.kioskLight .kioskNames{color:rgba(11,31,42,.92)}
+body.kioskMode[class*="kioskTheme-light"] .kioskDue,
+body.kioskMode.kioskLight .kioskDue{
+  color:rgba(11,31,42,.92);
+  background:color-mix(in srgb, var(--blue) 8%, transparent);
+  border-color:color-mix(in srgb, var(--blue) 35%, transparent);
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskRingInner,
+body.kioskMode.kioskLight .kioskRingInner{
+  background:rgba(255,255,255,.92);
+  border-color:color-mix(in srgb, var(--blue) 20%, transparent);
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskRingPct,
+body.kioskMode.kioskLight .kioskRingPct{color:var(--navy)}
+body.kioskMode[class*="kioskTheme-light"] .kioskRingLabel,
+body.kioskMode.kioskLight .kioskRingLabel{color:rgba(11,31,42,.65)}
+
+body.kioskFull .kioskStage{
+  min-height:100vh;
+  padding:64px 64px 84px;
+}
+
+body.kioskFull .kioskCard{
+  max-width:1400px;
+  margin:0 auto;
+  padding:56px;
+  border-radius:36px;
+  /* Darker glass card to look premium on big screens */
+  background:rgba(8,20,26,.66);
+  border:1px solid color-mix(in srgb, var(--blue) 35%, transparent);
+  box-shadow:0 20px 60px color-mix(in srgb, var(--blue) 35%, transparent);
+  text-align:center;
+}
+
+body.kioskFull .kioskTitle,
+body.kioskFull .kioskMeta,
+body.kioskFull .kioskNames,
+body.kioskFull .kioskDue{
+  color:rgba(255,255,255,.92);
+}
+
+body.kioskFull .kioskTitle{color:var(--kiosk-accent);text-shadow:0 6px 28px color-mix(in srgb, var(--blue) 38%, transparent), 0 1px 0 color-mix(in srgb, var(--blue) 65%, transparent)}
+
+
+body.kioskFull .kioskMeta{font-size:22px}
+body.kioskFull .kioskTitle{font-size:72px}
+body.kioskFull .kioskNames{font-size:28px}
+body.kioskFull .kioskDue{font-size:20px}
+body.kioskFull .kioskBar{height:20px}
+/* Keep the big ring in fullscreen too */
+body.kioskFull .kioskRing{width:var(--kiosk-ring-size);height:var(--kiosk-ring-size)}
+body.kioskFull .kioskRingInner{width:var(--kiosk-ring-inner);height:var(--kiosk-ring-inner)}
+body.kioskFull .kioskRingValue{font-size:42px}
+body.kioskFull .kioskFooter{display:none !important}
+
+body.kioskFull .kioskInfo{justify-content:center}
+body.kioskFull .kioskBadges{justify-content:center}
+body.kioskFull .kioskProgressRow{justify-content:center}
+body.kioskFull .kioskBarWrap{min-width:520px}
+
+
+
+/* --- Reports --- */
+.reportHeader{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.reportLogo{width:74px;height:74px;object-fit:contain}
+.reportLogoPlaceholder{width:74px;height:74px;border-radius:18px;background:color-mix(in srgb, var(--green) 12%, transparent);border:1px dashed color-mix(in srgb, var(--green) 35%, transparent)}
+.reportOrg{font-size:16px;font-weight:900;color:var(--navy)}
+.reportDept{font-size:13px;color:var(--muted)}
+.reportMeta{min-width:260px;text-align:left}
+.metaRow{display:flex;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted)}
+.metaRow b{color:var(--navy)}
+.codesWrap{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:10px}
+.codeBox{border:1px solid var(--line);background:#fff;border-radius:14px;padding:10px;text-align:center;min-width:120px}
+.barcodeImg{height:46px;max-width:220px;object-fit:contain}
+.qrImg{width:100px;height:100px;object-fit:contain}
+.reportTitle{margin:0 0 8px 0;text-align:center;color:var(--navy);font-weight:900}
+.reportSubTitle{text-align:center;color:var(--muted);margin-bottom:12px}
+
+.reportCharts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media(max-width:900px){.reportCharts{grid-template-columns:1fr}}
+
+.chartCard{border:1px solid var(--line);background:#fff;border-radius:var(--radius);padding:12px}
+.chartTitle{font-weight:900;color:var(--navy)}
+
+.donutWrap{display:flex;gap:12px;align-items:center}
+.donut{width:120px;height:120px;border-radius:50%;background:conic-gradient(var(--primary) 0 var(--d1), #c1b489 var(--d1) var(--d2), #ef4444 var(--d2) 360deg);position:relative}
+.donut:after{content:"";position:absolute;inset:22px;background:#fff;border-radius:50%;border:1px solid var(--line)}
+.legend{display:flex;flex-direction:column;gap:8px;color:var(--muted);font-size:12px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-left:6px}
+.dot.good{background:var(--primary)}
+.dot.warn{background:#c1b489}
+.dot.bad{background:#ef4444}
+
+.bars{display:grid;gap:10px}
+.barRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px;border:1px solid rgba(21,68,90,.10);border-radius:14px;background:rgba(21,68,90,.02)}
+.barLabel{min-width:220px}
+.barGraph{flex:1;display:flex;align-items:center;gap:10px}
+
+.reportFooter{margin-top:12px}
+.signatures{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;align-items:stretch}
+@media(max-width:900px){.signatures{grid-template-columns:1fr}}
+.sigBlock{border:1px solid var(--line);background:#fff;border-radius:14px;padding:12px;min-height:110px;display:flex;flex-direction:column;justify-content:space-between}
+.sigRole{font-weight:800;color:var(--navy)}
+.sigName{color:var(--muted)}
+.sigLine{height:1px;background:var(--line);margin-top:18px}
+.sealBox{margin-top:12px;display:flex;justify-content:center}
+.sealImg{max-width:160px;max-height:160px;opacity:.9}
+.sealPlaceholder{width:160px;height:160px;border-radius:16px;border:1px dashed rgba(21,68,90,.25);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
+/* Print styles */
+@media print {
+  body{background:#fff;color:#111;direction:rtl}
+  .nav,.noPrint{display:none !important}
+  .card{background:#fff;border:1px solid #ddd;box-shadow:none}
+  .table th{background:#f6f6f6;color:#111}
+  .table th,.table td{border-bottom:1px solid #ddd;color:#111}
+  .badge{border-color:#ddd;background:#f6f6f6;color:#111}
+}
+
+
+/* (removed old kiosk fullscreen block) */
+
+/* =========================
+   Kiosk: Home + Calendar + News Ticker (v1.4.17-displayfix2)
+   ========================= */
+
+/* Reserve space when bottom ticker is enabled */
+body.kioskMode.kioskHasNews .kioskStage{padding-bottom:72px}
+
+/* Bottom news ticker */
+.kioskNewsBar{
+  position:fixed;
+  left:12px; right:12px; bottom:12px;
+  height:56px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(12,14,18,.62);
+  box-shadow:0 18px 40px rgba(0,0,0,.30);
+  display:none;
+  align-items:center;
+  overflow:hidden;
+  z-index:999;
+  backdrop-filter: blur(10px);
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskNewsBar,
+body.kioskMode.kioskLight .kioskNewsBar{
+  background:rgba(255,255,255,.82);
+  border-color:color-mix(in srgb, var(--green) 20%, transparent);
+  box-shadow:0 16px 36px rgba(0,0,0,.10);
+}
+
+.kioskNewsBar.isOn{display:flex}
+
+.kioskNewsBrand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:0 14px;
+  border-left:1px solid color-mix(in srgb, var(--kiosk-accent) 28%, transparent);
+  height:100%;
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskNewsBrand,
+body.kioskMode.kioskLight .kioskNewsBrand{border-left-color:rgba(21,68,90,.14)}
+
+.kioskNewsBrandLogo{
+  width:34px;height:34px;
+  border-radius:12px;
+  background:rgba(255,255,255,.10);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskNewsBrandLogo,
+body.kioskMode.kioskLight .kioskNewsBrandLogo{background:rgba(21,68,90,.06)}
+
+.kioskNewsBrandLogo img{max-width:28px;max-height:28px;display:block}
+
+.kioskNewsBrandText{
+  font-weight:1000;
+  letter-spacing:.2px;
+  white-space:nowrap;
+  font-size:16px;  color:var(--kiosk-accent);
+}
+
+
+.kioskNewsViewport{
+  flex:1;
+  height:100%;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  padding:0 12px;
+  direction:ltr; /* keep motion consistent */
+}
+
+.kioskNewsTrack{
+  display:flex;
+  align-items:center;
+  gap:0;
+  width:max-content;
+  will-change:transform;
+  animation: kioskNewsScrollLTR var(--kiosk-news-dur, 60s) linear infinite;
+}
+
+.kioskNewsChunk{
+  display:flex;
+  align-items:center;
+  gap:26px;
+  padding-inline-end: 26px;
+  white-space:nowrap;
+}
+
+.kioskNewsItem{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  font-weight:900;
+  font-size:var(--kiosk-ticker-font, 18px);
+  white-space:nowrap;
+  direction:rtl; /* Arabic text */  color:var(--kiosk-accent);
+}
+
+
+.kioskNewsSep{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:22px;
+  height:22px;
+  border-radius:999px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.10);  color:var(--kiosk-accent2);
+}
+
+body.kioskMode[class*="kioskTheme-light"] .kioskNewsSep,
+body.kioskMode.kioskLight .kioskNewsSep{
+  background:rgba(21,68,90,.06);
+  border-color:rgba(21,68,90,.12);
+}
+.kioskNewsSep img{width:16px;height:16px;object-fit:contain;display:block}
+
+@keyframes kioskNewsScrollLTR{
+  from{ transform:translateX(-50%); }
+  to  { transform:translateX(0%); }
+}
+
+/* Home scene */
+.kioskHome{
+  padding:18px;
+}
+.kioskHomeClock{
+  text-align:center;
+  font-weight:1000;
+  font-size:clamp(56px, 10vw, 120px);
+  line-height:1;
+  letter-spacing:1px;
+  color:var(--kiosk-accent);
+}
+
+
+/* Analog clock (optional) */
+.kioskAnalogWrap{display:flex;justify-content:center;align-items:center;margin-top:6px;margin-bottom:4px;}
+.kioskAnalogClock{position:relative;width:clamp(220px, 28vw, 360px);height:clamp(220px, 28vw, 360px);border-radius:999px;overflow:hidden;}
+.kioskAnalogFace{position:absolute;inset:0;border-radius:999px;
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.10) 0 2px, transparent 3px),
+    radial-gradient(circle at center, rgba(255,255,255,.06) 0 60%, transparent 61%),
+    repeating-conic-gradient(rgba(255,255,255,.22) 0 1deg, transparent 1deg 6deg);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow: 0 14px 40px rgba(0,0,0,.25);
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskAnalogFace,
+body.kioskMode.kioskLight .kioskAnalogFace{
+  background:
+    radial-gradient(circle at center, rgba(21,68,90,.12) 0 2px, transparent 3px),
+    radial-gradient(circle at center, rgba(21,68,90,.06) 0 60%, transparent 61%),
+    repeating-conic-gradient(rgba(21,68,90,.22) 0 1deg, transparent 1deg 6deg);
+  border-color:rgba(21,68,90,.18);
+  box-shadow: 0 14px 40px rgba(0,0,0,.10);
+}
+
+.kioskAnalogHand{position:absolute;left:50%;top:50%;transform-origin:50% 100%;border-radius:999px;}
+.kioskAnalogHand.hour{width:10px;height:32%;background:rgba(255,255,255,.95);}
+.kioskAnalogHand.minute{width:8px;height:42%;background:rgba(255,255,255,.90);}
+.kioskAnalogHand.second{width:3px;height:46%;background:rgba(255,255,255,.75);}
+body.kioskMode[class*="kioskTheme-light"] .kioskAnalogHand.hour,
+body.kioskMode.kioskLight .kioskAnalogHand.hour{background:rgba(21,68,90,.90)}
+body.kioskMode[class*="kioskTheme-light"] .kioskAnalogHand.minute,
+body.kioskMode.kioskLight .kioskAnalogHand.minute{background:rgba(21,68,90,.75)}
+body.kioskMode[class*="kioskTheme-light"] .kioskAnalogHand.second,
+body.kioskMode.kioskLight .kioskAnalogHand.second{background:rgba(21,68,90,.45)}
+
+.kioskAnalogCenter{position:absolute;left:50%;top:50%;width:14px;height:14px;border-radius:999px;transform:translate(-50%,-50%);
+  background:rgba(255,255,255,.95);box-shadow:0 0 0 5px rgba(255,255,255,.14);
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskAnalogCenter,
+body.kioskMode.kioskLight .kioskAnalogCenter{background:rgba(21,68,90,.95);box-shadow:0 0 0 5px rgba(21,68,90,.12)}
+
+.kioskAnalogDigital{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-weight:1000;letter-spacing:.5px;font-size:clamp(30px, 5vw, 64px);
+  text-shadow:0 10px 26px rgba(0,0,0,.35);  color:var(--kiosk-accent);
+}
+
+body.kioskMode[class*="kioskTheme-light"] .kioskAnalogDigital,
+body.kioskMode.kioskLight .kioskAnalogDigital{text-shadow:none;}
+
+.kioskHomeDates{
+  margin-top:10px;
+  text-align:center;
+  display:grid;
+  gap:6px;
+}
+.kioskHomeDateLine{
+  font-weight:900;
+  font-size:clamp(18px, 2.2vw, 30px);
+  opacity:.95;  color:var(--kiosk-accent2);
+}
+
+.kioskHomeSub{
+  font-weight:800;
+  font-size:clamp(14px, 1.6vw, 22px);
+  opacity:.86;  color:var(--kiosk-accent2);
+}
+
+.kioskHomeQuote{
+  margin-top:16px;
+  padding:14px 16px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  text-align:center;
+  font-weight:900;
+  font-size:clamp(30px, 3.8vw, 64px);
+  line-height:1.35;  color:var(--kiosk-accent);
+}
+
+body.kioskMode[class*="kioskTheme-light"] .kioskHomeQuote,
+body.kioskMode.kioskLight .kioskHomeQuote{
+  background:rgba(21,68,90,.04);
+  border-color:rgba(21,68,90,.12);
+}
+
+/* Calendar scene */
+.kioskCalHero{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.kioskCalHeroTitle{
+  font-weight:1000;
+  font-size:clamp(22px, 3.2vw, 44px);
+  line-height:1.15;  color:var(--kiosk-accent);
+}
+
+.kioskCalHeroDate{
+  text-align:left;
+  direction:ltr;
+  font-weight:900;
+  font-size:clamp(14px, 1.7vw, 22px);
+  opacity:.90;
+  white-space:nowrap;  color:var(--kiosk-accent2);
+}
+
+.kioskCalList{
+  margin-top:12px;
+  display:grid;
+  gap:10px;
+}
+.kioskCalItem{
+  padding:12px 14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.06);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskCalItem,
+body.kioskMode.kioskLight .kioskCalItem{
+  background:rgba(21,68,90,.04);
+  border-color:rgba(21,68,90,.12);
+}
+.kioskCalItemTitle{font-weight:1000;font-size:clamp(16px, 2.0vw, 26px)}
+.kioskCalItemDate{font-weight:900;opacity:.86;white-space:nowrap;direction:ltr}
+
+
+
+/* Clock style variants (5 digital + 5 classic) */
+.kioskHomeClock.clock-digital_clean{letter-spacing:.5px}
+.kioskHomeClock.clock-digital_glow{text-shadow:0 0 28px rgba(255,255,255,.20), 0 0 60px color-mix(in srgb, var(--kiosk-accent) 55%, transparent);}
+.kioskHomeClock.clock-digital_card{
+  padding:10px 16px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.08);
+  box-shadow:0 16px 42px rgba(0,0,0,.28);
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskHomeClock.clock-digital_card{
+  background:rgba(21,68,90,.04);
+  border-color:rgba(21,68,90,.14);
+  box-shadow:0 10px 28px rgba(0,0,0,.10);
+}
+.kioskHomeClock.clock-digital_outline{
+  text-shadow:
+    -2px -2px 0 rgba(0,0,0,.35),
+    2px -2px 0 rgba(0,0,0,.35),
+    -2px 2px 0 rgba(0,0,0,.35),
+    2px 2px 0 rgba(0,0,0,.35),
+    0 14px 30px rgba(0,0,0,.30);
+}
+.kioskHomeClock.clock-digital_split{
+  display:flex;
+  align-items:baseline;
+  justify-content:center;
+  gap:10px;
+}
+.kioskHomeClock.clock-digital_split .dcPart{
+  padding:8px 12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.08);
+  min-width:72px;
+  text-align:center;
+}
+.kioskHomeClock.clock-digital_split .dcSep{opacity:.85;font-weight:1000}
+.kioskHomeClock.clock-digital_split .dcSuffix{
+  margin-right:10px;
+  font-size:.45em;
+  font-weight:900;
+  color:var(--kiosk-accent2);
+  opacity:.95;
+}
+body.kioskMode[class*="kioskTheme-light"] .kioskHomeClock.clock-digital_split .dcPart{
+  background:rgba(21,68,90,.04);
+  border-color:rgba(21,68,90,.14);
+}
+
+/* Classic clock variants */
+.kioskAnalogClock.clock-analog_classic .kioskAnalogFace{ /* default face already */ }
+.kioskAnalogClock.clock-analog_modern .kioskAnalogFace{
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.08) 0 2px, transparent 3px),
+    radial-gradient(circle at center, rgba(255,255,255,.06) 0 58%, transparent 59%),
+    conic-gradient(from 0deg, rgba(255,255,255,.18), transparent 25%, rgba(255,255,255,.18), transparent 50%, rgba(255,255,255,.18), transparent 75%, rgba(255,255,255,.18));
+  border-color:rgba(255,255,255,.16);
+}
+.kioskAnalogClock.clock-analog_minimal .kioskAnalogFace{
+  background:
+    radial-gradient(circle at center, rgba(255,255,255,.10) 0 2px, transparent 3px),
+    repeating-conic-gradient(rgba(255,255,255,.18) 0 1deg, transparent 1deg 12deg);
+}
+.kioskAnalogClock.clock-analog_ring .kioskAnalogFace{
+  box-shadow:0 0 0 10px rgba(255,255,255,.06), 0 14px 40px rgba(0,0,0,.25);
+  border-color:rgba(255,255,255,.18);
+}
+.kioskAnalogClock.clock-analog_skeleton{
+  overflow:visible;
+}
+.kioskAnalogClock.clock-analog_skeleton .kioskAnalogFace{
+  background:transparent;
+  border:2px dashed rgba(255,255,255,.22);
+  box-shadow:none;
+}
+.kioskAnalogClock.clock-analog_skeleton .kioskAnalogDigital{opacity:.90}
+
+.kioskAnalogClock.clock-analog_modern .kioskAnalogHand.hour,
+.kioskAnalogClock.clock-analog_ring .kioskAnalogHand.hour{background:color-mix(in srgb, var(--kiosk-accent) 75%, white);}
+.kioskAnalogClock.clock-analog_modern .kioskAnalogHand.minute,
+.kioskAnalogClock.clock-analog_ring .kioskAnalogHand.minute{background:rgba(255,255,255,.92)}
+.kioskAnalogClock.clock-analog_modern .kioskAnalogHand.second,
+.kioskAnalogClock.clock-analog_ring .kioskAnalogHand.second{background:color-mix(in srgb, var(--kiosk-accent2) 65%, white);}
+
+
+.kioskTheme-dark{
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--green) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 10% 5%, rgba(61,126,185,.18), transparent 60%),
+    linear-gradient(180deg, #030a10 0%, #041018 55%, #030a10 100%);
+  color:#fff;
+}
+
+.kioskTheme-light{
+  --blue:#1673a4;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--green) 12%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f7fbff 0%, #eef7f3 55%, #f7fbff 100%);
+  color:#0b1f2a;
+}
+
+
+/* MOE Extended Themes (50) */
+body.kioskMode.kioskTheme-dark_moe_01{
+  --blue:#0b3d57;
+  --primary:#0ca276;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #001f2a 0%, #00394a 55%, #001f2a 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_02{
+  --blue:#199fa5;
+  --primary:#0e9f7c;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #002025 0%, #003640 55%, #002025 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_03{
+  --blue:#1b9179;
+  --primary:#119c83;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #00211f 0%, #003b38 55%, #00211f 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_04{
+  --blue:#2e7ab1;
+  --primary:#07a869;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #00202d 0%, #00364d 55%, #00202d 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_05{
+  --blue:#2364be;
+  --primary:#09a56f;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #061c33 0%, #122a5a 55%, #061c33 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_06{
+  --blue:#6b4bbf;
+  --primary:#0ca276;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #160f2c 0%, #261d54 55%, #160f2c 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_07{
+  --blue:#a52662;
+  --primary:#0e9f7c;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #220d1a 0%, #3e1934 55%, #220d1a 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_08{
+  --blue:#c27338;
+  --primary:#119c83;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #1c140e 0%, #38281d 55%, #1c140e 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_09{
+  --blue:#839c92;
+  --primary:#07a869;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #181e15 0%, #273427 55%, #181e15 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_10{
+  --blue:#317699;
+  --primary:#09a56f;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #071e28 0%, #153040 55%, #071e28 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_11{
+  --blue:#0b3d57;
+  --primary:#0ca276;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #001f2a 0%, #00394a 55%, #001f2a 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_12{
+  --blue:#199fa5;
+  --primary:#0e9f7c;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #002025 0%, #003640 55%, #002025 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_13{
+  --blue:#1b9179;
+  --primary:#119c83;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #00211f 0%, #003b38 55%, #00211f 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_14{
+  --blue:#2e7ab1;
+  --primary:#07a869;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #00202d 0%, #00364d 55%, #00202d 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_15{
+  --blue:#2364be;
+  --primary:#09a56f;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #061c33 0%, #122a5a 55%, #061c33 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_16{
+  --blue:#6b4bbf;
+  --primary:#0ca276;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #160f2c 0%, #261d54 55%, #160f2c 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_17{
+  --blue:#a52662;
+  --primary:#0e9f7c;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #220d1a 0%, #3e1934 55%, #220d1a 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_18{
+  --blue:#c27338;
+  --primary:#119c83;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #1c140e 0%, #38281d 55%, #1c140e 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_19{
+  --blue:#839c92;
+  --primary:#07a869;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #181e15 0%, #273427 55%, #181e15 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_20{
+  --blue:#317699;
+  --primary:#09a56f;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #071e28 0%, #153040 55%, #071e28 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_21{
+  --blue:#0b3d57;
+  --primary:#0ca276;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #001f2a 0%, #00394a 55%, #001f2a 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_22{
+  --blue:#199fa5;
+  --primary:#0e9f7c;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #002025 0%, #003640 55%, #002025 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_23{
+  --blue:#1b9179;
+  --primary:#119c83;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #00211f 0%, #003b38 55%, #00211f 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_24{
+  --blue:#2e7ab1;
+  --primary:#07a869;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #00202d 0%, #00364d 55%, #00202d 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-dark_moe_25{
+  --blue:#2364be;
+  --primary:#09a56f;
+  background:
+    radial-gradient(1200px 700px at 80% -10%, color-mix(in srgb, var(--primary) 24%, transparent), transparent 55%),
+    radial-gradient(900px 600px at 12% 8%, color-mix(in srgb, var(--blue) 22%, transparent), transparent 60%),
+    radial-gradient(900px 620px at 90% 110%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 66%),
+    linear-gradient(180deg, #061c33 0%, #122a5a 55%, #061c33 100%);
+  color:#ffffff;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_01{
+  --blue:#1673a4;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f7fbff 0%, #eef7f3 55%, #f7fbff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_02{
+  --blue:#138b79;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f4fffa 0%, #fdfdfe 55%, #f4fffa 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_03{
+  --blue:#2587c3;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f6faff 0%, #fcfcfd 55%, #f6faff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_04{
+  --blue:#67705c;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #fffaf3 0%, #fafbfd 55%, #fffaf3 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_05{
+  --blue:#585fbc;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #fbf7ff 0%, #f9fafc 55%, #fbf7ff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_06{
+  --blue:#1673a4;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f7fbff 0%, #eef7f3 55%, #f7fbff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_07{
+  --blue:#138b79;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f4fffa 0%, #fdfdfe 55%, #f4fffa 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_08{
+  --blue:#2587c3;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f6faff 0%, #fcfcfd 55%, #f6faff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_09{
+  --blue:#67705c;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #fffaf3 0%, #fafbfd 55%, #fffaf3 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_10{
+  --blue:#585fbc;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #fbf7ff 0%, #f9fafc 55%, #fbf7ff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_11{
+  --blue:#1673a4;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f7fbff 0%, #eef7f3 55%, #f7fbff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_12{
+  --blue:#138b79;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f4fffa 0%, #fdfdfe 55%, #f4fffa 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_13{
+  --blue:#2587c3;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f6faff 0%, #fcfcfd 55%, #f6faff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_14{
+  --blue:#67705c;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #fffaf3 0%, #fafbfd 55%, #fffaf3 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_15{
+  --blue:#585fbc;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #fbf7ff 0%, #f9fafc 55%, #fbf7ff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_16{
+  --blue:#1673a4;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f7fbff 0%, #eef7f3 55%, #f7fbff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_17{
+  --blue:#138b79;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f4fffa 0%, #fdfdfe 55%, #f4fffa 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_18{
+  --blue:#2587c3;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f6faff 0%, #fcfcfd 55%, #f6faff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_19{
+  --blue:#67705c;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #fffaf3 0%, #fafbfd 55%, #fffaf3 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_20{
+  --blue:#585fbc;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #fbf7ff 0%, #f9fafc 55%, #fbf7ff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_21{
+  --blue:#1673a4;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f7fbff 0%, #eef7f3 55%, #f7fbff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_22{
+  --blue:#138b79;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f4fffa 0%, #fdfdfe 55%, #f4fffa 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_23{
+  --blue:#2587c3;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #f6faff 0%, #fcfcfd 55%, #f6faff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_24{
+  --blue:#67705c;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #fffaf3 0%, #fafbfd 55%, #fffaf3 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+
+body.kioskMode.kioskTheme-light_moe_25{
+  --blue:#585fbc;
+  --primary:#07a869;
+  background:
+    radial-gradient(900px 620px at 10% 8%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 60%),
+    radial-gradient(860px 560px at 90% 12%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #fbf7ff 0%, #f9fafc 55%, #fbf7ff 100%);
+  color:#0b1f2a;
+  --kiosk-accent: var(--blue);
+  --kiosk-accent2: var(--primary);
+  --kiosk-ticker-text: var(--kiosk-accent);
+  --kiosk-ticker-border: color-mix(in srgb, var(--kiosk-accent) 35%, transparent);
+}
+/* End MOE Extended Themes */
+.kioskTheme-dark_ocean{
+  --blue:#38bdf8;
+  --primary:#22c55e;
+  background:
+    radial-gradient(980px 640px at 12% 8%, rgba(56,189,248,.22), transparent 60%),
+    radial-gradient(820px 560px at 88% 18%, rgba(34,197,94,.12), transparent 58%),
+    linear-gradient(180deg, #021024 0%, #06324a 55%, #021024 100%);
+  color:#fff;
+}
+
+.kioskTheme-dark_forest{
+  --blue:#34d399;
+  --primary:#22c55e;
+  background:
+    radial-gradient(980px 640px at 12% 8%, rgba(34,197,94,.22), transparent 60%),
+    radial-gradient(820px 560px at 88% 18%, rgba(16,185,129,.12), transparent 58%),
+    linear-gradient(180deg, #02140c 0%, #0b2f1c 55%, #02140c 100%);
+  color:#fff;
+}
+
+.kioskTheme-dark_cobalt{
+  --blue:#60a5fa;
+  --primary:#22c55e;
+  background:
+    radial-gradient(980px 640px at 12% 8%, rgba(96,165,250,.20), transparent 60%),
+    radial-gradient(820px 560px at 88% 18%, rgba(34,197,94,.10), transparent 58%),
+    linear-gradient(180deg, #03051a 0%, #152a63 55%, #03051a 100%);
+  color:#fff;
+}
+
+.kioskTheme-dark_moss{
+  --blue:#a3e635;
+  --primary:#22c55e;
+  background:
+    radial-gradient(980px 640px at 12% 8%, rgba(163,230,53,.20), transparent 60%),
+    radial-gradient(820px 560px at 88% 18%, rgba(34,197,94,.10), transparent 58%),
+    linear-gradient(180deg, #081007 0%, #1e2f12 55%, #081007 100%);
+  color:#fff;
+}
+
+.kioskTheme-dark_plum{
+  --blue:#c084fc;
+  --primary:#22c55e;
+  background:
+    radial-gradient(980px 640px at 12% 8%, rgba(192,132,252,.20), transparent 60%),
+    radial-gradient(820px 560px at 88% 18%, rgba(34,197,94,.08), transparent 58%),
+    linear-gradient(180deg, #120416 0%, #3a1046 55%, #120416 100%);
+  color:#fff;
+}
+
+.kioskTheme-dark_bronze{
+  --blue:#fb923c;
+  --primary:#22c55e;
+  background:
+    radial-gradient(980px 640px at 12% 8%, rgba(251,146,60,.18), transparent 60%),
+    radial-gradient(820px 560px at 88% 18%, rgba(34,197,94,.08), transparent 58%),
+    linear-gradient(180deg, #120b05 0%, #3a2412 55%, #120b05 100%);
+  color:#fff;
+}
+
+.kioskNewsItem a{color:inherit;text-decoration:none;}
+.kioskNewsItem a:hover{text-decoration:underline;}
+
+.kioskCalHeroSub{color:var(--kiosk-accent2);}
+
+/* Added themes v1.4.17-displayfix8 */
+body.kioskMode.kioskTheme-dark_sapphire{
+  --blue: #1673a4;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #071b33 0%, #061425 55%, #040e1a 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_lagoon{
+  --blue: #208caa;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #062a2e 0%, #041e22 55%, #031317 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_jade{
+  --blue: #07a869;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #07251c 0%, #061c15 55%, #04110c 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_peacock{
+  --blue: #0ea5b8;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #061c2a 0%, #041722 55%, #030f18 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_royal{
+  --blue: #1b7aa8;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #151c3a 0%, #101630 55%, #090d1c 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_pine{
+  --blue: #0fa06e;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #0b2a24 0%, #08211c 55%, #041411 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_storm{
+  --blue: #1673a4;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #18222b 0%, #121a22 55%, #0b1117 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_iris{
+  --blue: #1673a4;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #221a35 0%, #1a132b 55%, #0f0a1a 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_grape{
+  --blue: #1673a4;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #24162f 0%, #1a1023 55%, #0e0813 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_olive{
+  --blue: #07a869;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #1c2b18 0%, #141f11 55%, #0b1108 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_marine{
+  --blue: #1673a4;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #061621 0%, #04111a 55%, #02080d 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_aubergine{
+  --blue: #208caa;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #2a1731 0%, #1f1024 55%, #0e0811 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_denim{
+  --blue: #208caa;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #0b1a2a 0%, #071221 55%, #050e18 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_turquoise{
+  --blue: #06b6d4;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #052a28 0%, #041f1d 55%, #021312 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_seafoam{
+  --blue: #16c98d;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #06211b 0%, #041a15 55%, #030f0c 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_evergreen{
+  --blue: #07a869;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #08261d 0%, #061c16 55%, #03100c 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_spruce{
+  --blue: #0ea5b8;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #081f1c 0%, #061715 55%, #030f0d 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_midnight{
+  --blue: #1673a4;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #090f1d 0%, #070a14 55%, #050815 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_graphite{
+  --blue: #1673a4;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #1a1f24 0%, #14181d 55%, #0e1114 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-dark_slate2{
+  --blue: #208caa;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #0f1720 0%, #0b1118 55%, #080c11 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-hybrid_sapphire{
+  --blue: #1673a4;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #071b33 0%, #061425 55%, #040e1a 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-hybrid_jade{
+  --blue: #07a869;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #07251c 0%, #061c15 55%, #04110c 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-hybrid_royal{
+  --blue: #1b7aa8;
+  background:
+    radial-gradient(900px 600px at 10% 5%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%),
+    radial-gradient(800px 520px at 90% 15%, color-mix(in srgb, var(--green) 10%, transparent), transparent 58%),
+    linear-gradient(180deg, #151c3a 0%, #101630 55%, #090d1c 100%);
+  color:#fff;
+}
+
+body.kioskMode.kioskTheme-paper_sky{
+  --blue: #1673a4;
+  background: linear-gradient(180deg, #eef7ff 0%, #ffffff 55%, #ecf4ff 100%);
+  color:#111;
+}
+
+body.kioskMode.kioskTheme-paper_mint{
+  --blue: var(--green);
+  background: linear-gradient(180deg, #f2fff9 0%, #ffffff 55%, #effdf6 100%);
+  color:#111;
+}
+
+body.kioskMode.kioskTheme-light_pearl{
+  --blue: #1673a4;
+  background:
+    radial-gradient(900px 560px at 12% 0%, color-mix(in srgb, var(--blue) 10%, transparent), transparent 66%),
+    linear-gradient(180deg, #f7fbff 0%, #ffffff 55%, #f2f6fb 100%);
+  color:#111;
+}
+
+body.kioskMode.kioskTheme-light_sage{
+  --blue: var(--green);
+  background:
+    radial-gradient(900px 560px at 12% 0%, color-mix(in srgb, var(--green) 10%, transparent), transparent 66%),
+    linear-gradient(180deg, #f3fff9 0%, #ffffff 55%, #f0fbf5 100%);
+  color:#111;
+}
+
+body.kioskMode.kioskTheme-light_cloud{
+  --blue: #208caa;
+  background: linear-gradient(180deg,#f7f9fc 0%, #ffffff 55%, #f1f4f9 100%);
+  color:#111;
+}
+
+body.kioskMode.kioskTheme-light_fog{
+  --blue: #1673a4;
+  background: linear-gradient(180deg,#f6f8fb 0%, #ffffff 55%, #eef2f7 100%);
+  color:#111;
+}
