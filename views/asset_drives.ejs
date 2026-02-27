@@ -1,0 +1,107 @@
+<%- include('partials/header', { pageTitle: 'الهاردسكات' }) %>
+
+<div class="grid" style="max-width:1100px;margin:0 auto">
+  <% if (ok) { %>
+    <div class="notice">تم حفظ التغيير ✅</div>
+  <% } %>
+  <% if (error) { %>
+    <div class="error"><%= error %></div>
+  <% } %>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin:0">الهاردسكات</h2>
+        <div class="small" style="margin-top:6px">تعريف الهاردسكات التي تُحفظ عليها المشاريع لمساعدة الفريق على الوصول للمواد.</div>
+      </div>
+      <div class="rowActions noPrint">
+        <a class="btn" href="/assets">العودة للأرشيف</a>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <% if (editing) { %>
+      <div class="notice" style="margin-bottom:10px">تعديل بيانات الهارد: <b><%= editing.name %></b></div>
+    <% } %>
+
+    <form class="grid grid4" method="post" action="<%= editing ? ('/assets/drives/' + editing.id + '/update') : '/assets/drives' %>">
+      <div>
+        <label class="small">اسم الهارد *</label>
+        <input class="input" name="name" placeholder="مثال: HDD-01 (فيديوهات 2025)" value="<%= editing ? (editing.name || '') : '' %>" required />
+      </div>
+      <div>
+        <label class="small">Serial (اختياري)</label>
+        <input class="input" name="serial" placeholder="رقم تسلسلي" value="<%= editing ? (editing.serial || '') : '' %>" />
+      </div>
+      <div>
+        <label class="small">الموقع (اختياري)</label>
+        <input class="input" name="location" placeholder="مكتب/خزانة/عند فلان" value="<%= editing ? (editing.location || '') : '' %>" />
+      </div>
+      <div>
+        <label class="small">ملاحظات (اختياري)</label>
+        <input class="input" name="notes" placeholder="مثال: يحتوي مشاريع الدلم + لقطات خام" value="<%= editing ? (editing.notes || '') : '' %>" />
+      </div>
+      <div style="display:flex;align-items:flex-end">
+        <button class="btn btnGood" type="submit" style="width:100%"><%= editing ? 'حفظ التعديل' : 'إضافة' %></button>
+      </div>
+
+      <% if (editing) { %>
+        <div style="display:flex;align-items:flex-end">
+          <a class="btn" href="/assets/drives" style="width:100%;text-align:center">إلغاء</a>
+        </div>
+      <% } %>
+    </form>
+
+    <div class="hr"></div>
+
+    <% if (!items.length) { %>
+      <div class="small">لا توجد هاردسكات مسجلة.</div>
+    <% } else { %>
+      <div style="overflow:auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>الاسم</th>
+              <th>Serial</th>
+              <th>الموقع</th>
+              <th>ملاحظات</th>
+              <th>عدد الأصول</th>
+              <th>آخر تواجد</th>
+              <th class="noPrint">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% items.forEach(d => { %>
+              <tr>
+                <td><b><%= d.name %></b></td>
+                <td class="small"><%= d.serial || '-' %></td>
+                <td class="small"><%= d.location || '-' %></td>
+                <td class="small"><%= d.notes || '-' %></td>
+                <td class="small"><%= d.asset_count || 0 %></td>
+                <td class="small"><%= d.last_seen_at ? fmtDate(d.last_seen_at) : '-' %></td>
+                <td class="noPrint">
+                  <a class="btn" href="/assets?drive=<%= d.id %>" target="_blank">عرض الأصول</a>
+                  <a class="btn" href="/assets/drives?edit=<%= d.id %>">تعديل</a>
+                  <form method="post" action="/assets/drives/<%= d.id %>/ping" style="display:inline">
+                    <button class="btn" type="submit">تحديث التواجد</button>
+                  </form>
+                  <form method="post" action="/assets/drives/<%= d.id %>/delete" style="display:inline" onsubmit="return confirm('حذف الهارد؟')">
+                    <button class="btn btnDanger" type="submit">حذف</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="small" style="opacity:.85">
+    <b>اقتراح تنظيم:</b> اتفقوا على بنية مجلدات موحدة داخل كل هارد (مثلاً: <b>Projects/اسم_المشروع/Video/Raw</b> و <b>Projects/اسم_المشروع/AE</b>)
+    ثم استخدموا الأرشيف لتسجيل مسارات الملفات المهمة.
+  </div>
+</div>
+
+<%- include('partials/footer') %>

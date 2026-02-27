@@ -1,0 +1,77 @@
+<%
+  const total = stats?.total || 0;
+  const completed = stats?.completed || 0;
+  const pending = stats?.pending || 0;
+  const overdue = stats?.overdue || 0;
+  const cancelled = stats?.cancelled || 0;
+  const inProgress = stats?.inProgress || 0;
+  const avgProgress = stats?.avgProgress || 0;
+
+  const completedPct = total ? Math.round(completed / total * 100) : 0;
+  const pendingPct = total ? Math.round(pending / total * 100) : 0;
+  const overduePct = total ? Math.round(overdue / total * 100) : 0;
+  const d1 = completedPct * 3.6;
+  const d2 = (completedPct + pendingPct) * 3.6;
+%>
+
+<div class="reportCharts">
+  <div class="chartCard">
+    <div class="chartTitle">ملخص الإنجاز</div>
+    <div class="grid grid4" style="margin-top:10px">
+      <div class="kpi">
+        <div class="label">إجمالي المهام</div>
+        <div class="value"><%= total %></div>
+      </div>
+      <div class="kpi">
+        <div class="label">مكتملة</div>
+        <div class="value"><%= completed %></div>
+      </div>
+      <div class="kpi">
+        <div class="label">متأخرة</div>
+        <div class="value"><%= overdue %></div>
+      </div>
+      <div class="kpi">
+        <div class="label">متوسط الإنجاز</div>
+        <div class="value"><%= avgProgress %>%</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chartCard">
+    <div class="chartTitle">نسب الحالات</div>
+    <div class="donutWrap" style="margin-top:10px">
+      <div class="donut" style="--d1:<%= d1 %>deg; --d2:<%= d2 %>deg;"></div>
+      <div class="legend">
+        <div><span class="dot good"></span> مكتملة (<%= completedPct %>%)</div>
+        <div><span class="dot warn"></span> بانتظار اعتماد (<%= pendingPct %>%)</div>
+        <div><span class="dot bad"></span> متأخرة (<%= overduePct %>%)</div>
+        <div class="small" style="margin-top:6px">جارية: <b><%= inProgress %></b> • ملغاة: <b><%= cancelled %></b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="chartCard">
+  <div class="chartTitle"><%= topTitle || 'الأعلى إنجازًا' %></div>
+
+  <% if (!top || !top.length) { %>
+    <div class="small" style="margin-top:10px">لا توجد بيانات كافية لعرض الرسم البياني.</div>
+  <% } else { %>
+    <div class="bars" style="margin-top:10px">
+      <% top.forEach((x, i) => { %>
+        <div class="barRow">
+          <div class="barLabel">
+            <div><b><%= (i+1) %>. <%= x.name %></b></div>
+            <div class="small">عدد المهام: <b><%= x.count %></b></div>
+          </div>
+          <div class="barGraph">
+            <div class="bar"><span style="width:<%= x.avg %>%"></span></div>
+            <div class="small"><%= x.avg %>%</div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  <% } %>
+</div>
+
+<div class="hr"></div>

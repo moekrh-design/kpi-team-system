@@ -1,0 +1,479 @@
+<%- include('partials/header', { pageTitle: 'الإعدادات' }) %>
+
+<div class="card" style="max-width:980px;margin:0 auto">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <h2 style="margin:0">الإعدادات</h2>
+    <a class="btn" href="/">رجوع</a>
+  </div>
+
+  <% if (ok) { %>
+    <div class="notice" style="margin-top:12px">تم حفظ الإعدادات ✅</div>
+  <% } %>
+
+  <% if (restore_ok) { %>
+    <div class="notice" style="margin-top:12px;border-color:rgba(7,168,105,.35);background:rgba(7,168,105,.10)">تم استيراد النسخة بنجاح ✅</div>
+  <% } %>
+  <% if (restore_err) { %>
+    <div class="notice" style="margin-top:12px;border-color:rgba(214,45,58,.35);background:rgba(214,45,58,.10)">تعذر استيراد النسخة. تأكد أن الملف بصيغة ZIP وأنه يحتوي على قاعدة البيانات (app.db) ❌</div>
+  <% } %>
+
+  <div class="help" style="margin-top:8px">
+    يمكن ترك الحقول فارغة. عند عدم رفع الشعار/الختم سيتم إخفاؤهما تلقائيًا في التقارير.
+  </div>
+
+  <form method="post" action="/admin/settings" enctype="multipart/form-data" class="grid" style="margin-top:12px">
+
+    <div class="card" style="padding:14px">
+      <div style="font-weight:900;color:var(--navy);margin-bottom:10px">بيانات الجهة (تظهر في التقارير)</div>
+      <div class="formRow">
+        <div>
+          <label class="small">اسم الجهة</label>
+          <input class="input" name="org_name" value="<%= settings.org_name || '' %>" placeholder="مثال: إدارة التعليم بمحافظة ..." />
+        </div>
+        <div>
+          <label class="small">القسم</label>
+          <input class="input" name="org_department" value="<%= settings.org_department || '' %>" placeholder="مثال: قسم الاتصال المؤسسي" />
+        </div>
+      </div>
+
+      <div class="formRow" style="margin-top:10px">
+        <div>
+          <label class="small">سطر علوي إضافي (اختياري)</label>
+          <input class="input" name="header_line" value="<%= settings.header_line || '' %>" placeholder="مثال: متابعة الأعمال الأسبوعية" />
+        </div>
+        <div>
+          <label class="small">ملاحظة سفلية (اختياري)</label>
+          <input class="input" name="footer_line" value="<%= settings.footer_line || '' %>" placeholder="مثال: هذه وثيقة داخلية" />
+        </div>
+      </div>
+
+      <div class="formRow" style="margin-top:10px">
+        <div>
+          <label class="small">رفع شعار الجهة (PNG/JPG)</label>
+          <input class="input" type="file" name="logo" accept="image/*" />
+          <% if (settings.logo_filename) { %>
+            <div class="help">الشعار الحالي: <a href="/uploads/<%= settings.logo_filename %>" target="_blank"><b>عرض</b></a></div>
+          <% } %>
+        </div>
+        <div>
+          <label class="small">رفع ختم الجهة (اختياري)</label>
+          <input class="input" type="file" name="seal" accept="image/*" />
+          <% if (settings.seal_filename) { %>
+            <div class="help">الختم الحالي: <a href="/uploads/<%= settings.seal_filename %>" target="_blank"><b>عرض</b></a></div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="card" style="padding:14px">
+      <div style="font-weight:900;color:var(--navy);margin-bottom:10px">التقارير (رقم التقرير + QR/Barcode)</div>
+      <div class="formRow">
+        <div>
+          <label class="small">Prefix رقم التقرير (اختياري)</label>
+          <input class="input" name="report_prefix" value="<%= settings.report_prefix || '' %>" placeholder="مثال: KRH" />
+          <div class="help">مثال للرقم: KRH-20260120-123456</div>
+        </div>
+        <div>
+          <label class="small">خيارات داخل التقرير</label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+            <label class="badge" style="cursor:pointer">
+              <input type="checkbox" name="show_qr" value="1" <%= (settings.show_qr ?? 1) ? 'checked' : '' %> />
+              <span>إظهار QR</span>
+            </label>
+            <label class="badge" style="cursor:pointer">
+              <input type="checkbox" name="show_barcode" value="1" <%= (settings.show_barcode ?? 1) ? 'checked' : '' %> />
+              <span>إظهار Barcode</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="card" style="padding:14px">
+      <div style="font-weight:900;color:var(--navy);margin-bottom:10px">التوقيعات (تظهر في أسفل التقارير)</div>
+      <div class="formRow">
+        <div>
+          <label class="small">مُعِدّ التقرير (المسمى)</label>
+          <input class="input" name="sig_prepared_title" value="<%= settings.sig_prepared_title || '' %>" placeholder="مثال: مُعِدّ التقرير" />
+        </div>
+        <div>
+          <label class="small">مُعِدّ التقرير (الاسم)</label>
+          <input class="input" name="sig_prepared_name" value="<%= settings.sig_prepared_name || '' %>" placeholder="مثال: الاسم هنا" />
+        </div>
+      </div>
+
+      <div class="formRow" style="margin-top:10px">
+        <div>
+          <label class="small">مراجع التقرير (المسمى)</label>
+          <input class="input" name="sig_reviewed_title" value="<%= settings.sig_reviewed_title || '' %>" placeholder="مثال: مراجع التقرير" />
+        </div>
+        <div>
+          <label class="small">مراجع التقرير (الاسم)</label>
+          <input class="input" name="sig_reviewed_name" value="<%= settings.sig_reviewed_name || '' %>" placeholder="مثال: الاسم هنا" />
+        </div>
+      </div>
+
+      <div class="formRow" style="margin-top:10px">
+        <div>
+          <label class="small">اعتماد (المسمى)</label>
+          <input class="input" name="sig_approved_title" value="<%= settings.sig_approved_title || '' %>" placeholder="مثال: اعتماد" />
+        </div>
+        <div>
+          <label class="small">اعتماد (الاسم)</label>
+          <input class="input" name="sig_approved_name" value="<%= settings.sig_approved_name || '' %>" placeholder="مثال: الاسم هنا" />
+        </div>
+      </div>
+
+      <div class="help" style="margin-top:10px">إذا تركت الأسماء فارغة ستظهر خطوط توقيع فقط.</div>
+    </div>
+
+
+    <div class="card" style="padding:14px">
+      <div style="font-weight:900;color:var(--navy);margin-bottom:10px">الشاشة المتحركة (تشغيل العرض)</div>
+
+      <div class="formRow">
+        <div>
+          <label class="small">ماذا يظهر بجانب نسبة الإنجاز؟</label>
+          <select class="input" name="kiosk_display_mode">
+            <option value="both" <%= (settings.kiosk_display_mode || 'both') === 'both' ? 'selected' : '' %>>المسند له + المشرف</option>
+            <option value="assignee" <%= (settings.kiosk_display_mode || '') === 'assignee' ? 'selected' : '' %>>المسند له فقط</option>
+            <option value="supervisor" <%= (settings.kiosk_display_mode || '') === 'supervisor' ? 'selected' : '' %>>المشرف فقط</option>
+            <option value="chart_only" <%= (settings.kiosk_display_mode || '') === 'chart_only' ? 'selected' : '' %>>الرسم البياني فقط</option>
+          </select>
+          <div class="help">ملاحظة: اسم المهمة يظهر دائمًا في منتصف الشاشة.</div>
+        </div>
+
+        <div>
+          <label class="small">سرعة التنقل (ثواني)</label>
+          <input class="input" type="number" name="kiosk_interval_sec" min="2" max="60" value="<%= settings.kiosk_interval_sec || 5 %>" />
+          <div class="help">الافتراضي: 5 ثواني.</div>
+        </div>
+
+        <div>
+          <label class="small">انتقالات الشاشة</label>
+          <select class="input" name="kiosk_transition">
+            <option value="fade" <%= (settings.kiosk_transition || 'fade') === 'fade' ? 'selected' : '' %>>ناعم (Fade)</option>
+            <option value="slide" <%= (settings.kiosk_transition || '') === 'slide' ? 'selected' : '' %>>سلايد (يمين)</option>
+            <option value="slide_up" <%= (settings.kiosk_transition || '') === 'slide_up' ? 'selected' : '' %>>سلايد (أعلى)</option>
+            <option value="zoom" <%= (settings.kiosk_transition || '') === 'zoom' ? 'selected' : '' %>>زووم</option>
+            <option value="flip" <%= (settings.kiosk_transition || '') === 'flip' ? 'selected' : '' %>>تقليب</option>
+            <option value="none" <%= (settings.kiosk_transition || '') === 'none' ? 'selected' : '' %>>بدون</option>
+          </select>
+          <div class="help">تتحكم في شكل الانتقال بين الأعمال أثناء العرض.</div>
+        </div>
+      </div>
+
+      <div class="formRow" style="margin-top:10px">
+        <div>
+          <label class="small">بداية تاريخ عرض المهام (اختياري)</label>
+          <input class="input" type="date" name="kiosk_date_from" value="<%= settings.kiosk_date_from || '' %>" />
+          <div class="help">إذا لم تحدده: سيعرض النظام جميع الأعمال.</div>
+        </div>
+        <div>
+          <label class="small">نهاية تاريخ عرض المهام (اختياري)</label>
+          <input class="input" type="date" name="kiosk_date_to" value="<%= settings.kiosk_date_to || '' %>" />
+          <div class="help">يعتمد التصفية على تاريخ الاستحقاق (أو البداية إن لم يوجد).</div>
+        </div>
+      </div>
+
+      <div class="formRow" style="margin-top:10px">
+        <div>
+          <label class="small">مدة عرض الصفحات الأخرى (ثواني)</label>
+          <input class="input" type="number" name="kiosk_other_interval_sec" min="3" max="180" value="<%= settings.kiosk_other_interval_sec || 10 %>" />
+          <div class="help">الصفحات غير المهام: الرئيسية/الأيام/التقويم.</div>
+        </div>
+
+        <div>
+          <label class="small">ترتيب عرض المهام في الشاشة</label>
+          <select class="input" name="kiosk_task_order">
+            <option value="due" <%= (settings.kiosk_task_order || 'due') === 'due' ? 'selected' : '' %>>الأقرب استحقاقًا أولاً</option>
+            <option value="updated" <%= (settings.kiosk_task_order || '') === 'updated' ? 'selected' : '' %>>الأحدث تحديثًا</option>
+            <option value="priority" <%= (settings.kiosk_task_order || '') === 'priority' ? 'selected' : '' %>>الأعلى أولوية</option>
+          </select>
+          <div class="help">ينطبق فقط على شاشة العرض (لا يغير ترتيب المهام داخل النظام).</div>
+        </div>
+        <div>
+          <label class="small">محتوى شاشة العرض</label>
+          <input type="hidden" id="kiosk_pages_default" name="kiosk_pages_default" value="<%= settings.kiosk_pages_default || 'home,tasks,days,calendar' %>" />
+          <div class="kioskPagesPick" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:8px">
+            <label class="badge" style="cursor:pointer"><input type="checkbox" data-token="home" /> <span>الرئيسية (الوقت + عبارة)</span></label>
+            <label class="badge" style="cursor:pointer"><input type="checkbox" data-token="tasks" /> <span>المهام</span></label>
+            <label class="badge" style="cursor:pointer"><input type="checkbox" data-token="days" /> <span>الأيام العالمية</span></label>
+            <label class="badge" style="cursor:pointer"><input type="checkbox" data-token="calendar" /> <span>التقويم الدراسي</span></label>
+            <label class="badge" style="cursor:pointer"><input type="checkbox" data-token="ticker" /> <span>الشريط الإخباري</span></label>
+          </div>
+          <div class="help">ضع علامة صح على ما تريد إظهاره في شاشة العرض. (الشريط الإخباري يثبت أسفل الشاشة)</div>
+        </div>
+      </div>
+
+      
+      <div class="bInfo" style="margin-top:12px">
+        تم نقل إعدادات الشريط الإخباري إلى: <a class="link" href="/kiosk-content/ticker">محتوى شاشة العرض → الشريط الإخباري</a>
+      </div>
+<div class="formRow" style="margin-top:10px">
+        <div>
+          <label class="small">حجم الرسوم البيانية</label>
+          <select class="input" name="kiosk_chart_size">
+            <option value="l" <%= (settings.kiosk_chart_size || 'xl') === 'l' ? 'selected' : '' %>>كبير</option>
+            <option value="xl" <%= (settings.kiosk_chart_size || 'xl') === 'xl' ? 'selected' : '' %>>كبير جدًا</option>
+            <option value="xxl" <%= (settings.kiosk_chart_size || 'xl') === 'xxl' ? 'selected' : '' %>>عملاق</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="small">نوع الرسم</label>
+          <select class="input" name="kiosk_chart_variant">
+            <option value="ring" <%= (settings.kiosk_chart_variant || 'ring') === 'ring' ? 'selected' : '' %>>دائري (المفضل)</option>
+            <option value="ring_bar" <%= (settings.kiosk_chart_variant || '') === 'ring_bar' ? 'selected' : '' %>>دائري + شريط</option>
+            <option value="bar" <%= (settings.kiosk_chart_variant || '') === 'bar' ? 'selected' : '' %>>شريط فقط</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="formRow" style="margin-top:10px">
+        <div>
+          <label class="small">عناصر إضافية داخل الشاشة</label>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:8px">
+            <label class="badge" style="cursor:pointer">
+              <input type="checkbox" name="kiosk_show_event" value="1" <%= (settings.kiosk_show_event ?? 1) ? 'checked' : '' %> />
+              <span>عرض الفعالية</span>
+            </label>
+            <label class="badge" style="cursor:pointer">
+              <input type="checkbox" name="kiosk_show_due" value="1" <%= (settings.kiosk_show_due ?? 1) ? 'checked' : '' %> />
+              <span>عرض تاريخ الاستحقاق</span>
+            </label>
+            <label class="badge" style="cursor:pointer">
+              <input type="checkbox" name="kiosk_show_status" value="1" <%= (settings.kiosk_show_status ?? 1) ? 'checked' : '' %> />
+              <span>عرض الحالة</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="small">نمط الألوان</label>
+          <select class="input" name="kiosk_color_scheme" style="max-width:360px">
+            <optgroup label="ثيمات داكنة (ملوّنة)">
+            <option value="dark_moe_01" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_01' ? 'selected' : '' %>>داكن 01 — كحلي عميق</option>
+            <option value="dark_moe_02" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_02' ? 'selected' : '' %>>داكن 02 — تركواز</option>
+            <option value="dark_moe_03" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_03' ? 'selected' : '' %>>داكن 03 — زمردي</option>
+            <option value="dark_moe_04" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_04' ? 'selected' : '' %>>داكن 04 — سماوي</option>
+            <option value="dark_moe_05" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_05' ? 'selected' : '' %>>داكن 05 — أزرق ملكي</option>
+            <option value="dark_moe_06" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_06' ? 'selected' : '' %>>داكن 06 — بنفسجي</option>
+            <option value="dark_moe_07" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_07' ? 'selected' : '' %>>داكن 07 — عنّابي</option>
+            <option value="dark_moe_08" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_08' ? 'selected' : '' %>>داكن 08 — برتقالي</option>
+            <option value="dark_moe_09" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_09' ? 'selected' : '' %>>داكن 09 — ذهبي</option>
+            <option value="dark_moe_10" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_10' ? 'selected' : '' %>>داكن 10 — رمادي أزرق</option>
+            <option value="dark_moe_11" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_11' ? 'selected' : '' %>>داكن 11 — كحلي عميق</option>
+            <option value="dark_moe_12" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_12' ? 'selected' : '' %>>داكن 12 — تركواز</option>
+            <option value="dark_moe_13" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_13' ? 'selected' : '' %>>داكن 13 — زمردي</option>
+            <option value="dark_moe_14" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_14' ? 'selected' : '' %>>داكن 14 — سماوي</option>
+            <option value="dark_moe_15" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_15' ? 'selected' : '' %>>داكن 15 — أزرق ملكي</option>
+            <option value="dark_moe_16" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_16' ? 'selected' : '' %>>داكن 16 — بنفسجي</option>
+            <option value="dark_moe_17" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_17' ? 'selected' : '' %>>داكن 17 — عنّابي</option>
+            <option value="dark_moe_18" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_18' ? 'selected' : '' %>>داكن 18 — برتقالي</option>
+            <option value="dark_moe_19" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_19' ? 'selected' : '' %>>داكن 19 — ذهبي</option>
+            <option value="dark_moe_20" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_20' ? 'selected' : '' %>>داكن 20 — رمادي أزرق</option>
+            <option value="dark_moe_21" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_21' ? 'selected' : '' %>>داكن 21 — كحلي عميق</option>
+            <option value="dark_moe_22" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_22' ? 'selected' : '' %>>داكن 22 — تركواز</option>
+            <option value="dark_moe_23" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_23' ? 'selected' : '' %>>داكن 23 — زمردي</option>
+            <option value="dark_moe_24" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_24' ? 'selected' : '' %>>داكن 24 — سماوي</option>
+            <option value="dark_moe_25" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'dark_moe_25' ? 'selected' : '' %>>داكن 25 — أزرق ملكي</option>
+            </optgroup>
+            <optgroup label="ثيمات فاتحة">
+            <option value="light_moe_01" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_01' ? 'selected' : '' %>>فاتح 01 — لؤلؤي</option>
+            <option value="light_moe_02" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_02' ? 'selected' : '' %>>فاتح 02 — نعناعي</option>
+            <option value="light_moe_03" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_03' ? 'selected' : '' %>>فاتح 03 — سماوي ناعم</option>
+            <option value="light_moe_04" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_04' ? 'selected' : '' %>>فاتح 04 — رملي</option>
+            <option value="light_moe_05" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_05' ? 'selected' : '' %>>فاتح 05 — لافندر</option>
+            <option value="light_moe_06" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_06' ? 'selected' : '' %>>فاتح 06 — لؤلؤي</option>
+            <option value="light_moe_07" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_07' ? 'selected' : '' %>>فاتح 07 — نعناعي</option>
+            <option value="light_moe_08" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_08' ? 'selected' : '' %>>فاتح 08 — سماوي ناعم</option>
+            <option value="light_moe_09" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_09' ? 'selected' : '' %>>فاتح 09 — رملي</option>
+            <option value="light_moe_10" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_10' ? 'selected' : '' %>>فاتح 10 — لافندر</option>
+            <option value="light_moe_11" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_11' ? 'selected' : '' %>>فاتح 11 — لؤلؤي</option>
+            <option value="light_moe_12" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_12' ? 'selected' : '' %>>فاتح 12 — نعناعي</option>
+            <option value="light_moe_13" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_13' ? 'selected' : '' %>>فاتح 13 — سماوي ناعم</option>
+            <option value="light_moe_14" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_14' ? 'selected' : '' %>>فاتح 14 — رملي</option>
+            <option value="light_moe_15" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_15' ? 'selected' : '' %>>فاتح 15 — لافندر</option>
+            <option value="light_moe_16" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_16' ? 'selected' : '' %>>فاتح 16 — لؤلؤي</option>
+            <option value="light_moe_17" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_17' ? 'selected' : '' %>>فاتح 17 — نعناعي</option>
+            <option value="light_moe_18" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_18' ? 'selected' : '' %>>فاتح 18 — سماوي ناعم</option>
+            <option value="light_moe_19" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_19' ? 'selected' : '' %>>فاتح 19 — رملي</option>
+            <option value="light_moe_20" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_20' ? 'selected' : '' %>>فاتح 20 — لافندر</option>
+            <option value="light_moe_21" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_21' ? 'selected' : '' %>>فاتح 21 — لؤلؤي</option>
+            <option value="light_moe_22" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_22' ? 'selected' : '' %>>فاتح 22 — نعناعي</option>
+            <option value="light_moe_23" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_23' ? 'selected' : '' %>>فاتح 23 — سماوي ناعم</option>
+            <option value="light_moe_24" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_24' ? 'selected' : '' %>>فاتح 24 — رملي</option>
+            <option value="light_moe_25" <%= (settings.kiosk_color_scheme || 'dark_moe_01') === 'light_moe_25' ? 'selected' : '' %>>فاتح 25 — لافندر</option>
+            </optgroup>
+          </select>
+          <div class="help">في تشغيل العرض لن تظهر قائمة أعلى الصفحة.</div>
+
+          <div style="margin-top:10px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+            <label class="badge" style="cursor:pointer">
+              <input type="checkbox" name="kiosk_theme_auto_cycle" value="1" <%= (settings.kiosk_theme_auto_cycle ?? 0) ? 'checked' : '' %> />
+              <span>التنقّل التلقائي بين الثيمات (بعد اكتمال دورة العرض)</span>
+            </label>
+            <span class="help">يتغيّر لون الشاشة تلقائيًا عند اكتمال دورة العرض (مرة داكنة ومرة فاتحة).</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+    
+    <div class="card" style="padding:14px;margin-top:14px">
+      <div style="font-weight:900;color:var(--navy);margin-bottom:10px">قوالب المهام التفصيلية</div>
+      <div class="help" style="margin-bottom:10px">
+        اكتب كل قالب في سطر مستقل (مثال: <b>تصميم</b> أو <b>design|تصميم</b>). إذا تركته فارغًا سيستخدم النظام القوالب الافتراضية.
+      </div>
+
+      <div class="formRow" style="grid-template-columns:1fr">
+        <div>
+          <textarea class="textarea" name="stage_templates_text" rows="8" placeholder="مثال:
+تصميم
+تنفيذ
+مراجعة
+اعتماد
+نشر"><%= settings.stage_templates_text || '' %></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="padding:14px;margin-top:14px">
+      <div style="font-weight:900;color:var(--navy);margin-bottom:10px">البريد والإشعارات</div>
+
+      <div class="formRow">
+        <div>
+          <label class="label">تفعيل إرسال البريد</label>
+          <label class="check">
+            <input type="checkbox" name="email_enabled" <%= settings.email_enabled ? 'checked' : '' %> />
+            تفعيل الإرسال (Office365 / SMTP)
+          </label>
+          <div class="help">لن يتم إرسال أي بريد ما لم يتم تفعيل الخيار وتعبئة إعدادات SMTP.</div>
+        </div>
+
+        <div>
+          <label class="label">تنبيه قبل موعد الاستحقاق (بالأيام)</label>
+          <input class="input" type="number" min="0" max="30" name="email_due_days" value="<%= (settings.email_due_days != null ? settings.email_due_days : 2) %>" />
+          <div class="help">مثال: 2 = قبل يومين من موعد انتهاء المهمة.</div>
+        </div>
+      </div>
+
+      <div class="formRow">
+        <div>
+          <label class="label">بريد المُرسِل</label>
+          <input class="input" name="email_from_email" value="<%= settings.email_from_email || '' %>" placeholder="system@moe.gov.sa" />
+          <div class="help">هذا البريد يظهر لدى المستلم كمرسل الرسالة.</div>
+        </div>
+
+        <div>
+          <label class="label">اسم المُرسِل (اختياري)</label>
+          <input class="input" name="email_from_name" value="<%= settings.email_from_name || '' %>" placeholder="" />
+          <div class="help">إذا تبغى البريد يرسل باسم: اكتب الاسم هنا (مثال: الإدارة العامة للاتصال المؤسسي).</div>
+        </div>
+      </div>
+
+      <div class="formRow">
+        <div>
+          <label class="label">SMTP Host</label>
+          <input class="input" name="email_smtp_host" value="<%= settings.email_smtp_host || 'smtp.office365.com' %>" />
+        </div>
+
+        <div>
+          <label class="label">SMTP Port</label>
+          <input class="input" type="number" name="email_smtp_port" value="<%= settings.email_smtp_port || 587 %>" />
+          <div class="help">Office365 غالبًا: 587</div>
+        </div>
+      </div>
+
+      <div class="formRow">
+        <div>
+          <label class="label">SMTP User</label>
+          <input class="input" name="email_smtp_user" value="<%= settings.email_smtp_user || '' %>" placeholder="system@moe.gov.sa" />
+          <div class="help">عادةً نفس بريد المُرسِل.</div>
+        </div>
+
+        <div>
+          <label class="label">SMTP Password</label>
+          <input class="input" type="password" name="email_smtp_pass" value="<%= settings.email_smtp_pass || '' %>" placeholder="App Password / SMTP Password" />
+          <div class="help">قد تحتاج تفعيل SMTP Auth أو كلمة مرور تطبيق.</div>
+        </div>
+      </div>
+
+      <div class="formRow">
+        <div>
+          <label class="label">استخدام Secure (TLS مباشرة)</label>
+          <label class="check">
+            <input type="checkbox" name="email_smtp_secure" <%= settings.email_smtp_secure ? 'checked' : '' %> />
+            Secure = true
+          </label>
+          <div class="help">Office365 على 587 عادةً Secure = false (STARTTLS).</div>
+        </div>
+        <div></div>
+      </div>
+    </div>
+
+
+    <div class="rowActions noPrint" style="justify-content:flex-start">
+      <button class="btn btnGood" type="submit">حفظ</button>
+    </div>
+  </form>
+
+  <div class="card" style="padding:14px;margin-top:14px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">النسخ الاحتياطي والاستيراد</div>
+
+    <div class="formRow">
+      <div>
+        <div class="help" style="margin-bottom:8px">يحفظ نسخة تشمل: قاعدة البيانات + المرفقات (صور/PDF) + الشعار والختم.</div>
+        <a class="btn" href="/admin/backup">⬇️ حفظ نسخة احتياطية (ZIP)</a>
+      </div>
+
+      <div>
+        <form method="post" action="/admin/restore" enctype="multipart/form-data" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input class="input" type="file" name="backupZip" accept=".zip" required />
+          <button class="btn btnDanger" type="submit" onclick="return confirm('تأكيد الاستيراد؟ سيتم استبدال البيانات الحالية بالنسخة المرفوعة.');">⬆️ استيراد نسخة</button>
+        </form>
+        <div class="help" style="margin-top:8px">ملاحظة: يتم أخذ نسخة احتياطية تلقائيًا قبل الاستبدال (app.db.bak-... و uploads.bak-...).</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+
+<script>
+(function(){
+  const holder = document.querySelector('.kioskPagesPick');
+  const hidden = document.getElementById('kiosk_pages_default');
+  if(!holder || !hidden) return;
+  const parse = (v)=> String(v||'').split(',').map(s=>s.trim()).filter(Boolean);
+  const syncFromHidden = () => {
+    const tokens = new Set(parse(hidden.value));
+    holder.querySelectorAll('input[type=checkbox][data-token]').forEach(cb=>{
+      cb.checked = tokens.has(cb.dataset.token);
+    });
+  };
+  const syncToHidden = () => {
+    const selected = [];
+    holder.querySelectorAll('input[type=checkbox][data-token]').forEach(cb=>{
+      if(cb.checked) selected.push(cb.dataset.token);
+    });
+    const pages = selected.filter(t=>t !== 'ticker');
+    if(!pages.length){
+      // لا تترك شاشة العرض بلا صفحات
+      if(!selected.includes('tasks')) selected.push('tasks');
+      holder.querySelector('input[data-token="tasks"]').checked = true;
+    }
+    hidden.value = selected.join(',');
+  };
+  syncFromHidden();
+  holder.addEventListener('change', syncToHidden);
+})();
+</script>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,200 @@
+<%- include('partials/header', { pageTitle: 'الرئيسية' }) %>
+
+<div class="grid">
+  <div class="grid grid4">
+    <div class="card kpi">
+      <div class="label">إجمالي المهام</div>
+      <div class="value"><%= stats.total %></div>
+    </div>
+    <div class="card kpi">
+      <div class="label">مكتملة</div>
+      <div class="value" style="color:var(--good)"><%= stats.completed %></div>
+    </div>
+    <div class="card kpi">
+      <div class="label">بانتظار اعتماد</div>
+      <div class="value" style="color:var(--warn)"><%= stats.pending %></div>
+    </div>
+    <div class="card kpi">
+      <div class="label">متأخرة</div>
+      <div class="value" style="color:var(--bad)"><%= stats.overdue %></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <h3 style="margin:0">ملخص الأداء</h3>
+        <div class="small">متوسط نسبة الإنجاز: <b><%= stats.avgProgress %>%</b></div>
+      </div>
+      <div class="rowActions noPrint">
+        <% if (me.role !== 'employee') { %>
+          <a class="btn btnGood" href="/tasks/new">إضافة مهمة</a>
+          <a class="btn" href="/events/new">إضافة مناسبة</a>
+        <% } %>
+        <a class="btn" href="/reports">التقارير</a>
+        <button class="btn" type="button" onclick="openKioskChooser('same')">تشغيل العرض</button>
+        <button class="btn" type="button" onclick="openKioskChooser('popup')">فتح الشاشة (نافذة)</button>
+      </div>
+    </div>
+    <div style="margin-top:12px" class="progressWrap">
+      <div class="bar"><span style="width:<%= stats.avgProgress %>%"></span></div>
+      <div class="small"><%= stats.avgProgress %>%</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <h3 style="margin:0">آخر المهام</h3>
+      <a class="btn" href="/tasks">عرض كل المهام</a>
+    </div>
+
+    <div style="overflow:auto;margin-top:10px">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>المهمة</th>
+            <th>المناسبة</th>
+            <th>الموظف</th>
+            <th>المشرف</th>
+            <th>التقدم</th>
+            <th>الحالة</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!tasks.length) { %>
+            <tr><td colspan="6" class="small">لا توجد مهام بعد.</td></tr>
+          <% } %>
+          <% tasks.forEach(t => { %>
+            <tr>
+              <td>
+                <a href="/tasks/<%= t.id %>"><b><%= t.title %></b></a>
+                <% if (t.due_date) { %>
+                  <div class="small">الاستحقاق: <%= fmtDate(t.due_date) %></div>
+                <% } %>
+              </td>
+              <td class="small"><%= t.event_title || '-' %></td>
+              <td class="small"><%= t.employee_name || '-' %></td>
+              <td class="small"><%= t.supervisor_name || '-' %></td>
+              <td style="min-width:180px">
+                <div class="progressWrap">
+                  <div class="bar"><span style="width:<%= t.progress %>%"></span></div>
+                  <div class="small"><%= t.progress %>%</div>
+                </div>
+              </td>
+              <td>
+                <% if (t.status === 'completed') { %>
+                  <span class="badge bGood">مكتملة</span>
+                <% } else if (t.status === 'pending_approval') { %>
+                  <span class="badge bWarn">بانتظار اعتماد</span>
+                <% } else if (t.status === 'overdue') { %>
+                  <span class="badge bBad">متأخرة</span>
+                <% } else if (t.status === 'cancelled') { %>
+                  <span class="badge">ملغاة</span>
+                <% } else { %>
+                  <span class="badge bInfo">جارية</span>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Kiosk view chooser -->
+<div id="kioskChooser" class="modalOverlay" style="display:none">
+  <div class="modalCard">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div>
+        <div style="font-weight:900;color:var(--navy)">خيارات شاشة العرض</div>
+        <div class="small">اختر ما الذي تريد عرضه</div>
+      </div>
+      <button class="btn" type="button" onclick="closeKioskChooser()">إغلاق</button>
+    </div>
+
+    <div id="kioskModes" style="margin-top:12px;display:grid;grid-template-columns:1fr;gap:10px">
+      <label class="radioRow">
+        <input type="radio" name="kiosk_mode" value="tasks" />
+        <span><b>المهام فقط</b><span class="small" style="display:block">عرض المهام مع التقدم والعداد</span></span>
+      </label>
+      <label class="radioRow">
+        <input type="radio" name="kiosk_mode" value="days" />
+        <span><b>الأيام العالمية فقط</b><span class="small" style="display:block">أقرب يوم عالمي + عدّاد تنازلي + شريط الأيام</span></span>
+      </label>
+      <label class="radioRow">
+        <input type="radio" name="kiosk_mode" value="both" checked />
+        <span><b>المهام + الأيام العالمية</b><span class="small" style="display:block">تبديل تلقائي بين المهام والأيام العالمية</span></span>
+      </label>
+    </div>
+
+    <div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btnGood" type="button" onclick="confirmKioskChooser()">فتح</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let kioskTarget = 'same';
+
+function openKioskChooser(target){
+  kioskTarget = target || 'same';
+  const el = document.getElementById('kioskChooser');
+  if (!el) return;
+  // default from localStorage (if exists)
+  const saved = (localStorage.getItem('kiosk_view_mode') || '').trim();
+  if (saved) {
+    document.querySelectorAll('input[name="kiosk_mode"]').forEach(r => {
+      if (r.value === saved) r.checked = true;
+    });
+  }
+  el.style.display = 'flex';
+}
+
+function closeKioskChooser(){
+  const el = document.getElementById('kioskChooser');
+  if (el) el.style.display = 'none';
+}
+
+function getSelectedKioskMode(){
+  const r = document.querySelector('input[name="kiosk_mode"]:checked');
+  return (r && r.value) ? r.value : 'both';
+}
+
+function confirmKioskChooser(){
+  const mode = getSelectedKioskMode();
+  localStorage.setItem('kiosk_view_mode', mode);
+  closeKioskChooser();
+  if (kioskTarget === 'popup') {
+    openKioskOnSecondScreen(mode);
+  } else {
+    window.location.href = '/kiosk?view=' + encodeURIComponent(mode);
+  }
+}
+
+function openKioskOnSecondScreen(mode){
+  // Browser limitation: we cannot reliably detect monitor #2.
+  // We'll open a popup and TRY to move it to the right side (works when the 2nd monitor is on the right).
+  const w = Math.max(900, Math.min(1920, window.screen.availWidth || 1200));
+  const h = Math.max(650, Math.min(1080, window.screen.availHeight || 800));
+
+  const left = (window.screen.availWidth || window.screen.width || 0); // attempt second monitor on the right
+  const top = 0;
+  const features = `popup=yes,noopener=no,noreferrer=no,width=${w},height=${h},left=${left},top=${top}`;
+  const view = mode || (localStorage.getItem('kiosk_view_mode') || 'both');
+  const win = window.open('/kiosk?presenter=1&view=' + encodeURIComponent(view), 'kpi_kiosk', features);
+  if (!win) {
+    alert('المتصفح منع فتح النافذة. اسمح بالنوافذ المنبثقة ثم أعد المحاولة.');
+    return;
+  }
+  try {
+    win.moveTo(left, top);
+    win.resizeTo(w, h);
+    win.focus();
+  } catch (e) {}
+
+  // Tip: user clicks ⛶ داخل الشاشة لتفعيل ملء الشاشة.
+}
+</script>
+
+<%- include('partials/footer') %>

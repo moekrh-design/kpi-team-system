@@ -1,0 +1,147 @@
+<%- include('partials/header', { pageTitle: 'أرشيف الأعمال' }) %>
+
+<div class="grid" style="max-width:1200px;margin:0 auto">
+  <% if (ok === 'created') { %>
+    <div class="notice">تم إضافة الأصل بنجاح ✅</div>
+  <% } %>
+  <% if (ok === 'deleted') { %>
+    <div class="notice">تم حذف الأصل ✅</div>
+  <% } %>
+  <% if (err === 'thumbtype') { %>
+    <div class="error">صورة المعاينة يجب أن تكون ملف صورة (PNG/JPG/WEBP).</div>
+  <% } %>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin:0">أرشيف الأعمال</h2>
+        <div class="small" style="margin-top:6px">فهرسة أعمال التصميم/التصوير/المونتاج على الهاردسكات وربطها بالمشاريع.</div>
+      </div>
+      <div class="rowActions noPrint">
+        <a class="btn btnGood" href="/assets/new<%= filters.eventId && /^\d+$/.test(filters.eventId) ? ('?event=' + filters.eventId) : '' %>">إضافة أصل</a>
+        <% if (me.role !== 'employee') { %>
+          <a class="btn" href="/assets/drives">الهاردسكات</a>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <form class="grid grid4" method="get" action="/assets">
+      <div>
+        <label class="small">بحث</label>
+        <input class="input" name="q" value="<%= q %>" placeholder="اسم الأصل / الوسوم / اسم المشروع / الهارد" />
+      </div>
+      <div>
+        <label class="small">المشروع</label>
+        <select class="input" name="event">
+          <option value="">الكل</option>
+          <% events.forEach(e => { %>
+            <option value="<%= e.id %>" <%= String(filters.eventId) === String(e.id) ? 'selected' : '' %>><%= e.title %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="small">النوع</label>
+        <select class="input" name="type">
+          <option value="">الكل</option>
+          <option value="video" <%= filters.type==='video'?'selected':'' %>>فيديو</option>
+          <option value="photo" <%= filters.type==='photo'?'selected':'' %>>صورة</option>
+          <option value="audio" <%= filters.type==='audio'?'selected':'' %>>صوت</option>
+          <option value="project" <%= filters.type==='project'?'selected':'' %>>مشروع/ملف عمل</option>
+          <option value="doc" <%= filters.type==='doc'?'selected':'' %>>مستند</option>
+          <option value="other" <%= filters.type==='other'?'selected':'' %>>أخرى</option>
+        </select>
+      </div>
+      <div>
+        <label class="small">الهارد</label>
+        <select class="input" name="drive">
+          <option value="">الكل</option>
+          <% drives.forEach(d => { %>
+            <option value="<%= d.id %>" <%= String(filters.driveId) === String(d.id) ? 'selected' : '' %>><%= d.name %></option>
+          <% }) %>
+        </select>
+      </div>
+      <div>
+        <label class="small">الخصوصية</label>
+        <select class="input" name="vis">
+          <option value="">الكل</option>
+          <option value="team" <%= filters.visFilter==='team'?'selected':'' %>>للفريق</option>
+          <option value="private" <%= filters.visFilter==='private'?'selected':'' %>>خاص</option>
+          <option value="public" <%= filters.visFilter==='public'?'selected':'' %>>عام</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:10px">
+        <button class="btn btnGood" type="submit" style="width:100%">تطبيق</button>
+      </div>
+    </form>
+
+    <div class="hr"></div>
+
+    <% if (!items.length) { %>
+      <div class="small">لا توجد أصول مطابقة.</div>
+    <% } else { %>
+      <div style="overflow:auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>الأصل</th>
+              <th>المشروع</th>
+              <th>النوع</th>
+              <th>الهارد</th>
+              <th>المسار</th>
+              <th>الوسوم</th>
+              <th>أضيف بواسطة</th>
+              <th>التاريخ</th>
+              <th class="noPrint">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% items.forEach(a => { %>
+              <tr>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <% if (a.thumb_relpath) { %>
+                      <img src="/uploads/<%= a.thumb_relpath %>" alt="thumb" style="width:44px;height:44px;object-fit:cover;border-radius:12px;border:1px solid var(--line)" />
+                    <% } else { %>
+                      <div style="width:44px;height:44px;border-radius:12px;border:1px dashed var(--line);background:rgba(7,168,105,.04)"></div>
+                    <% } %>
+                    <div>
+                      <a href="/assets/<%= a.id %>"><b><%= a.title %></b></a>
+                      <% if (a.file_name) { %><div class="small" style="margin-top:2px"><%= a.file_name %></div><% } %>
+                    </div>
+                  </div>
+                </td>
+                <td class="small"><%= a.event_title || '-' %></td>
+                <td class="small"><%= a.asset_type %></td>
+                <td class="small"><%= a.drive_name || '-' %></td>
+                <td class="small" style="max-width:360px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><%= a.file_path %></td>
+                <td class="small">
+                  <% (String(a.tags||'').split(',').map(x=>x.trim()).filter(Boolean)).slice(0,6).forEach(t => { %>
+                    <span class="tag"><%= t %></span>
+                  <% }) %>
+                </td>
+                <td class="small"><%= a.created_by_name || '-' %></td>
+                <td class="small"><%= fmtDate(a.created_at) %></td>
+                <td class="noPrint">
+                  <a class="btn" href="/assets/<%= a.id %>">عرض</a>
+                  <a class="btn" href="/assets/<%= a.id %>/edit">تعديل</a>
+                  <form method="post" action="/assets/<%= a.id %>/delete" style="display:inline" onsubmit="return confirm('حذف الأصل؟')">
+                    <button class="btn btnDanger" type="submit">حذف</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="small" style="opacity:.85">
+    <b>ملاحظة:</b> هذا الأرشيف لا يرفع ملفات الفيديو الكبيرة؛ هو فهرسة للمسارات على الهاردسكات + (اختياري) صورة معاينة صغيرة فقط.
+    للملفات الخفيفة المشتركة داخل النظام استخدم: <b>ملفات المشروع</b> داخل كل مشروع.
+  </div>
+</div>
+
+<%- include('partials/footer') %>

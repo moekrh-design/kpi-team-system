@@ -1,0 +1,89 @@
+<%- include('partials/header', { pageTitle: 'ملفات المشروع' }) %>
+
+<div class="grid" style="max-width:1100px;margin:0 auto">
+  <% if (ok) { %>
+    <div class="notice">تم رفع الملف بنجاح ✅</div>
+  <% } %>
+
+  <% if (error) { %>
+    <div class="error"><%= error %></div>
+  <% } %>
+
+  <div class="card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin:0">ملفات المشروع</h2>
+        <div class="small" style="margin-top:6px">
+          المشروع: <b><%= event.title %></b>
+          <% if (event.start_date || event.end_date) { %>
+            • الفترة: <b><%= event.start_date ? fmtDate(event.start_date) : '-' %></b> → <b><%= event.end_date ? fmtDate(event.end_date) : '-' %></b>
+          <% } %>
+          <% if (event.supervisor_name) { %>
+            • المشرف: <b><%= event.supervisor_name %></b>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="rowActions noPrint">
+        <a class="btn" href="/events" target="_blank">قائمة المشاريع</a>
+        <a class="btn" href="/assets?event=<%= event.id %>" target="_blank">أرشيف الأعمال</a>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <form class="grid grid2" method="post" action="/events/<%= event.id %>/files/upload" enctype="multipart/form-data">
+      <div>
+        <label class="small">رفع ملف للمشروع</label>
+        <input class="input" type="file" name="file" required />
+        <div class="help">المسموح: PDF / صور / Word / Excel / PowerPoint / TXT / CSV / ZIP (حد 35MB)</div>
+      </div>
+      <div>
+        <label class="small">الخصوصية</label>
+        <select class="input" name="visibility">
+          <option value="team">متاح لفريق المشروع</option>
+          <option value="private">خاص (أنا + المشرف + المدير)</option>
+        </select>
+        <button class="btn btnGood" type="submit" style="margin-top:10px;width:100%">رفع</button>
+      </div>
+    </form>
+
+    <div class="hr"></div>
+
+    <% if (!files.length) { %>
+      <div class="small">لا توجد ملفات لهذا المشروع.</div>
+    <% } else { %>
+      <div style="overflow:auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>الملف</th>
+              <th>الحجم</th>
+              <th>الرافع</th>
+              <th>الخصوصية</th>
+              <th>التاريخ</th>
+              <th class="noPrint">فتح</th>
+              <th class="noPrint">تنزيل</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% files.forEach(f => { %>
+              <tr>
+                <td class="small"><%= f.original_name %></td>
+                <td class="small"><%= f.size_bytes ? Math.round(f.size_bytes/1024) + ' KB' : '-' %></td>
+                <td class="small"><%= f.uploaded_by_name || '-' %></td>
+                <td class="small"><%= (f.visibility === 'private') ? 'خاص' : 'فريق المشروع' %></td>
+                <td class="small"><%= fmtDate(f.uploaded_at) %></td>
+                <td class="noPrint"><a class="btn" href="/files/<%= f.id %>" target="_blank">عرض</a></td>
+                <td class="noPrint"><a class="btn" href="/files/<%= f.id %>?dl=1" target="_blank">تنزيل</a></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    <% } %>
+
+  </div>
+</div>
+
+<%- include('partials/footer') %>

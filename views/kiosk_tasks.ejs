@@ -1,0 +1,123 @@
+<%- include('partials/header', { pageTitle: 'إعدادات المهام لشاشة العرض' }) %>
+
+<div class="container">
+
+  <% if (okMsg) { %>
+    <div class="card" style="padding:12px;border-color:rgba(46,204,113,.35)">
+      <b>تم</b> — <%= okMsg %>
+    </div>
+  <% } %>
+
+  <% if (errMsg) { %>
+    <div class="card" style="padding:12px;border-color:rgba(231,76,60,.35)">
+      <b>تنبيه</b> — <%= errMsg %>
+    </div>
+  <% } %>
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:8px">إعدادات عرض المهام</div>
+    <div class="help">هذه الإعدادات تتحكم بما يظهر في صفحة <b>المهام</b> داخل شاشة العرض.</div>
+
+    <form method="POST" action="/kiosk-content/tasks/settings" style="margin-top:12px">
+      <div class="grid2" style="gap:12px;align-items:end">
+        <div>
+          <label class="label">ماذا يظهر بجانب نسبة الإنجاز؟</label>
+          <select class="input" name="kiosk_display_mode">
+            <option value="both" <%= (settings && settings.kiosk_display_mode==='both') ? 'selected' : '' %>>المسند له + المشرف</option>
+            <option value="assignee" <%= (settings && settings.kiosk_display_mode==='assignee') ? 'selected' : '' %>>المسند له فقط</option>
+            <option value="supervisor" <%= (settings && settings.kiosk_display_mode==='supervisor') ? 'selected' : '' %>>المشرف فقط</option>
+            <option value="chart_only" <%= (settings && settings.kiosk_display_mode==='chart_only') ? 'selected' : '' %>>بدون أسماء (مخطط فقط)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="label">سرعة التنقل (ثواني)</label>
+          <input class="input" type="number" name="kiosk_interval_sec" min="2" max="60" value="<%= (settings && settings.kiosk_interval_sec) ? settings.kiosk_interval_sec : 5 %>">
+        </div>
+
+        <div>
+          <label class="label">نمط عرض الإنجاز</label>
+          <select class="input" name="kiosk_chart_variant">
+            <option value="ring" <%= (settings && settings.kiosk_chart_variant==='ring') ? 'selected' : '' %>>حلقة (Ring)</option>
+            <option value="bar" <%= (settings && settings.kiosk_chart_variant==='bar') ? 'selected' : '' %>>شريط (Bar)</option>
+            <option value="ring_bar" <%= (settings && settings.kiosk_chart_variant==='ring_bar') ? 'selected' : '' %>>حلقة + شريط</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="label">عناصر المعلومات</label>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:6px">
+            <label class="small"><input type="checkbox" name="kiosk_show_event" <%= (settings && Number(settings.kiosk_show_event ?? 1)===1) ? 'checked' : '' %>> إظهار المناسبة</label>
+            <label class="small"><input type="checkbox" name="kiosk_show_due" <%= (settings && Number(settings.kiosk_show_due ?? 1)===1) ? 'checked' : '' %>> إظهار الاستحقاق</label>
+            <label class="small"><input type="checkbox" name="kiosk_show_status" <%= (settings && Number(settings.kiosk_show_status ?? 1)===1) ? 'checked' : '' %>> إظهار الحالة</label>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;display:flex;gap:10px">
+        <button class="btn btnPrimary" type="submit">حفظ الإعدادات</button>
+        <a class="btn ghost" href="/kiosk">فتح شاشة العرض</a>
+        <a class="btn" href="/kiosk-content">عودة لمحتوى شاشة العرض</a>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:8px">المهام التي تظهر في شاشة العرض</div>
+    <div class="help">جميع المهام تكون ظاهرة افتراضيًا (✓). لإخفاء مهمة من شاشة العرض قم بإزالة العلامة.</div>
+
+    <div style="margin-top:12px;overflow:auto">
+      <table class="table" style="min-width:980px">
+        <thead>
+          <tr>
+            <th style="width:80px">يظهر</th>
+            <th>المهمة</th>
+            <th style="width:220px">المناسبة</th>
+            <th style="width:140px">المسند له</th>
+            <th style="width:140px">المشرف</th>
+            <th style="width:120px">الاستحقاق</th>
+            <th style="width:120px">الحالة</th>
+            <th style="width:90px">فتح</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!tasks || !tasks.length) { %>
+            <tr><td colspan="8" class="small muted">لا توجد مهام.</td></tr>
+          <% } %>
+
+          <% function stLabel(s){ 
+              if (s==='completed') return 'مكتملة';
+              if (s==='pending_approval') return 'بانتظار اعتماد';
+              if (s==='cancelled') return 'ملغاة';
+              return 'جارية';
+          } %>
+
+          <% (tasks || []).forEach(t => { 
+              const vis = (t.kiosk_visible === null || typeof t.kiosk_visible === 'undefined') ? 1 : Number(t.kiosk_visible);
+          %>
+            <tr>
+              <td>
+                <form method="POST" action="/kiosk-content/tasks/<%= t.id %>/visible">
+                  <input type="hidden" name="visible" value="0">
+                  <input type="checkbox" name="visible" value="1" <%= (vis===1) ? 'checked' : '' %> onchange="this.form.submit()">
+                </form>
+              </td>
+              <td style="font-weight:800"><%= t.title %></td>
+              <td class="small muted"><%= t.event_title || '-' %></td>
+              <td class="small"><%= t.employee_name || '-' %></td>
+              <td class="small"><%= t.supervisor_name || '-' %></td>
+              <td class="small"><%= t.due_date ? t.due_date : '-' %></td>
+              <td class="small"><%= stLabel(t.status) %></td>
+              <td><a class="btn" href="/tasks/<%= t.id %>">فتح</a></td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="small muted" style="margin-top:10px">ملاحظة: إذا لم تجد المهمة هنا بسبب كثرة المهام، سيتم عرض آخر 500 مهمة (الأحدث أولاً).</div>
+  </div>
+
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,72 @@
+<%- include('partials/header', { pageTitle: 'العبارات التوعوية' }) %>
+
+<div class="container">
+  <% if (msg) { %>
+    <div class="card" style="padding:12px;border-color:rgba(46,204,113,.35)">
+      <b>تم</b> — <%= msg %>
+    </div>
+  <% } %>
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">إضافة عبارة</div>
+
+    <form method="POST" action="/kiosk-content/quotes/add">
+      <div class="formRow">
+        <div style="flex:1 1 420px">
+          <label class="small">النص</label>
+          <input class="input" name="quote_text" maxlength="220" placeholder="مثال: الانضباط يصنع الفرق… ابدأ يومك بإتقان." required />
+        </div>
+        <div style="flex:0 0 150px">
+          <label class="small">تفعيل</label>
+          <select class="input" name="is_active">
+            <option value="1" selected>نعم</option>
+            <option value="0">لا</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end">
+        <a class="btn" href="/kiosk-content">رجوع</a>
+        <button class="btn btnGood">حفظ</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">العبارات الحالية</div>
+
+    <% if (!items || !items.length) { %>
+      <div class="help">لا توجد عبارات بعد.</div>
+    <% } else { %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="width:90px">الحالة</th>
+            <th>النص</th>
+            <th style="width:160px">إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(it => { %>
+            <tr>
+              <td>
+                <span class="badge <%= it.is_active ? 'good' : 'bad' %>"><%= it.is_active ? 'مفعلة' : 'متوقفة' %></span>
+              </td>
+              <td><%= it.quote_text %></td>
+              <td style="display:flex;gap:8px;flex-wrap:wrap">
+                <form method="POST" action="/kiosk-content/quotes/<%= it.id %>/toggle" style="display:inline">
+                  <button class="btn btnSmall" type="submit"><%= it.is_active ? 'إيقاف' : 'تفعيل' %></button>
+                </form>
+                <form method="POST" action="/kiosk-content/quotes/<%= it.id %>/delete" style="display:inline" onsubmit="return confirm('حذف العبارة؟')">
+                  <button class="btn btnSmall btnBad" type="submit">حذف</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

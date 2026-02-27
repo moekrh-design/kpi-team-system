@@ -1,0 +1,106 @@
+<%- include('partials/header', { pageTitle: 'تحديث النظام' }) %>
+
+<div class="container">
+  <div class="card" style="padding:16px">
+    <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:900;color:var(--navy);margin-bottom:4px">تحديث النظام</div>
+        <div class="tiny muted">الإصدار الحالي: <%= appVersion || '-' %></div>
+      </div>
+      <div class="tiny muted">سيتم إنشاء نسخة احتياطية تلقائيًا قبل تطبيق أي تحديث.</div>
+    </div>
+
+    <% if (msg) { %>
+      <div class="alert" style="margin-top:10px"><%= msg %></div>
+    <% } %>
+
+    <div class="divider" style="margin:16px 0"></div>
+
+    <form method="POST" action="/admin/update" enctype="multipart/form-data">
+      <div class="formRow">
+        <div style="flex:1">
+          <label class="small">ملف التحديث (Update.zip)</label>
+          <input class="input" type="file" name="update_zip" accept=".zip" required />
+          <div class="tiny muted" style="margin-top:6px">
+            داخل الملف يجب أن يكون: manifest.json + مجلد patch/ للملفات + (اختياري) migrations/ لترقيات قاعدة البيانات.
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+        <button class="btn btnPrimary" type="submit">تطبيق التحديث</button>
+      </div>
+    </form>
+
+    <div class="divider" style="margin:18px 0"></div>
+
+    <div style="display:grid;grid-template-columns:1fr;gap:16px">
+      <div class="card" style="padding:12px">
+        <div style="font-weight:900;color:var(--navy);margin-bottom:8px">آخر التحديثات</div>
+        <% if (updates && updates.length) { %>
+          <div style="overflow:auto">
+            <table class="table" style="min-width:720px">
+              <thead>
+                <tr>
+                  <th style="width:190px">التاريخ</th>
+                  <th style="width:110px">العملية</th>
+                  <th style="width:120px">الإصدار</th>
+                  <th>ملاحظات</th>
+                  <th style="width:190px">نسخة احتياطية</th>
+                  <th style="width:80px">الحالة</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% updates.forEach(u => { %>
+                  <tr>
+                    <td class="small"><%= u.ts ? u.ts.replace('T',' ').replace('Z','') : '-' %></td>
+                    <td class="small"><%= u.action || '-' %></td>
+                    <td class="small"><%= u.version || '-' %></td>
+                    <td class="small muted" style="max-width:420px;word-break:break-word"><%= u.notes || (u.error || '-') %></td>
+                    <td class="small"><%= u.backup || (u.backup_dir || '-') %></td>
+                    <td class="small"><%= u.ok ? '✅' : '❌' %></td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="small muted">لا يوجد سجل تحديثات بعد.</div>
+        <% } %>
+      </div>
+
+      <div class="card" style="padding:12px">
+        <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+          <div style="font-weight:900;color:var(--navy)">النسخ الاحتياطية</div>
+          <div class="tiny muted">يمكنك استعادة أي نسخة عند الحاجة.</div>
+        </div>
+
+        <% if (backups && backups.length) { %>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px">
+            <% backups.forEach(b => { %>
+              <div style="display:flex;gap:10px;align-items:center;justify-content:space-between;border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:10px">
+                <div class="small" style="font-weight:700"><%= b %></div>
+                <form method="POST" action="/admin/update/rollback" onsubmit="return confirm('هل تريد استعادة هذه النسخة؟ يفضل إعادة تشغيل النظام بعد الاستعادة.');">
+                  <input type="hidden" name="backup" value="<%= b %>"/>
+                  <button class="btn" type="submit">استعادة</button>
+                </form>
+              </div>
+            <% }) %>
+          </div>
+        <% } else { %>
+          <div class="small muted" style="margin-top:8px">لا يوجد نسخ احتياطية بعد.</div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:14px;margin-top:12px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:6px">تنسيق ملف Update.zip</div>
+    <div class="small muted" style="line-height:1.9">
+      <div>1) ضع <b>manifest.json</b> في الجذر.</div>
+      <div>2) ضع الملفات المراد تحديثها داخل <b>patch/</b> (مثل: patch/views/... أو patch/public/...).</div>
+      <div>3) (اختياري) ملفات SQL داخل <b>migrations/</b> وسيتم تنفيذها تلقائيًا.</div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

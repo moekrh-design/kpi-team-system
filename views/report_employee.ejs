@@ -1,0 +1,62 @@
+<%- include('partials/header', { pageTitle: 'تقرير الموظف' }) %>
+
+<div class="card" style="max-width:1150px;margin:0 auto">
+  <div class="noPrint" style="display:flex;justify-content:flex-end">
+    <button class="btn printBtn" onclick="window.print()">🖨️ طباعة / PDF</button>
+    <a class="btn" style="margin-right:8px" href="/reports/employee/<%= employee.id %>.xlsx">📊 تصدير Excel</a>
+  </div>
+
+  <%- include('partials/report_header', { title: ('تقرير الموظف: ' + employee.display_name), meta }) %>
+  <%- include('partials/report_charts', { stats, top, topTitle }) %>
+
+  <div style="overflow:auto">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>المهمة</th>
+          <th>المناسبة</th>
+          <th>المشرف</th>
+          <th>الاستحقاق</th>
+          <th>التقدم</th>
+          <th>الحالة</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!rows.length) { %>
+          <tr><td colspan="6" class="small">لا توجد بيانات.</td></tr>
+        <% } %>
+        <% rows.forEach(t => { %>
+          <tr>
+            <td><b><%= t.title %></b></td>
+            <td class="small"><%= t.event_title || '-' %></td>
+            <td class="small"><%= t.supervisor_name || '-' %></td>
+            <td class="small"><%= t.due_date ? fmtDate(t.due_date) : '-' %></td>
+            <td style="min-width:180px">
+              <div class="progressWrap">
+                <div class="bar"><span style="width:<%= t.progress %>%"></span></div>
+                <div class="small"><%= t.progress %>%</div>
+              </div>
+            </td>
+            <td>
+              <% if (t.status === 'completed') { %>
+                <span class="badge bGood">مكتملة</span>
+              <% } else if (t.status === 'pending_approval') { %>
+                <span class="badge bWarn">بانتظار اعتماد</span>
+              <% } else if (t.status === 'overdue') { %>
+                <span class="badge bBad">متأخرة</span>
+              <% } else if (t.status === 'cancelled') { %>
+                <span class="badge">ملغاة</span>
+              <% } else { %>
+                <span class="badge bInfo">جارية</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+
+  <%- include('partials/report_footer') %>
+</div>
+
+<%- include('partials/footer') %>

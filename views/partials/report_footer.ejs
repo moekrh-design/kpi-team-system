@@ -1,0 +1,41 @@
+<div class="hr"></div>
+
+<div class="reportFooter">
+  <div class="sigGrid">
+    <div class="sigBox">
+      <div class="sigTitle"><%= (settings && settings.sig_prepared_title) ? settings.sig_prepared_title : 'مُعِدّ التقرير' %></div>
+      <div class="sigLine"></div>
+      <% if (settings && settings.sig_prepared_name) { %>
+        <div class="sigName"><%= settings.sig_prepared_name %></div>
+      <% } %>
+    </div>
+
+    <div class="sigBox">
+      <div class="sigTitle"><%= (settings && settings.sig_reviewed_title) ? settings.sig_reviewed_title : 'مراجع التقرير' %></div>
+      <div class="sigLine"></div>
+      <% if (settings && settings.sig_reviewed_name) { %>
+        <div class="sigName"><%= settings.sig_reviewed_name %></div>
+      <% } %>
+    </div>
+
+    <div class="sigBox">
+      <div class="sigTitle"><%= (settings && settings.sig_approved_title) ? settings.sig_approved_title : 'اعتماد' %></div>
+      <div class="sigLine"></div>
+      <% if (settings && settings.sig_approved_name) { %>
+        <div class="sigName"><%= settings.sig_approved_name %></div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="sealWrap">
+    <% if (settings && settings.seal_filename) { %>
+      <img src="/uploads/<%= settings.seal_filename %>" alt="seal" class="sealImg" />
+    <% } else { %>
+      <div class="sealPlaceholder">ختم الجهة</div>
+    <% } %>
+  </div>
+</div>
+
+<% if (settings && settings.footer_line) { %>
+  <div class="small" style="text-align:center;margin-top:10px"><%= settings.footer_line %></div>
+<% } %>

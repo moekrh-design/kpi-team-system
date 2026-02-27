@@ -1,0 +1,118 @@
+<%- include('partials/header', { pageTitle: (asset ? 'تعديل أصل' : 'إضافة أصل') }) %>
+
+<div class="grid" style="max-width:1000px;margin:0 auto">
+  <% if (error) { %>
+    <div class="error"><%= error %></div>
+  <% } %>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <h2 style="margin:0"><%= asset ? 'تعديل أصل' : 'إضافة أصل' %></h2>
+      <div class="rowActions noPrint">
+        <a class="btn" href="/assets">العودة للأرشيف</a>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <form method="post" action="<%= asset ? ('/assets/' + asset.id + '?_method=PUT') : '/assets' %>" enctype="multipart/form-data" class="grid">
+      <div class="grid grid2">
+        <div>
+          <label class="small">العنوان *</label>
+          <input class="input" name="title" value="<%= asset ? asset.title : '' %>" required />
+        </div>
+        <div>
+          <label class="small">النوع</label>
+          <select class="input" name="asset_type">
+            <% const t = (asset ? asset.asset_type : 'other'); %>
+            <option value="video" <%= t==='video'?'selected':'' %>>فيديو</option>
+            <option value="photo" <%= t==='photo'?'selected':'' %>>صورة</option>
+            <option value="audio" <%= t==='audio'?'selected':'' %>>صوت</option>
+            <option value="project" <%= t==='project'?'selected':'' %>>مشروع/ملف عمل</option>
+            <option value="doc" <%= t==='doc'?'selected':'' %>>مستند</option>
+            <option value="other" <%= t==='other'?'selected':'' %>>أخرى</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid2">
+        <div>
+          <label class="small">المشروع (اختياري)</label>
+          <select class="input" name="event_id">
+            <option value="">— بدون ربط —</option>
+            <% events.forEach(e => { %>
+              <% const sel = asset ? String(asset.event_id||'') : String(preEvent||''); %>
+              <option value="<%= e.id %>" <%= sel===String(e.id)?'selected':'' %>><%= e.title %></option>
+            <% }) %>
+          </select>
+          <div class="help">ربط الأصل بمشروع (مناسبة) لتسهيل البحث والفهرسة.</div>
+        </div>
+        <div>
+          <label class="small">الهارد (اختياري)</label>
+          <select class="input" name="drive_id">
+            <option value="">— غير محدد —</option>
+            <% drives.forEach(d => { %>
+              <option value="<%= d.id %>" <%= asset && String(asset.drive_id||'')===String(d.id) ? 'selected' : '' %>><%= d.name %></option>
+            <% }) %>
+          </select>
+          <% if (me.role !== 'employee') { %>
+            <div class="help">يمكنك إدارة الهاردسكات من صفحة <a href="/assets/drives" style="color:var(--primary)"><b>الهاردسكات</b></a>.</div>
+          <% } %>
+        </div>
+      </div>
+
+      <div class="grid grid2">
+        <div>
+          <label class="small">مسار الملف على الجهاز/الهارد *</label>
+          <input class="input" name="file_path" value="<%= asset ? (asset.file_path||'') : '' %>" placeholder="مثال: D:\\Projects\\Event\\Video\\Final.mp4" required />
+          <div class="help">هذا المسار للفهرسة فقط (لا يتم رفع الملف الكبير).</div>
+        </div>
+        <div>
+          <label class="small">اسم الملف (اختياري)</label>
+          <input class="input" name="file_name" value="<%= asset ? (asset.file_name||'') : '' %>" placeholder="Final_Edit_v03.mp4" />
+        </div>
+      </div>
+
+      <div>
+        <label class="small">وصف (اختياري)</label>
+        <textarea class="input" name="description" rows="3" placeholder="ملاحظات سريعة عن المحتوى..."><%= asset ? (asset.description||'') : '' %></textarea>
+      </div>
+
+      <div class="grid grid2">
+        <div>
+          <label class="small">الوسوم (Tags)</label>
+          <input class="input" name="tags" value="<%= asset ? (asset.tags||'') : '' %>" placeholder="تصميم, مونتاج, موشن, كاميرا" />
+          <div class="help">افصل بين الوسوم بفاصلة.</div>
+        </div>
+        <div>
+          <label class="small">الخصوصية</label>
+          <% const v = (asset ? asset.visibility : 'team'); %>
+          <select class="input" name="visibility">
+            <option value="team" <%= v==='team'?'selected':'' %>>للفريق</option>
+            <option value="private" <%= v==='private'?'selected':'' %>>خاص</option>
+            <option value="public" <%= v==='public'?'selected':'' %>>عام</option>
+          </select>
+          <div class="help">يفضل “للفريق” للأعمال المرتبطة بمشروع. “خاص” يُستخدم لمسارات شخصية.</div>
+        </div>
+      </div>
+
+      <div class="grid grid2">
+        <div>
+          <label class="small">صورة معاينة صغيرة (اختياري)</label>
+          <input class="input" type="file" name="thumb" accept="image/*" />
+          <div class="help">تُحفظ داخل النظام كصورة فقط (حد 5MB).</div>
+        </div>
+        <div>
+          <% if (asset && asset.thumb_relpath) { %>
+            <label class="small">المعاينة الحالية</label>
+            <img src="/uploads/<%= asset.thumb_relpath %>" alt="thumb" style="width:120px;height:120px;object-fit:cover;border-radius:18px;border:1px solid var(--line)" />
+          <% } %>
+        </div>
+      </div>
+
+      <button class="btn btnGood" type="submit"><%= asset ? 'حفظ التعديل' : 'إضافة' %></button>
+    </form>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

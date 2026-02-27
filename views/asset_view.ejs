@@ -1,0 +1,74 @@
+<%- include('partials/header', { pageTitle: 'تفاصيل أصل' }) %>
+
+<div class="grid" style="max-width:1100px;margin:0 auto">
+  <div class="card">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin:0"><%= a.title %></h2>
+        <div class="small" style="margin-top:6px">
+          <% if (a.event_title) { %>المشروع: <b><%= a.event_title %></b><% } %>
+          <% if (a.drive_name) { %><span> • الهارد: <b><%= a.drive_name %></b></span><% } %>
+          <span> • النوع: <b><%= a.asset_type %></b></span>
+          <span> • الخصوصية: <b><%= a.visibility %></b></span>
+        </div>
+      </div>
+      <div class="rowActions noPrint">
+        <a class="btn" href="/assets">العودة للأرشيف</a>
+        <% if (canEdit) { %>
+          <a class="btn" href="/assets/<%= a.id %>/edit">تعديل</a>
+          <form method="post" action="/assets/<%= a.id %>/delete" style="display:inline" onsubmit="return confirm('حذف الأصل؟')">
+            <button class="btn btnDanger" type="submit">حذف</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="grid grid2">
+      <div>
+        <% if (a.thumb_relpath) { %>
+          <img src="/uploads/<%= a.thumb_relpath %>" alt="thumb" style="width:100%;max-width:480px;aspect-ratio:16/9;object-fit:cover;border-radius:18px;border:1px solid var(--line)" />
+        <% } else { %>
+          <div style="width:100%;max-width:480px;aspect-ratio:16/9;border-radius:18px;border:1px dashed var(--line);background:rgba(61,126,185,.05)"></div>
+        <% } %>
+      </div>
+      <div>
+        <div class="small" style="margin-bottom:6px">المسار</div>
+        <div class="code" style="white-space:pre-wrap"><%= a.file_path %></div>
+
+        <% if (a.file_name) { %>
+          <div class="small" style="margin:12px 0 6px">اسم الملف</div>
+          <div class="code"><%= a.file_name %></div>
+        <% } %>
+
+        <% if (a.description) { %>
+          <div class="small" style="margin:12px 0 6px">الوصف</div>
+          <div class="small" style="line-height:1.8"><%= a.description %></div>
+        <% } %>
+
+        <% const tagList = (String(a.tags||'').split(',').map(x=>x.trim()).filter(Boolean)); %>
+        <% if (tagList.length) { %>
+          <div class="small" style="margin:12px 0 6px">الوسوم</div>
+          <div>
+            <% tagList.forEach(t => { %>
+              <span class="tag"><%= t %></span>
+            <% }) %>
+          </div>
+        <% } %>
+
+        <div class="small" style="margin-top:12px;opacity:.8">
+          أضيف بواسطة: <b><%= a.created_by_name || '-' %></b>
+          <% if (a.created_at) { %> • بتاريخ: <b><%= fmtDate(a.created_at) %></b><% } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+    <div class="small" style="opacity:.85">
+      إذا كان الملف على هارد خارجي، احرص على توحيد بنية المجلدات داخل الفريق (مثلاً: <b>Projects/اسم_المشروع/Video/Final</b>) حتى يسهل العثور عليه.
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

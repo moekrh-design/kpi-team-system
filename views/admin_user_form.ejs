@@ -1,0 +1,107 @@
+<%- include('partials/header', { pageTitle: user ? 'تعديل مستخدم' : 'إضافة مستخدم' }) %>
+
+<div class="card" style="max-width:860px;margin:0 auto">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <h2 style="margin:0"><%= user ? 'تعديل مستخدم' : 'إضافة مستخدم' %></h2>
+    <a class="btn" href="/admin/users">رجوع</a>
+  </div>
+
+  <% if (error) { %><div class="error" style="margin-top:12px"><%= error %></div><% } %>
+
+  <form method="post" action="<%= user ? ('/admin/users/' + user.id + '?_method=PUT') : '/admin/users' %>" class="grid" style="margin-top:12px">
+
+    <% if (!user) { %>
+      <div class="formRow">
+        <div>
+          <label class="small">اسم المستخدم</label>
+          <input class="input" name="username" required />
+          <div class="help">بدون مسافات - مثال: user1</div>
+        </div>
+        <div>
+          <label class="small">الاسم المعروض</label>
+          <input class="input" name="display_name" required />
+        </div>
+      </div>
+    <% } else { %>
+      <div class="formRow">
+        <div>
+          <label class="small">اسم المستخدم</label>
+          <input class="input" value="<%= user.username %>" disabled />
+        </div>
+        <div>
+          <label class="small">الاسم المعروض</label>
+          <input class="input" name="display_name" value="<%= user.display_name %>" required />
+        </div>
+      </div>
+    <% } %>
+
+    <div class="formRow">
+      <div>
+        <label class="small">الدور</label>
+        <select class="input" name="role" required>
+          <option value="employee" <%= user && user.role==='employee' ? 'selected' : '' %>>employee</option>
+          <option value="supervisor" <%= user && user.role==='supervisor' ? 'selected' : '' %>>supervisor</option>
+          <option value="admin" <%= user && user.role==='admin' ? 'selected' : '' %>>admin</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="small">الحالة</label>
+        <select class="input" name="is_active" required>
+          <option value="1" <%= !user || user.is_active ? 'selected' : '' %>>نشط</option>
+          <option value="0" <%= user && !user.is_active ? 'selected' : '' %>>موقوف</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="formRow">
+      <div>
+        <label class="small">نوع المستخدم</label>
+        <select class="input" name="user_kind" required>
+          <option value="employee" <%= !user || user.user_kind==='employee' ? 'selected' : '' %>>موظف</option>
+          <option value="collaborator" <%= user && user.user_kind==='collaborator' ? 'selected' : '' %>>متعاون</option>
+        </select>
+      </div>
+      <div>
+        <label class="small">السماح بالدخول</label>
+        <select class="input" name="can_login" required>
+          <option value="1" <%= !user || user.can_login ? 'selected' : '' %>>نعم</option>
+          <option value="0" <%= user && !user.can_login ? 'selected' : '' %>>لا</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="small">صلاحية اعتماد المهام (اختياري)</label>
+        <div class="help" style="margin-bottom:6px">تُستخدم فقط إذا كان الدور <b>employee</b> (المشرف/المدير يعتمد تلقائيًا)</div>
+        <input type="hidden" name="can_approve_tasks" value="0" />
+        <label class="checkRow" style="display:flex;align-items:center;gap:8px">
+          <input type="checkbox" name="can_approve_tasks" value="1" <%= user && Number(user.can_approve_tasks||0)===1 ? 'checked' : '' %> />
+          <span>يسمح له باعتماد إنهاء المهام</span>
+        </label>
+      </div>
+      <div>
+        <label class="small">تخصص/ملاحظة (اختياري)</label>
+        <input class="input" name="specialty" value="<%= user ? (user.specialty || '') : '' %>" placeholder="مثال: موشن، مونتاج، تصميم..." />
+      </div>
+
+      <div>
+        <label class="small">البريد الرسمي (للتنبيهات)</label>
+        <input class="input" name="email" value="<%= user ? (user.email || '') : '' %>" placeholder="name@moe.gov.sa" />
+        <div class="help">يُستخدم لإرسال إشعارات الإسناد والتنبيه قبل نهاية الوقت</div>
+      </div>
+    </div>
+
+    <div>
+      <label class="small"><%= user ? 'تعيين كلمة مرور جديدة (اختياري)' : 'كلمة المرور' %></label>
+      <input class="input" type="password" name="password" <%= user ? '' : 'required' %> />
+      <div class="help">يفضّل 6 أحرف فأكثر</div>
+    </div>
+
+    <div class="rowActions noPrint">
+      <button class="btn btnGood" type="submit">حفظ</button>
+      <a class="btn" href="/admin/users">إلغاء</a>
+    </div>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

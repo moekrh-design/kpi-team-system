@@ -1,0 +1,176 @@
+<%- include('partials/header', { pageTitle: 'الأيام العالمية' }) %>
+
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div>
+      <h2 style="margin:0">الأيام العالمية</h2>
+      <div class="small">تظهر في شاشة العرض كصفحة مستقلة مع عدّاد تنازلي.</div>
+    </div>
+    <div class="rowActions noPrint">
+      <% if (canEdit) { %>
+        <a class="btn btnGood" href="/world-days/new">إضافة يوم عالمي</a>
+      <% } %>
+    </div>
+  </div>
+
+  <% if (ok) { %>
+    <div class="notice" style="margin-top:12px"><%= ok %></div>
+  <% } %>
+  <% if (error) { %>
+    <div class="error" style="margin-top:12px"><%= error %></div>
+  <% } %>
+
+  <form method="get" action="/world-days" style="margin-top:12px">
+    <div class="row">
+      <input class="input" name="q" placeholder="بحث بالاسم/التصنيف/ملاحظات" value="<%= q %>" />
+      <button class="btn" type="submit">بحث</button>
+      <a class="btn" href="/world-days">مسح</a>
+      <a class="btn" href="/kiosk?view=days" target="_blank">معاينة شاشة الأيام</a>
+    </div>
+  </form>
+
+  <% if (canEdit) { %>
+    <div class="hr noPrint"></div>
+    <div class="formRow noPrint" style="grid-template-columns:repeat(2,1fr)">
+      <div>
+        <div style="font-weight:700;margin-bottom:6px">تحديث آلي من المواقع الرسمية</div>
+        <div class="help">يستورد قائمة الأيام/الأسابيع الدولية ويحوّلها إلى أقرب تاريخ قادم.</div>
+        <form method="post" action="/world-days/import/auto" style="margin-top:10px">
+          <div class="row">
+            <select class="input" name="source" style="max-width:320px">
+              <option value="un_ar">الأمم المتحدة (عربي)</option>
+              <option value="unesco_en">اليونسكو (إنجليزي)</option>
+            </select>
+            <button class="btn" type="submit">تحديث آلي</button>
+          </div>
+          <div class="help">المصادر: قائمة الأمم المتحدة للأيام والأسابيع (un.org) وقائمة اليونسكو للأيام الدولية (unesco.org).</div>
+        </form>
+
+        <form method="post" action="/world-days/import/auto-all" style="margin-top:8px">
+          <button class="btn btnGood" type="submit">تحديث الآن (من المصدرين)</button>
+        </form>
+      </div>
+
+      <div>
+        <div style="font-weight:700;margin-bottom:6px">استيراد من ملف إكسل</div>
+        <div class="help">ارفع ملف .xlsx وفق القالب (عنوان + تاريخ). يمكنك تنزيل القالب الجاهز.</div>
+        <div class="row" style="margin-top:10px">
+          <a class="btn" href="/world-days/template.xlsx">تحميل قالب الإكسل</a>
+        </div>
+        <form method="post" action="/world-days/import/excel" enctype="multipart/form-data" style="margin-top:10px">
+          <div class="row">
+            <input class="input" type="file" name="file" accept=".xlsx" />
+            <button class="btn" type="submit">استيراد</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="noPrint" style="margin-top:10px;padding:12px;border:1px solid var(--border);border-radius:12px;background:rgba(0,0,0,.02)">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <div style="font-weight:800">التحديث المجدول (يوميًا)</div>
+          <div class="help">يتم تحديث الأيام تلقائيًا كل يوم حسب الوقت المحدد، ويظهر أقرب يوم عالمي في شاشة العرض.</div>
+        </div>
+        <div class="small" style="text-align:end">
+          <% const nextRunTxt = (schedule && schedule.next_run_at) ? new Date(schedule.next_run_at).toLocaleString('ar-SA') : '—'; %>
+          <div>التحديث القادم: <b><%= nextRunTxt %></b></div>
+          <% if (schedule && schedule.last_auto_at) { %>
+            <div>آخر تحديث: <%= new Date(schedule.last_auto_at).toLocaleString('ar-SA') %>
+              <% if (schedule.last_auto_status) { %>
+                — <b><%= schedule.last_auto_status %></b>
+              <% } %>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <form method="post" action="/world-days/auto-schedule" style="margin-top:10px">
+        <div class="row" style="flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" name="world_days_auto_enabled" <%= (schedule && schedule.enabled) ? 'checked' : '' %> />
+            تفعيل التحديث اليومي
+          </label>
+
+          <label style="display:flex;align-items:center;gap:8px">
+            <span class="small">الوقت:</span>
+            <input class="input" type="time" name="world_days_auto_time" value="<%= (schedule && schedule.time) ? schedule.time : '03:10' %>" style="max-width:150px" />
+          </label>
+
+          <label style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" name="src_un_ar" <%= (schedule && schedule.sourcesArr && schedule.sourcesArr.includes('un_ar')) ? 'checked' : '' %> />
+            الأمم المتحدة
+          </label>
+
+          <label style="display:flex;align-items:center;gap:8px">
+            <input type="checkbox" name="src_unesco_en" <%= (schedule && schedule.sourcesArr && schedule.sourcesArr.includes('unesco_en')) ? 'checked' : '' %> />
+            اليونسكو
+          </label>
+
+          <button class="btn" type="submit">حفظ</button>
+        </div>
+        <% if (schedule && schedule.last_auto_msg) { %>
+          <div class="help" style="margin-top:6px">سجل: <%= schedule.last_auto_msg %></div>
+        <% } %>
+      </form>
+    </div>
+
+  <% } %>
+
+  <div style="overflow:auto;margin-top:12px">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>اليوم العالمي</th>
+          <th>التاريخ</th>
+          <th>متبقي</th>
+          <th>التصنيف</th>
+          <th>الحالة</th>
+          <th>ملاحظات</th>
+          <th class="noPrint">إجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!rows.length) { %>
+          <tr><td colspan="7" class="small">لا توجد أيام عالمية مضافة.</td></tr>
+        <% } %>
+        <% rows.forEach(it => { %>
+          <tr>
+            <td><b><%= it.title %></b></td>
+            <td class="small"><%= fmtDate(it.day_date) %></td>
+            <td class="small">
+              <% if (it.days_left < 0) { %>
+                <span class="badge">مضى</span>
+              <% } else if (it.days_left === 0) { %>
+                <span class="badge bGood">اليوم</span>
+              <% } else { %>
+                <span class="badge bInfo"><%= it.days_left %> يوم</span>
+              <% } %>
+            </td>
+            <td class="small"><%= it.category || '-' %></td>
+            <td class="small">
+              <% if (Number(it.is_active) === 1) { %>
+                <span class="badge bGood">مُفعّل</span>
+              <% } else { %>
+                <span class="badge">موقوف</span>
+              <% } %>
+            </td>
+            <td class="small"><%= it.notes || '-' %></td>
+            <td class="noPrint">
+              <% if (canEdit) { %>
+                <a class="btn" href="/world-days/<%= it.id %>/edit">تعديل</a>
+                <form method="post" action="/world-days/<%= it.id %>/delete" style="display:inline" onsubmit="return confirm('حذف اليوم؟')">
+                  <button class="btn btnDanger" type="submit">حذف</button>
+                </form>
+              <% } else { %>
+                -
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

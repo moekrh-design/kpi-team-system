@@ -1,0 +1,153 @@
+<%- include('partials/header', { pageTitle: 'التقويم الدراسي' }) %>
+
+<div class="container">
+  <% if (msg) { %>
+    <div class="card" style="padding:12px;border-color:rgba(46,204,113,.35)">
+      <b>تم</b> — <%= msg %>
+    </div>
+  <% } %>
+
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">إعدادات التقويم الدراسي</div>
+
+    <form method="POST" action="/kiosk-content/calendar/settings">
+      <div class="formRow">
+        <div style="flex:0 0 260px">
+          <label class="small">المصدر</label>
+          <select class="input" name="kiosk_calendar_source">
+            <option value="manual" <%= (settings.kiosk_calendar_source || 'manual') === 'manual' ? 'selected' : '' %>>يدوي (من الجدول)</option>
+            <option value="moe" <%= (settings.kiosk_calendar_source || 'manual') === 'moe' ? 'selected' : '' %>>استيراد من موقع الوزارة</option>
+          </select>
+        </div>
+
+        <div style="flex:0 0 220px">
+          <label class="small">الأيام القادمة</label>
+          <input class="input" name="kiosk_calendar_days_ahead" type="number" min="7" max="365" value="<%= settings.kiosk_calendar_days_ahead || 60 %>" />
+        </div>
+
+        <div style="flex:0 0 220px">
+          <label class="small">الحد الأقصى للعرض</label>
+          <input class="input" name="kiosk_calendar_max_items" type="number" min="5" max="50" value="<%= settings.kiosk_calendar_max_items || 12 %>" />
+        </div>
+      </div>
+
+      <div class="formRow">
+        <div style="flex:1 1 580px">
+          <label class="small">رابط التقويم الدراسي (الوزارة)</label>
+          <input class="input" name="kiosk_calendar_moe_url" value="<%= settings.kiosk_calendar_moe_url || 'https://www.moe.gov.sa/ar/education/generaleducation/Pages/rss.aspx' %>" />
+        </div>
+        <div style="flex:0 0 260px">
+          <label class="small">تحديث الرابط (بالدقائق)</label>
+          <input class="input" name="kiosk_calendar_moe_refresh_min" type="number" min="5" max="1440" value="<%= settings.kiosk_calendar_moe_refresh_min || 120 %>" />
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:10px">
+        <button class="btn btnPrimary" type="submit">حفظ الإعدادات</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">إضافة موعد</div>
+
+    <form method="POST" action="/kiosk-content/calendar/add">
+      <div class="formRow">
+        <div style="flex:1 1 380px">
+          <label class="small">العنوان</label>
+          <input class="input" name="title" maxlength="220" placeholder="مثال: بداية اختبارات الفترة الأولى" required />
+        </div>
+        <div style="flex:0 0 190px">
+          <label class="small">التاريخ</label>
+          <input class="input" name="event_date" type="date" required />
+        </div>
+        <div style="flex:0 0 190px">
+          <label class="small">حتى (اختياري)</label>
+          <input class="input" name="end_date" type="date" />
+        </div>
+      </div>
+
+      <div class="formRow" style="margin-top:10px">
+        <div style="flex:0 0 190px">
+          <label class="small">تصنيف (اختياري)</label>
+          <input class="input" name="category" placeholder="إجازة/اختبارات/بداية فصل..." />
+        </div>
+        <div style="flex:1 1 380px">
+          <label class="small">ملاحظات (اختياري)</label>
+          <input class="input" name="notes" maxlength="240" placeholder="ملاحظة قصيرة..." />
+        </div>
+        <div style="flex:0 0 150px">
+          <label class="small">تفعيل</label>
+          <select class="input" name="is_active">
+            <option value="1" selected>نعم</option>
+            <option value="0">لا</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end">
+        <a class="btn" href="/kiosk-content">رجوع</a>
+        <button class="btn btnGood">حفظ</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">استيراد من Excel</div>
+
+    <div class="help">الملف يجب أن يحتوي الأعمدة: <b>title</b>, <b>event_date</b> (YYYY-MM-DD), <b>end_date</b> (اختياري), <b>category</b> (اختياري), <b>notes</b> (اختياري), <b>is_active</b> (0/1).</div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+      <a class="btn" href="/kiosk-content/calendar/template.xlsx">تحميل قالب Excel</a>
+
+      <form method="POST" action="/kiosk-content/calendar/import" enctype="multipart/form-data" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input class="input" type="file" name="excel" accept=".xlsx" required style="max-width:320px" />
+        <button class="btn btnGood" type="submit" onclick="return confirm('سيتم إضافة/تحديث المواعيد حسب العنوان + التاريخ. متابعة؟')">استيراد</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">المواعيد الحالية</div>
+
+    <% if (!items || !items.length) { %>
+      <div class="help">لا توجد مواعيد بعد.</div>
+    <% } else { %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="width:90px">الحالة</th>
+            <th style="width:130px">التاريخ</th>
+            <th>العنوان</th>
+            <th style="width:160px">إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(it => { %>
+            <tr>
+              <td><span class="badge <%= it.is_active ? 'good' : 'bad' %>"><%= it.is_active ? 'مفعل' : 'متوقف' %></span></td>
+              <td><%= it.event_date %></td>
+              <td>
+                <b><%= it.title %></b>
+                <% if (it.end_date) { %><div class="small">حتى: <%= it.end_date %></div><% } %>
+                <% if (it.category) { %><div class="small">تصنيف: <%= it.category %></div><% } %>
+                <% if (it.notes) { %><div class="small">ملاحظة: <%= it.notes %></div><% } %>
+              </td>
+              <td style="display:flex;gap:8px;flex-wrap:wrap">
+                <form method="POST" action="/kiosk-content/calendar/<%= it.id %>/toggle" style="display:inline">
+                  <button class="btn btnSmall" type="submit"><%= it.is_active ? 'إيقاف' : 'تفعيل' %></button>
+                </form>
+                <form method="POST" action="/kiosk-content/calendar/<%= it.id %>/delete" style="display:inline" onsubmit="return confirm('حذف الموعد؟')">
+                  <button class="btn btnSmall btnBad" type="submit">حذف</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

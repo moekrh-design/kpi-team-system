@@ -1,0 +1,49 @@
+<div class="reportHeader">
+  <div class="reportBrand">
+    <div style="display:flex;align-items:center;gap:12px">
+      <% if (settings && settings.logo_filename) { %>
+        <img src="/uploads/<%= settings.logo_filename %>" alt="logo" class="reportLogo" />
+      <% } else { %>
+        <div class="reportLogoPlaceholder"></div>
+      <% } %>
+
+      <div>
+        <% if (settings && settings.org_name) { %>
+          <div class="reportOrg"><%= settings.org_name %></div>
+        <% } %>
+        <% if (settings && settings.org_department) { %>
+          <div class="reportDept"><%= settings.org_department %></div>
+        <% } %>
+        <% if (settings && settings.header_line) { %>
+          <div class="reportDept"><%= settings.header_line %></div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <div class="reportMeta">
+    <div class="metaRow"><span>التاريخ:</span><b><%= fmtDate(new Date().toISOString()) %></b></div>
+    <div class="metaRow"><span>رقم التقرير:</span><b><%= meta && meta.reportNo ? meta.reportNo : '-' %></b></div>
+    <div class="metaRow"><span>المرفقات:</span><b><%= meta && typeof meta.attachmentsCount === 'number' ? meta.attachmentsCount : 0 %></b></div>
+
+    <div class="codesWrap">
+      <% if (meta && meta.barcodeDataUrl) { %>
+        <div class="codeBox">
+          <div class="small" style="margin-bottom:6px">باركود</div>
+          <img src="<%= meta.barcodeDataUrl %>" alt="barcode" class="barcodeImg" />
+        </div>
+      <% } %>
+      <% if (meta && meta.qrDataUrl) { %>
+        <div class="codeBox">
+          <div class="small" style="margin-bottom:6px">QR</div>
+          <img src="<%= meta.qrDataUrl %>" alt="qr" class="qrImg" />
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<div class="hr"></div>
+
+<h2 class="reportTitle">خطاب / تقرير رسمي</h2>
+<div class="reportSubTitle"><b><%= title %></b></div>

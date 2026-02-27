@@ -1,0 +1,92 @@
+<%- include('partials/header', { pageTitle: 'المهام' }) %>
+
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <h2 style="margin:0">المهام</h2>
+    <div class="rowActions noPrint">
+      <% if (me.role !== 'employee') { %>
+        <a class="btn btnGood" href="/tasks/new">إضافة مهمة</a>
+      <% } %>
+      <a class="btn" href="/reports/general">تقرير عام</a>
+    </div>
+  </div>
+
+  <div class="hr noPrint"></div>
+
+  <form class="grid noPrint" method="get" action="/tasks" style="grid-template-columns:2fr 1fr 150px;align-items:end">
+    <div>
+      <label class="small">بحث</label>
+      <input class="input" name="q" value="<%= q %>" placeholder="... بحث بالمهمة/المناسبة/الموظف" />
+    </div>
+    <div>
+      <label class="small">الحالة</label>
+      <select name="status" class="input">
+        <option value="" <%= !status ? 'selected' : '' %>>الكل</option>
+        <option value="new" <%= status==='new' ? 'selected' : '' %>>جديدة</option>
+        <option value="in_progress" <%= status==='in_progress' ? 'selected' : '' %>>جارية</option>
+        <option value="pending_approval" <%= status==='pending_approval' ? 'selected' : '' %>>بانتظار اعتماد</option>
+        <option value="completed" <%= status==='completed' ? 'selected' : '' %>>مكتملة</option>
+        <option value="overdue" <%= status==='overdue' ? 'selected' : '' %>>متأخرة</option>      </select>
+    </div>
+    <button class="btn" type="submit">تطبيق</button>
+  </form>
+
+  <div style="overflow:auto;margin-top:12px">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>المهمة</th>
+          <th>المناسبة</th>
+          <th>الموظف</th>
+          <th>التقدم</th>
+          <th>الحالة</th>
+          <th class="noPrint">إجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!tasks.length) { %>
+          <tr><td colspan="6" class="small">لا توجد نتائج.</td></tr>
+        <% } %>
+        <% tasks.forEach(t => { %>
+          <tr>
+            <td>
+              <a href="/tasks/<%= t.id %>"><b><%= t.title %></b></a>
+              <% if (t.due_date) { %><div class="small">الاستحقاق: <%= fmtDate(t.due_date) %></div><% } %>
+            </td>
+            <td class="small"><%= t.event_title || '-' %></td>
+            <td class="small"><%= t.employee_name || '-' %></td>
+            <td style="min-width:200px">
+              <div class="progressWrap status-<%= t.status %>">
+                <div class="bar"><span style="width:<%= t.progress %>%"></span></div>
+                <div class="small"><%= t.progress %>%</div>
+              </div>
+            </td>
+            <td>
+              <% if (t.status === 'completed') { %>
+                <span class="badge bGood">مكتملة</span>
+              <% } else if (t.status === 'pending_approval') { %>
+                <span class="badge bWarn">بانتظار اعتماد</span>
+              <% } else if (t.status === 'overdue') { %>
+                <span class="badge bBad">متأخرة</span>
+              <% } else if (t.status === 'cancelled') { %>
+                <span class="badge">ملغاة</span>
+              <% } else { %>
+                <span class="badge bInfo">جارية</span>
+              <% } %>
+            </td>
+            <td class="noPrint">
+              <div class="rowActions">
+                <a class="btn" href="/tasks/<%= t.id %>">فتح</a>
+                <% if (me.role !== 'employee') { %>
+                  <a class="btn" href="/tasks/<%= t.id %>/edit">تعديل</a>
+                <% } %>
+              </div>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

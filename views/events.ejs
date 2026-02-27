@@ -1,0 +1,50 @@
+<%- include('partials/header', { pageTitle: 'المناسبات' }) %>
+
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <h2 style="margin:0">المناسبات</h2>
+    <div class="rowActions noPrint">
+      <% if (me.role !== 'employee') { %>
+        <a class="btn btnGood" href="/events/new">إضافة مناسبة</a>
+      <% } %>
+    </div>
+  </div>
+
+  <div style="overflow:auto;margin-top:12px">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>اسم المناسبة</th>
+          <th>الفترة</th>
+          <th>المشرف</th>
+          <th class="noPrint">تقارير</th>
+          <th class="noPrint">ملفات</th>
+          <th class="noPrint">أرشيف</th>
+          <th class="noPrint">إجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!events.length) { %>
+          <tr><td colspan="7" class="small">لا توجد مناسبات.</td></tr>
+        <% } %>
+        <% events.forEach(e => { %>
+          <tr>
+            <td><b><%= e.title %></b></td>
+            <td class="small"><%= e.start_date ? fmtDate(e.start_date) : '-' %> → <%= e.end_date ? fmtDate(e.end_date) : '-' %></td>
+            <td class="small"><%= e.supervisor_name || '-' %></td>
+            <td class="noPrint"><a class="btn" href="/reports/event/<%= e.id %>" target="_blank">طباعة تقرير</a></td>
+            <td class="noPrint"><a class="btn" href="/events/<%= e.id %>/files" target="_blank">ملفات المشروع</a></td>
+            <td class="noPrint"><a class="btn" href="/assets?event=<%= e.id %>" target="_blank">أرشيف الأعمال</a></td>
+            <td class="noPrint">
+              <% if (me.role !== 'employee') { %>
+                <a class="btn" href="/events/<%= e.id %>/edit">تعديل</a>
+              <% } %>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

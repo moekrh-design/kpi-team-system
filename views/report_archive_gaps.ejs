@@ -1,0 +1,61 @@
+<%- include('partials/header', { pageTitle: title }) %>
+
+<div class="grid" style="max-width:1250px;margin:0 auto">
+  <div class="card">
+    <div class="noPrint" style="display:flex;gap:10px;justify-content:flex-end;align-items:center;flex-wrap:wrap">
+      <a class="btn" href="/reports" style="background:#f3f7ff;color:#0b2a63">رجوع للتقارير</a>
+      <a class="btn" href="/reports/archive/gaps.xlsx">تصدير Excel</a>
+      <button class="btn" onclick="window.print()">طباعة / PDF</button>
+    </div>
+
+    <%- include('partials/report_header', { title, meta }) %>
+
+    <div class="card" style="margin-top:12px">
+      <div class="small muted" style="margin-bottom:8px">
+        هذا التقرير يظهر الأصول التي ينقصها أحد الحقول المهمة، لتسهيل اكتمال الفهرسة.
+      </div>
+
+      <div style="overflow:auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="min-width:260px">العنوان</th>
+              <th style="min-width:180px">النقص</th>
+              <th style="min-width:160px">المناسبة</th>
+              <th style="min-width:140px">الهارد</th>
+              <th>النوع</th>
+              <th style="min-width:200px">الوسوم</th>
+              <th style="min-width:160px">الملف</th>
+              <th style="min-width:260px">المسار</th>
+              <th style="min-width:140px">المُفهرِس</th>
+              <th style="min-width:120px">تاريخ</th>
+              <th class="noPrint">فتح</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% rows.forEach(r => { %>
+              <tr>
+                <td>
+                  <div style="font-weight:700"><%= r.title %></div>
+                  <% if (r.description) { %><div class="small muted"><%= r.description %></div><% } %>
+                </td>
+                <td class="small"><%= r.gap || '-' %></td>
+                <td class="small"><%= r.event_title || '-' %></td>
+                <td class="small"><%= r.drive_name || '-' %></td>
+                <td class="small"><%= (r.asset_type==='video'?'فيديو':r.asset_type==='photo'?'صورة':r.asset_type==='audio'?'صوت':r.asset_type==='project'?'ملفات مشروع':r.asset_type==='doc'?'مستند':'أخرى') %></td>
+                <td class="small"><%= r.tags || '' %></td>
+                <td class="small"><%= r.file_name || '' %></td>
+                <td class="small" style="direction:ltr;text-align:left"><%= r.file_path || '' %></td>
+                <td class="small"><%= r.created_by_name || '-' %></td>
+                <td class="small"><%= fmtDate(r.created_at) %></td>
+                <td class="noPrint"><a class="link" href="/assets/<%= r.id %>">فتح</a></td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

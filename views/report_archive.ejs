@@ -1,0 +1,193 @@
+<%- include('partials/header', { pageTitle: title }) %>
+
+<%
+  const qs =
+    `q=${encodeURIComponent(q || '')}` +
+    `&event=${encodeURIComponent(filters.eventId || '')}` +
+    `&drive=${encodeURIComponent(filters.driveId || '')}` +
+    `&type=${encodeURIComponent(filters.type || '')}` +
+    `&vis=${encodeURIComponent(filters.vis || '')}` +
+    `&from=${encodeURIComponent(filters.from || '')}` +
+    `&to=${encodeURIComponent(filters.to || '')}`;
+
+  const t = stats?.typeCounts || {};
+  const v = stats?.visCounts || {};
+%>
+
+<div class="grid" style="max-width:1250px;margin:0 auto">
+  <div class="card">
+    <div class="noPrint" style="display:flex;gap:10px;justify-content:flex-end;align-items:center;flex-wrap:wrap">
+      <a class="btn" href="/reports" style="background:#f3f7ff;color:#0b2a63">رجوع للتقارير</a>
+      <a class="btn" href="/reports/archive.xlsx?<%= qs %>">تصدير Excel</a>
+      <button class="btn" onclick="window.print()" type="button" style="background:#111">طباعة / PDF</button>
+    </div>
+
+    <%- include('partials/report_header', { title, meta }) %>
+
+    <div class="noPrint" style="margin-top:12px">
+      <form method="get" action="/reports/archive" class="grid">
+        <div class="formRow">
+          <div>
+            <label class="small">بحث</label>
+            <input class="input" name="q" value="<%= q || '' %>" placeholder="عنوان / وسم / مسار / هارد" />
+          </div>
+          <div>
+            <label class="small">مناسبة</label>
+            <select class="input" name="event">
+              <option value="">الكل</option>
+              <% events.forEach(e => { %>
+                <option value="<%= e.id %>" <%= String(filters.eventId||'')===String(e.id) ? 'selected' : '' %>><%= e.title %></option>
+              <% }) %>
+            </select>
+          </div>
+        </div>
+
+        <div class="formRow">
+          <div>
+            <label class="small">الهارد</label>
+            <select class="input" name="drive">
+              <option value="">الكل</option>
+              <% drives.forEach(d => { %>
+                <option value="<%= d.id %>" <%= String(filters.driveId||'')===String(d.id) ? 'selected' : '' %>><%= d.name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div>
+            <label class="small">النوع</label>
+            <select class="input" name="type">
+              <option value="">الكل</option>
+              <option value="video" <%= filters.type==='video' ? 'selected' : '' %>>فيديو</option>
+              <option value="photo" <%= filters.type==='photo' ? 'selected' : '' %>>صورة</option>
+              <option value="audio" <%= filters.type==='audio' ? 'selected' : '' %>>صوت</option>
+              <option value="project" <%= filters.type==='project' ? 'selected' : '' %>>ملفات مشروع</option>
+              <option value="doc" <%= filters.type==='doc' ? 'selected' : '' %>>مستند</option>
+              <option value="other" <%= filters.type==='other' ? 'selected' : '' %>>أخرى</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="formRow">
+          <div>
+            <label class="small">الخصوصية</label>
+            <select class="input" name="vis">
+              <option value="">الكل</option>
+              <option value="public" <%= filters.vis==='public' ? 'selected' : '' %>>عام</option>
+              <option value="team" <%= filters.vis==='team' ? 'selected' : '' %>>فريق</option>
+              <option value="private" <%= filters.vis==='private' ? 'selected' : '' %>>خاص</option>
+            </select>
+          </div>
+          <div>
+            <label class="small">من</label>
+            <input class="input" type="date" name="from" value="<%= filters.from || '' %>" />
+          </div>
+          <div>
+            <label class="small">إلى</label>
+            <input class="input" type="date" name="to" value="<%= filters.to || '' %>" />
+          </div>
+        </div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" type="submit">تطبيق</button>
+          <a class="btn" href="/reports/archive" style="background:#f3f3f3;color:#111">تصفير</a>
+        </div>
+      </form>
+    </div>
+
+    <div class="reportCharts" style="margin-top:14px">
+      <div class="chartCard">
+        <div class="chartTitle">ملخص الأرشيف</div>
+        <div class="grid grid4" style="margin-top:10px">
+          <div class="kpi">
+            <div class="label">إجمالي الأصول</div>
+            <div class="value"><%= stats.total || 0 %></div>
+          </div>
+          <div class="kpi">
+            <div class="label">بدون مناسبة</div>
+            <div class="value"><%= stats.missingEvent || 0 %></div>
+          </div>
+          <div class="kpi">
+            <div class="label">بدون هارد</div>
+            <div class="value"><%= stats.missingDrive || 0 %></div>
+          </div>
+          <div class="kpi">
+            <div class="label">عام / فريق / خاص</div>
+            <div class="value"><%= (v.public||0) %> / <%= (v.team||0) %> / <%= (v.private||0) %></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">توزيع الأنواع</div>
+        <div class="grid grid4" style="margin-top:10px">
+          <div class="kpi"><div class="label">فيديو</div><div class="value"><%= t.video||0 %></div></div>
+          <div class="kpi"><div class="label">صور</div><div class="value"><%= t.photo||0 %></div></div>
+          <div class="kpi"><div class="label">صوت</div><div class="value"><%= t.audio||0 %></div></div>
+          <div class="kpi"><div class="label">ملفات مشروع</div><div class="value"><%= t.project||0 %></div></div>
+          <div class="kpi"><div class="label">مستندات</div><div class="value"><%= t.doc||0 %></div></div>
+          <div class="kpi"><div class="label">أخرى</div><div class="value"><%= t.other||0 %></div></div>
+        </div>
+      </div>
+
+      <div class="chartCard">
+        <div class="chartTitle">أكثر الوسوم تكرارًا</div>
+        <% if (!stats.topTags || !stats.topTags.length) { %>
+          <div class="small" style="margin-top:10px">لا توجد وسوم كافية لعرضها.</div>
+        <% } else { %>
+          <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+            <% stats.topTags.forEach(x => { %>
+              <span class="badge">#<%= x.tag %> (<%= x.count %>)</span>
+            <% }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div class="small" style="margin-bottom:10px">الم نشان: يتم عرض آخر 1500 سجل كحد أقصى في الصفحة. (التصدير يدعم حتى 5000 سجل)</div>
+
+    <div class="tableWrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>العنوان</th>
+            <th>النوع</th>
+            <th>المناسبة</th>
+            <th>الهارد</th>
+            <th>المسار</th>
+            <th>الخصوصية</th>
+            <th>المُفهرِس</th>
+            <th>التاريخ</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (!rows || !rows.length) { %>
+            <tr><td colspan="9" class="small">لا توجد بيانات.</td></tr>
+          <% } else { %>
+            <% rows.forEach(r => { %>
+              <tr>
+                <td>
+                  <div><b><%= r.title || '-' %></b></div>
+                  <% if (r.tags) { %><div class="small">وسوم: <%= r.tags %></div><% } %>
+                  <% if (r.file_name) { %><div class="small">ملف: <%= r.file_name %></div><% } %>
+                </td>
+                <td><span class="badge"><%= assetTypeLabelAr(r.asset_type || 'other') %></span></td>
+                <td><%= r.event_title || '-' %></td>
+                <td><%= r.drive_name || '-' %></td>
+                <td class="small" style="max-width:360px;word-break:break-word"><%= r.file_path || '' %></td>
+                <td><span class="badge"><%= assetVisLabelAr(r.visibility || 'team') %></span></td>
+                <td><%= r.created_by_name || '-' %></td>
+                <td class="small"><%= fmtDate(r.created_at) %></td>
+                <td><a class="btn" href="/assets/<%= r.id %>" style="padding:6px 10px">فتح</a></td>
+              </tr>
+            <% }) %>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<%- include('partials/footer') %>

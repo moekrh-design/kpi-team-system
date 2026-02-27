@@ -1,0 +1,103 @@
+<%- include('partials/header', { pageTitle: 'التقارير' }) %>
+
+<div class="grid" style="max-width:1100px;margin:0 auto">
+  <div class="card">
+    <h2 style="margin:0 0 8px 0">التقارير</h2>
+    <div class="small">كل تقرير يفتح في صفحة جاهزة للطباعة أو الحفظ PDF من المتصفح</div>
+
+    <div class="hr"></div>
+
+    <div class="grid grid2">
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">تقرير عام</h3>
+        <form method="get" action="/reports/general" class="grid">
+          <div class="formRow">
+            <div>
+              <label class="small">من</label>
+              <input class="input" type="date" name="from" />
+            </div>
+            <div>
+              <label class="small">إلى</label>
+              <input class="input" type="date" name="to" />
+            </div>
+          </div>
+          <button class="btn" type="submit">فتح التقرير</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">تقرير مناسبة</h3>
+        <form method="get" onsubmit="event.preventDefault();location.href='/reports/event/' + document.getElementById('eventId').value" class="grid">
+          <div>
+            <label class="small">اختر مناسبة</label>
+            <select id="eventId" class="input" required>
+              <option value="">—</option>
+              <% events.forEach(e => { %>
+                <option value="<%= e.id %>"><%= e.title %></option>
+              <% }) %>
+            </select>
+          </div>
+          <button class="btn" type="submit">فتح تقرير المناسبة</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">تقرير موظف</h3>
+        <form method="get" onsubmit="event.preventDefault();location.href='/reports/employee/' + document.getElementById('empId').value" class="grid">
+          <div>
+            <label class="small">اختر موظف</label>
+            <select id="empId" class="input" required>
+              <option value="">—</option>
+              <% employees.forEach(e => { %>
+                <option value="<%= e.id %>"><%= e.display_name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <button class="btn" type="submit">فتح تقرير الموظف</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">تقرير مشرف</h3>
+        <form method="get" onsubmit="event.preventDefault();location.href='/reports/supervisor/' + document.getElementById('supId').value" class="grid">
+          <div>
+            <label class="small">اختر مشرف</label>
+            <select id="supId" class="input" required>
+              <option value="">—</option>
+              <% supervisors.forEach(e => { %>
+                <option value="<%= e.id %>"><%= e.display_name %></option>
+              <% }) %>
+            </select>
+          </div>
+          <button class="btn" type="submit">فتح تقرير المشرف</button>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">تقرير الأرشيف</h3>
+        <div class="small" style="margin-bottom:10px">عرض وفلاتر + تصدير Excel لأصول الأرشفة (صور/فيديو/صوت/ملفات مشروع).</div>
+        <a class="btn" href="/reports/archive">فتح تقرير الأرشيف</a>
+      </div>
+
+      <% if (me && me.role !== 'employee') { %>
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">تقرير الهاردسكات</h3>
+          <div class="small" style="margin-bottom:10px">ملخص للهاردسكات وعدد الأصول المرتبطة بكل هارد + تصدير Excel.</div>
+          <a class="btn" href="/reports/archive/drives">فتح تقرير الهاردسكات</a>
+        </div>
+
+        <div class="card">
+          <h3 style="margin:0 0 8px 0">تقرير نواقص الأرشفة</h3>
+          <div class="small" style="margin-bottom:10px">يساعدك تكتشف الأصول التي ينقصها (مناسبة/هارد/وسوم/اسم ملف).</div>
+          <a class="btn" href="/reports/archive/gaps">فتح تقرير النواقص</a>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="help" style="margin-top:12px">
+      نصيحة: بعد فتح التقرير اضغط <b>Ctrl+P</b> ثم اختر <b>Save as PDF</b>.
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

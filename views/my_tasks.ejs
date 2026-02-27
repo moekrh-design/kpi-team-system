@@ -1,0 +1,122 @@
+<%- include('partials/header', { pageTitle: 'مهامي' }) %>
+
+<div class="grid" style="max-width:1150px;margin:0 auto">
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin:0">مهامي</h2>
+        <div class="small">هنا تظهر كل الأعمال المسندة لك (مباشرة أو ضمن مراحل تفصيلية).</div>
+      </div>
+      <div class="rowActions noPrint">
+        <a class="btn" href="/tasks">سجل المهام</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px 0">المراحل المسندة لي</h3>
+    <% if (!stages.length) { %>
+      <div class="small">لا توجد مراحل مسندة لك حالياً.</div>
+    <% } else { %>
+      <div style="overflow:auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>المهمة</th>
+              <th>المرحلة</th>
+              <th>المناسبة</th>
+              <th>المشرف</th>
+              <th>الاستحقاق</th>
+              <th>التقدم</th>
+              <th class="noPrint">تحديث</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% stages.forEach(s => { %>
+              <tr>
+                <td style="min-width:220px">
+                  <a href="/tasks/<%= s.task_id %>"><b><%= s.task_title %></b></a>
+                  <div class="small">أولوية: <b><%= s.priority %></b> • الحالة: <b><%= s.task_status %></b></div>
+                </td>
+                <td class="small"><b><%= s.stage_name %></b></td>
+                <td class="small"><%= s.event_title || '-' %></td>
+                <td class="small"><%= s.supervisor_name || '-' %></td>
+                <td class="small"><%= s.due_date ? fmtDate(s.due_date) : '-' %></td>
+                <td style="min-width:210px">
+                  <div class="progressWrap">
+                    <div class="bar"><span style="width:<%= s.progress %>%"></span></div>
+                    <div class="small"><%= s.progress %>%</div>
+                  </div>
+                </td>
+                <td class="noPrint" style="min-width:260px">
+                  <form method="post" action="/stages/<%= s.id %>/update" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <input class="input" type="number" name="progress" min="0" max="100" step="5" value="<%= s.progress %>" style="width:110px" />
+                    <button class="btn btnGood" type="submit">حفظ</button>
+                    <button class="btn" type="submit" name="done" value="1">تم ✅</button>
+                    <input class="input" name="note" placeholder="ملاحظة (اختياري)" style="width:220px" />
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <div class="help" style="margin-top:10px">
+        عند اكتمال كل المراحل يتم تحويل المهمة تلقائياً إلى <b>بانتظار اعتماد</b>.
+      </div>
+    <% } %>
+  </div>
+
+  <div class="card">
+    <h3 style="margin:0 0 10px 0">مهام مسندة لي (مباشرة)</h3>
+    <% if (!directTasks.length) { %>
+      <div class="small">لا توجد مهام مباشرة مسندة لك.</div>
+    <% } else { %>
+      <div style="overflow:auto">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>المهمة</th>
+              <th>المناسبة</th>
+              <th>المشرف</th>
+              <th>الاستحقاق</th>
+              <th>التقدم</th>
+              <th class="noPrint">تحديث الإنجاز</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% directTasks.forEach(t => { %>
+              <tr>
+                <td style="min-width:220px">
+                  <a href="/tasks/<%= t.id %>"><b><%= t.title %></b></a>
+                  <div class="small">الحالة: <b><%= t.status %></b></div>
+                </td>
+                <td class="small"><%= t.event_title || '-' %></td>
+                <td class="small"><%= t.supervisor_name || '-' %></td>
+                <td class="small"><%= t.due_date ? fmtDate(t.due_date) : '-' %></td>
+                <td style="min-width:210px">
+                  <div class="progressWrap">
+                    <div class="bar"><span style="width:<%= t.progress %>%"></span></div>
+                    <div class="small"><%= t.progress %>%</div>
+                  </div>
+                </td>
+                <td class="noPrint" style="min-width:260px">
+                  <form method="post" action="/tasks/<%= t.id %>/update" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                    <input class="input" type="number" step="0.01" name="done_value" value="<%= t.done_value %>" style="width:110px" />
+                    <button class="btn btnGood" type="submit">حفظ</button>
+                    <input class="input" name="note" placeholder="ملاحظة (اختياري)" style="width:220px" />
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      </div>
+      <div class="help" style="margin-top:10px">
+        ملاحظة: عند تحديث المنجز تتحول المهمة إلى <b>بانتظار اعتماد</b> حتى يعتمدها المشرف.
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

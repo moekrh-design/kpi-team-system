@@ -1,0 +1,49 @@
+<%- include('partials/header', { pageTitle: 'شاشة الترحيب' }) %>
+
+<div class="container">
+  <% if (msg) { %>
+    <div class="card" style="padding:12px;border-color:rgba(46,204,113,.35)">
+      <b>تم</b> — <%= msg %>
+    </div>
+  <% } %>
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:8px">إعدادات شاشة الترحيب</div>
+    <div class="help">تظهر صفحة ترحيبية داخل شاشة العرض. اكتب النص على 3 أسطر (Enter): السطر الأول والثالث أصغر، والسطر الأوسط هو العنوان الرئيسي. إذا تم إيقافها فلن تظهر ضمن دوران الصفحات.</div>
+
+    <form method="POST" action="/kiosk-content/welcome/settings" style="margin-top:12px">
+      <div class="formRow">
+        <div style="flex:0 0 260px">
+          <label class="small">تفعيل شاشة الترحيب</label>
+          <select class="input" name="kiosk_welcome_enabled">
+            <option value="1" <%= Number(settings.kiosk_welcome_enabled ?? 1) === 1 ? 'selected' : '' %>>نعم</option>
+            <option value="0" <%= Number(settings.kiosk_welcome_enabled ?? 1) !== 1 ? 'selected' : '' %>>لا</option>
+          </select>
+        </div>
+
+        <div style="flex:1 1 560px">
+          <label class="small">نص الترحيب / عنوان القسم</label>
+          <textarea class="input" name="kiosk_welcome_text" rows="5" style="min-height:120px" placeholder="مثال:\nمرحبا بكم\nإدارة التسويق\nالإدارة العامة للاتصال المؤسسي"><%= (settings.kiosk_welcome_text || 'مرحبا بكم في إدارة التسويق') %></textarea>
+          <div class="tiny muted">سيتم عرض النص كما هو داخل شاشة العرض.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px">
+        <a class="btn" href="/kiosk-content">رجوع</a>
+        <a class="btn" href="/kiosk?view=welcome" target="_blank">فتح معاينة الترحيب</a>
+        <button class="btn btnPrimary" type="submit">حفظ الإعدادات</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:8px">اقتراحات سريعة</div>
+    <ul style="margin:0;padding-right:18px;line-height:1.9">
+      <li>ضع العنوان في سطر أول، وسطر ثانٍ اختياري مثل: <b>معاً نصنع أثراً</b>.</li>
+      <li>استخدم كلمات قصيرة وواضحة حتى تكون مقروءة من مسافة.</li>
+      <li>لو أردت وضع تاريخ أو شعار، الأفضل تركه للجزء العلوي في شاشة العرض (الشعار موجود بالفعل).</li>
+    </ul>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

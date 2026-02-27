@@ -1,0 +1,306 @@
+<%- include('partials/header', { pageTitle: task ? 'تعديل مهمة' : 'إضافة مهمة' }) %>
+
+<div class="card" style="max-width:980px;margin:0 auto">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <h2 style="margin:0"><%= task ? 'تعديل مهمة' : 'إضافة مهمة' %></h2>
+    <a class="btn" href="/tasks">رجوع</a>
+  </div>
+
+  <% if (error) { %><div class="error" style="margin-top:12px"><%= error %></div><% } %>
+
+  <form method="post" action="<%= task ? ('/tasks/' + task.id + '?_method=PUT') : '/tasks' %>" class="grid" style="margin-top:12px">
+    <div>
+      <label class="small">اسم المهمة</label>
+      <input class="input" name="title" value="<%= task ? task.title : '' %>" required />
+    </div>
+
+    <div>
+      <label class="small">وصف مختصر (اختياري)</label>
+      <textarea class="input" name="description"><%= task ? (task.description || '') : '' %></textarea>
+    </div>
+
+    <div class="formRow">
+      <div>
+        <label class="small">المناسبة</label>
+        <select class="input" name="event_id">
+          <option value="">—</option>
+          <% events.forEach(e => { %>
+            <option value="<%= e.id %>" <%= task && task.event_id === e.id ? 'selected' : '' %>><%= e.title %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div>
+        <label class="small">الموظف</label>
+        <select class="input" name="employee_id">
+          <option value="">—</option>
+          <% employees.forEach(u => { %>
+            <option value="<%= u.id %>" <%= task && task.employee_id === u.id ? 'selected' : '' %>><%= u.display_name %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div>
+        <label class="small">المشرف</label>
+        <select class="input" name="supervisor_id">
+          <option value="">—</option>
+          <% supervisors.forEach(u => { %>
+            <option value="<%= u.id %>" <%= task && task.supervisor_id === u.id ? 'selected' : '' %>><%= u.display_name %></option>
+          <% }) %>
+        </select>
+      </div>
+
+      <div>
+        <label class="small">الأولوية</label>
+        <select class="input" name="priority">
+          <option value="low" <%= task && task.priority==='low' ? 'selected' : '' %>>منخفضة</option>
+          <option value="medium" <%= !task || task.priority==='medium' ? 'selected' : '' %>>متوسطة</option>
+          <option value="high" <%= task && task.priority==='high' ? 'selected' : '' %>>عالية</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="small">المستهدف</label>
+        <input class="input" type="number" step="0.01" name="target_value" value="<%= task ? task.target_value : 0 %>" />
+      </div>
+
+      <div>
+        <label class="small">المنجز</label>
+        <input class="input" type="number" step="0.01" name="done_value" value="<%= task ? task.done_value : 0 %>" />
+        <div class="help">ملاحظة: تحديث الموظف يجعلها (بانتظار اعتماد)</div>
+      </div>
+
+      <div>
+        <label class="small">تاريخ البداية</label>
+        <input class="input" type="date" name="start_date" value="<%= task && task.start_date ? fmtDate(task.start_date) : '' %>" />
+      </div>
+
+      <div>
+        <label class="small">تاريخ الاستحقاق</label>
+        <input class="input" type="date" name="due_date" value="<%= task && task.due_date ? fmtDate(task.due_date) : '' %>" />
+      </div>
+
+      <div>
+        <label class="small">الحالة</label>
+        <select class="input" name="status">
+          <option value="new" <%= task && task.status==='new' ? 'selected' : '' %>>جديدة</option>
+          <option value="in_progress" <%= task && task.status==='in_progress' ? 'selected' : '' %>>جارية</option>
+          <option value="pending_approval" <%= task && task.status==='pending_approval' ? 'selected' : '' %>>بانتظار اعتماد</option>
+          <option value="completed" <%= task && task.status==='completed' ? 'selected' : '' %>>مكتملة</option>
+          <option value="overdue" <%= task && task.status==='overdue' ? 'selected' : '' %>>متأخرة</option>
+          <option value="cancelled" <%= task && task.status==='cancelled' ? 'selected' : '' %>>ملغاة</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="small">تاريخ نهاية المناسبة (اختياري)</label>
+        <input class="input" type="date" name="end_date" value="" disabled />
+        <div class="help">هذه خانة توضيحية فقط (المناسبات لها صفحة مستقلة)</div>
+      </div>
+    </div>
+
+    <div class="hr"></div>
+
+    <div>
+      <h3 style="margin:0 0 8px 0">تفصيل المهمة إلى مراحل (اختياري)</h3>
+      <div class="help" style="margin-bottom:10px">
+        إذا اخترت مرحلة أو أكثر: يتم حساب الإنجاز تلقائياً حسب المراحل، و<strong>الوزن النسبي يُقسَّم بالتساوي تلقائياً</strong>.
+        <br/>يمكنك أيضاً إضافة مرحلة خاصة ليست ضمن القائمة.
+      </div>
+
+      <% if (task) { %>
+        <div class="notice" style="margin-bottom:10px">
+          هذه الصفحة مخصصة لإنشاء مهمة جديدة أو تعديل بياناتها الأساسية. تعديل المراحل يتم من داخل صفحة المهمة.
+        </div>
+      <% } else { %>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px">
+          <% stageTemplates.forEach(st => { %>
+            <div class="card" style="padding:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+                <label style="display:flex;align-items:center;gap:10px;cursor:pointer">
+                  <input type="checkbox" name="stage_keys" value="<%= st.key %>" />
+                  <span class="small"><b><%= st.name %></b></span>
+                </label>
+                <select class="input" name="assigned_to[<%= st.key %>]" style="min-width:150px">
+                  <option value="">— غير مسند —</option>
+                  <% assignees.forEach(a => { %>
+                    <option value="<%= a.id %>">
+                      <%= a.display_name %><%= a.specialty ? (' • ' + a.specialty) : '' %>
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+          <% }) %>
+        </div>
+
+        <div class="card" style="margin-top:10px">
+          <h4 style="margin:0 0 8px 0">مرحلة أخرى (غير موجودة)</h4>
+          <div class="formRow">
+            <div>
+              <label class="small">اسم المرحلة</label>
+              <input class="input" name="custom_stage_name" placeholder="اكتب اسم المرحلة..." />
+            </div>
+            <div>
+              <label class="small">المسند إليه</label>
+              <select class="input" name="custom_stage_assigned_to">
+                <option value="">— غير مسند —</option>
+                <% assignees.forEach(a => { %>
+                  <option value="<%= a.id %>">
+                    <%= a.display_name %><%= a.specialty ? (' • ' + a.specialty) : '' %>
+                  </option>
+                <% }) %>
+              </select>
+            </div>
+          </div>
+          <div class="help">إذا تركت الحقول فارغة يتم إنشاء مهمة عادية بدون مراحل.</div>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="rowActions noPrint" style="justify-content:flex-start">
+      <button class="btn btnGood" type="submit"><%= task ? 'حفظ التعديل' : 'حفظ' %></button>
+      <a class="btn" href="/tasks">إلغاء</a>
+
+      <% if (task && (me.role==='admin' || me.role==='supervisor')) { %>
+        <button class="btn btnDanger" type="submit" form="cancelTaskForm" onclick="return confirm('هل تريد حذف/إلغاء هذه المهمة؟');">حذف المهمة</button>
+      <% } %>
+    </div>
+  </form>
+
+  <% if (task && (me.role==='admin' || me.role==='supervisor')) { %>
+    <form id="cancelTaskForm" method="post" action="/tasks/<%= task.id %>/cancel"></form>
+  <% } %>
+</div>
+
+<% if (task) { %>
+  <div class="card" style="margin-top:12px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+      <div>
+        <h3 style="margin:0;color:var(--navy)">تفصيل المهمة إلى مراحل</h3>
+        <div class="help" style="margin-top:4px">الوزن النسبي يُحسب تلقائيًا بالتساوي بين المراحل (لا تحتاج كتابته يدويًا).</div>
+      </div>
+      <div class="badge" style="white-space:nowrap">المهمة: <%= (task.progress_mode === 'stages') ? 'مقسمة إلى مراحل' : 'عادية' %></div>
+    </div>
+
+    <% if (!stages || stages.length === 0) { %>
+      <div class="small" style="margin-top:10px;color:var(--muted)">
+        لا توجد مراحل مسجلة لهذه المهمة بعد. يمكنك إضافة مرحلة، وسيتم تحويل المهمة تلقائيًا إلى وضع المراحل.
+      </div>
+    <% } %>
+
+    <div class="grid" style="margin-top:12px">
+      <% (stages || []).forEach(s => { %>
+        <div class="card" style="border:1px solid var(--line);background:#fff">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px">
+            <div style="font-weight:900;color:var(--navy)">المرحلة #<%= s.sort_order %></div>
+            <div class="badge"><%= Math.round(Number(s.weight) || 0) %>%</div>
+          </div>
+
+          <div style="margin-top:10px" class="progressWrap">
+            <div class="bar"><span style="width:<%= Math.min(100, Math.max(0, Number(s.progress) || 0)) %>%"></span></div>
+            <div style="min-width:52px;font-weight:900;color:var(--navy)"><%= Math.round(Number(s.progress) || 0) %>%</div>
+          </div>
+
+          <form method="post" action="/stages/<%= s.id %>/meta" style="margin-top:10px">
+            <input type="hidden" name="_method" value="PUT" />
+            <div class="formRow">
+              <div style="max-width:110px">
+                <label class="small">الترتيب</label>
+                <input class="input" type="number" min="1" name="sort_order" value="<%= s.sort_order %>" />
+              </div>
+              <div style="flex:1">
+                <label class="small">اسم المرحلة</label>
+                <input class="input" name="stage_name" value="<%= s.stage_name %>" />
+              </div>
+              <div style="min-width:220px">
+                <label class="small">المسند إليه</label>
+                <select class="input" name="assigned_to">
+                  <option value="">— غير مسند —</option>
+                  <% assignees.forEach(a => { %>
+                    <option value="<%= a.id %>" <%= (String(a.id) === String(s.assigned_to)) ? 'selected' : '' %>>
+                      <%= a.display_name %><%= a.specialty ? (' • ' + a.specialty) : '' %>
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="rowActions noPrint" style="justify-content:flex-start">
+              <button class="btn btnGood" type="submit">حفظ المرحلة</button>
+            </div>
+          </form>
+
+          <form method="post" action="/stages/<%= s.id %>/cancel" class="noPrint" onsubmit="return confirm('هل أنت متأكد من حذف هذه المرحلة؟')" style="margin-top:8px">
+            <button class="btn btnDanger" type="submit">حذف المرحلة</button>
+          </form>
+        </div>
+      <% }) %>
+    </div>
+
+    <div class="hr" style="margin:14px 0"></div>
+
+    <div class="card" style="border:1px dashed rgba(21,68,90,.25);background:rgba(21,68,90,.03)">
+      <div style="font-weight:900;color:var(--navy);margin-bottom:8px">إضافة مرحلة جديدة</div>
+
+      <form method="post" action="/tasks/<%= task.id %>/stages/add" class="noPrint">
+        <div class="formRow">
+          <div style="flex:1">
+            <label class="small">مرحلة جاهزة</label>
+            <select class="input" name="stage_key">
+              <option value="">— اختر مرحلة —</option>
+              <% (stageTemplates || []).forEach(t => { %>
+                <option value="<%= t.key %>"><%= t.name || t.label %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div style="min-width:220px">
+            <label class="small">المسند إليه</label>
+            <select class="input" name="assigned_to">
+              <option value="">— غير مسند —</option>
+              <% assignees.forEach(a => { %>
+                <option value="<%= a.id %>"><%= a.display_name %><%= a.specialty ? (' • ' + a.specialty) : '' %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div style="align-self:end">
+            <button class="btn btnGood" type="submit">إضافة</button>
+          </div>
+        </div>
+        <div class="help" style="margin-top:6px">يمكنك تعديل إسناد المرحلة لاحقًا من نفس الصفحة.</div>
+      </form>
+
+      <div style="height:10px"></div>
+
+      <form method="post" action="/tasks/<%= task.id %>/stages/add" class="noPrint">
+        <div class="formRow">
+          <div style="flex:1">
+            <label class="small">مرحلة أخرى (اسم مخصص)</label>
+            <input class="input" name="custom_stage_name" placeholder="اكتب اسم المرحلة..." />
+          </div>
+          <div style="min-width:220px">
+            <label class="small">المسند إليه</label>
+            <select class="input" name="assigned_to">
+              <option value="">— غير مسند —</option>
+              <% assignees.forEach(a => { %>
+                <option value="<%= a.id %>"><%= a.display_name %><%= a.specialty ? (' • ' + a.specialty) : '' %></option>
+              <% }) %>
+            </select>
+          </div>
+          <div style="align-self:end">
+            <button class="btn" type="submit">إضافة</button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="hr" style="margin:14px 0"></div>
+
+    <div class="noPrint" style="display:flex;gap:10px;flex-wrap:wrap">
+      <form method="post" action="/tasks/<%= task.id %>/cancel" onsubmit="return confirm('هل أنت متأكد من حذف هذه المهمة؟ سيتم الاحتفاظ بسجلها ولكن لن تظهر ضمن المهام النشطة.')">
+        <button class="btn btnDanger" type="submit">حذف المهمة</button>
+      </form>
+    </div>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>

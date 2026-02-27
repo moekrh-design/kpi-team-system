@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#07a869" />
+  <% 
+    // EJS throws ReferenceError if an undeclared variable is referenced.
+    // Guard optional locals like pageTitle/title.
+    var _pt = (typeof pageTitle !== 'undefined' && pageTitle) ? pageTitle
+      : ((typeof title !== 'undefined' && title) ? title : 'نظام المهام ومؤشرات الأداء');
+  %>
+  <title><%= _pt %></title>
+
+  <!-- Arabic font (optional) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="/public/style.css" />
+</head>
+<% // NOTE: EJS throws ReferenceError if an undeclared variable is referenced.
+   // Use typeof guards for optional locals like bodyClass.
+%>
+<body class="<%= (typeof bodyClass !== 'undefined' && bodyClass) ? bodyClass : '' %>">
+  <div class="container">
+    <div class="nav noPrint">
+      <div class="brand">
+        <% if (settings && settings.logo_filename) { %>
+          <img class="logoImg" src="/uploads/<%= settings.logo_filename %>" alt="logo" />
+        <% } else { %>
+          <div class="logoDot"></div>
+        <% } %>
+
+        <div>
+          <div style="font-weight:900;color:var(--navy)">نظام المهام ومؤشرات الأداء</div>
+          <div class="small">
+            <%= (settings && (settings.org_name || settings.org_department))
+              ? ((settings.org_name||'') + (settings.org_department ? ' - ' + settings.org_department : ''))
+              : 'نظام فريق (نسخة ويب)' %>
+          </div>
+        </div>
+      </div>
+
+      <div class="links">
+        <% if (me) { %>
+          <a class="link" href="/">الرئيسية</a>
+          <a class="link" href="/tasks">المهام</a>
+          <% if (me.role === 'employee') { %>
+            <a class="link" href="/my">مهامي</a>
+          <% } %>
+          <a class="link" href="/events">المناسبات</a>
+          <a class="link" href="/reports">التقارير</a>
+          <a class="link" href="/assets">أرشيف الأعمال</a>
+<a class="link" href="/kiosk">تشغيل العرض</a>
+          <% if (me.role === 'admin' || me.role === 'supervisor') { %>
+            <a class="link" href="/kiosk-content">محتوى الشاشة</a>
+          <% } %>
+          <% if (me.role === 'admin') { %>
+            <a class="link" href="/admin/users">المستخدمون</a>
+            <a class="link" href="/admin/settings">الإعدادات</a>
+            <a class="link" href="/admin/update">تحديث النظام</a>
+          <% } %>
+        <% } %>
+      </div>
+
+      <div class="userBox">
+        <% if (me) { %>
+          <span class="pill"><%= me.display_name %> • <%= me.role %></span>
+          <a class="btn" href="/notifications" title="الإشعارات" style="position:relative;margin-inline:8px">
+            🔔
+            <% if (notifUnreadCount && notifUnreadCount > 0) { %>
+              <span style="position:absolute;top:-6px;left:-6px;background:#e11d48;color:#fff;border-radius:999px;padding:2px 6px;font-size:11px;line-height:1">
+                <%= notifUnreadCount %>
+              </span>
+            <% } %>
+          </a>
+
+          <a class="btn" href="/account/password" title="تغيير كلمة المرور" style="margin-inline:8px">كلمة المرور</a>
+          <form method="post" action="/logout">
+            <button class="btn btnDanger" type="submit">خروج</button>
+          </form>
+        <% } else { %>
+          <a class="btn btnGood" href="/login">دخول</a>
+        <% } %>
+      </div>
+    </div>
+
+
+    <% if (me && dueSoonCount && dueSoonCount > 0) { %>
+      <div class="notice noPrint" style="margin-top:12px;border-color:rgba(193,180,137,.55);background:rgba(193,180,137,.18)">
+        ⏳ <b>تنبيه مهم:</b> لديك <b><%= dueSoonCount %></b> مهمة ينتهي وقتها خلال <b>يومين</b>.
+        <div class="small" style="margin-top:6px">
+          <% dueSoonItems.slice(0,3).forEach(t => { %>
+            • <b><%= t.title %></b> (الاستحقاق: <%= fmtDate(t.due_date) %>)<br/>
+          <% }) %>
+        </div>
+        <div style="margin-top:8px">
+          <a class="btn" href="/tasks">عرض المهام</a>
+        </div>
+      </div>
+    <% } %>

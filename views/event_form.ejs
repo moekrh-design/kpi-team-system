@@ -1,0 +1,44 @@
+<%- include('partials/header', { pageTitle: event ? 'تعديل مناسبة' : 'إضافة مناسبة' }) %>
+
+<div class="card" style="max-width:900px;margin:0 auto">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <h2 style="margin:0"><%= event ? 'تعديل مناسبة' : 'إضافة مناسبة' %></h2>
+    <a class="btn" href="/events">رجوع</a>
+  </div>
+
+  <% if (error) { %><div class="error" style="margin-top:12px"><%= error %></div><% } %>
+
+  <form method="post" action="<%= event ? ('/events/' + event.id + '?_method=PUT') : '/events' %>" class="grid" style="margin-top:12px">
+    <div>
+      <label class="small">اسم المناسبة</label>
+      <input class="input" name="title" value="<%= event ? event.title : '' %>" required />
+    </div>
+
+    <div class="formRow">
+      <div>
+        <label class="small">تاريخ البداية</label>
+        <input class="input" type="date" name="start_date" value="<%= event && event.start_date ? fmtDate(event.start_date) : '' %>" />
+      </div>
+      <div>
+        <label class="small">تاريخ النهاية</label>
+        <input class="input" type="date" name="end_date" value="<%= event && event.end_date ? fmtDate(event.end_date) : '' %>" />
+      </div>
+      <div>
+        <label class="small">المشرف</label>
+        <select class="input" name="supervisor_id">
+          <option value="">—</option>
+          <% supervisors.forEach(s => { %>
+            <option value="<%= s.id %>" <%= event && event.supervisor_id === s.id ? 'selected' : '' %>><%= s.display_name %></option>
+          <% }) %>
+        </select>
+      </div>
+    </div>
+
+    <div class="rowActions noPrint">
+      <button class="btn btnGood" type="submit">حفظ</button>
+      <a class="btn" href="/events">إلغاء</a>
+    </div>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

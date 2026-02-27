@@ -1,0 +1,313 @@
+<%- include('partials/header', { pageTitle: 'تفاصيل المهمة' }) %>
+
+<div class="grid" style="max-width:1100px;margin:0 auto">
+  <% if (ok) { %>
+    <div class="notice">تم حفظ العملية بنجاح ✅</div>
+  <% } %>
+
+  <% if (error) { %>
+    <div class="error"><%= error %></div>
+  <% } %>
+
+  <% if (emailSent) { %>
+    <div class="notice">تم إرسال التذكير بالبريد ✅</div>
+  <% } %>
+
+  <% if (emailErr) { %>
+    <div class="error"><%= emailErr %></div>
+  <% } %>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <h2 style="margin:0"><%= task.title %></h2>
+        <div class="small">المناسبة: <b><%= task.event_title || '-' %></b> • الموظف: <b><%= task.employee_name || '-' %></b> • المشرف: <b><%= task.supervisor_name || '-' %></b></div>
+        <% if (task.event_id) { %>
+          <div class="small noPrint" style="margin-top:8px">
+            <a class="btn" href="/events/<%= task.event_id %>/files" target="_blank">ملفات المشروع</a>
+          </div>
+        <% } %>
+      </div>
+      <div class="rowActions noPrint">
+        <a class="btn" href="/tasks">رجوع</a>
+        <% if (me.role !== 'employee') { %>
+          <form action="/tasks/<%= task.id %>/remind-email" method="post" style="display:inline" onsubmit="return confirm('إرسال تذكير بالبريد للمسند له؟');">
+            <button class="btn" type="submit">تذكير بريد</button>
+          </form>
+          <a class="btn" href="/tasks/<%= task.id %>/edit">تعديل</a>
+          <form action="/tasks/<%= task.id %>?_method=DELETE" method="post" style="display:inline" onsubmit="return confirm('متأكد من حذف هذه المهمة؟ سيتم حذف جميع المرفقات والسجلات المرتبطة.');">
+            <button class="btn btnDanger" type="submit">حذف</button>
+          </form>
+        <% } %>
+      </div>
+    </div>
+
+    <% if (task.description) { %>
+      <div class="hr"></div>
+      <div class="small"><%= task.description %></div>
+    <% } %>
+
+    <div class="hr"></div>
+
+    <div class="grid grid2">
+      <div>
+        <div class="small">الحالة</div>
+        <div style="margin-top:6px">
+          <% if (task.status === 'completed') { %>
+            <span class="badge bGood">مكتملة</span>
+          <% } else if (task.status === 'pending_approval') { %>
+            <span class="badge bWarn">بانتظار اعتماد</span>
+          <% } else if (task.status === 'overdue') { %>
+            <span class="badge bBad">متأخرة</span>
+          <% } else if (task.status === 'cancelled') { %>
+            <span class="badge">ملغاة</span>
+          <% } else { %>
+            <span class="badge bInfo">جارية</span>
+          <% } %>
+        </div>
+        <div class="small" style="margin-top:10px">الأولوية: <b><%= task.priority %></b></div>
+        <% if (task.start_date) { %><div class="small">بداية: <b><%= fmtDate(task.start_date) %></b></div><% } %>
+        <% if (task.due_date) { %><div class="small">الاستحقاق: <b><%= fmtDate(task.due_date) %></b></div><% } %>
+      </div>
+
+      <div>
+        <div class="small">التقدم</div>
+        <div style="margin-top:10px" class="progressWrap status-<%= task.status %>">
+          <div class="bar"><span style="width:<%= task.progress %>%"></span></div>
+          <div class="small"><%= task.progress %>%</div>
+        </div>
+        <div class="small" style="margin-top:8px">المنجز: <b><%= task.done_value %></b> / المستهدف: <b><%= task.target_value %></b></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Put "Update progress" first, and move attachments below it (not side-by-side) -->
+  <div class="grid">
+    <div class="card">
+      <h3 style="margin:0 0 10px 0">تحديث الإنجاز</h3>
+
+      <% if (String(task.progress_mode || 'simple') === 'stages') { %>
+        <div class="help" style="margin-bottom:10px">
+          هذه المهمة مقسّمة إلى مراحل. قم بتحديث المرحلة المسندة لك (أو اعتمد الإنجاز إذا كنت مشرفًا).
+        </div>
+
+        <% if (!stages || !stages.length) { %>
+          <div class="small">لا توجد مراحل في هذه المهمة.</div>
+        <% } else { %>
+          <div style="overflow:auto">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>المرحلة</th>
+                  <th>المسند</th>
+                  <th>الوزن</th>
+                  <th>التقدم</th>
+                  <th>الحالة</th>
+                  <th class="noPrint">تحديث</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% stages.forEach(s => { %>
+                  <% const canEdit = (me.role === 'admin') || (me.role === 'supervisor') || (me.role === 'employee' && s.assigned_to === me.id); %>
+                  <tr>
+                    <td class="small"><b><%= s.stage_name %></b></td>
+                    <td class="small"><%= s.assigned_to_name || '-' %></td>
+                    <td class="small"><%= Math.round((Number(s.weight||0)) * 10) / 10 %>%</td>
+                    <td style="min-width:210px">
+                      <div class="progressWrap status-<%= s.status %>">
+                        <div class="bar"><span style="width:<%= s.progress || 0 %>%"></span></div>
+                        <div class="small"><%= s.progress || 0 %>%</div>
+                      </div>
+                    </td>
+                    <td class="small"><%= s.status %></td>
+                    <td class="noPrint" style="min-width:280px">
+                      <% if (canEdit) { %>
+                        <form method="post" action="/stages/<%= s.id %>/update" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+                          <input class="input" type="number" name="progress" min="0" max="100" step="5" value="<%= s.progress || 0 %>" style="width:110px" />
+                          <button class="btn btnGood" type="submit">حفظ</button>
+                          <button class="btn" type="submit" name="done" value="1">تم ✅</button>
+                          <input class="input" name="note" placeholder="ملاحظة (اختياري)" style="width:220px" />
+                        </form>
+                      <% } else { %>
+                        <span class="small" style="color:var(--muted)">غير مسند لك</span>
+                      <% } %>
+                    </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+
+        <% if ((me.role !== 'employee' || Number(me.can_approve_tasks||0)===1) && task.status === 'pending_approval') { %>
+          <div class="hr"></div>
+          <h3 style="margin:0 0 10px 0">اعتماد المشرف</h3>
+          <form method="post" action="/tasks/<%= task.id %>/approve" class="grid">
+            <div class="formRow">
+              <div>
+                <label class="small">القرار</label>
+                <select class="input" name="decision" required>
+                  <option value="approved">اعتماد ✅</option>
+                  <option value="rejected">رفض / إعادة للتعديل 🔁</option>
+                </select>
+              </div>
+              <div>
+                <label class="small">تعليق (اختياري)</label>
+                <input class="input" name="comment" placeholder="ملاحظة للمُنفّذ..." />
+              </div>
+            </div>
+            <button class="btn btnGood" type="submit">تسجيل القرار</button>
+          </form>
+        <% } %>
+
+      <% } else { %>
+        <form method="post" action="/tasks/<%= task.id %>/update" class="grid">
+          <div>
+            <label class="small">قيمة المنجز الحالية</label>
+            <input class="input" type="number" step="0.01" name="done_value" value="<%= task.done_value %>" />
+          </div>
+          <div>
+            <label class="small">ملاحظة (اختياري)</label>
+            <textarea class="input" name="note" placeholder="اكتب توضيح مختصر..."></textarea>
+          </div>
+          <button class="btn btnGood" type="submit">حفظ التحديث</button>
+          <div class="help">
+            عند الوصول إلى <b>100%</b> تتحول المهمة تلقائيًا إلى <b>بانتظار اعتماد</b>.
+            <br/>بعد ذلك يُسجّل المشرف/المدير قرار الاعتماد لتصبح <b>مكتملة</b>.
+          </div>
+        </form>
+
+        <% if ((me.role !== 'employee' || Number(me.can_approve_tasks||0)===1) && task.status === 'pending_approval') { %>
+          <div class="hr"></div>
+          <h3 style="margin:0 0 10px 0">اعتماد المشرف</h3>
+          <form method="post" action="/tasks/<%= task.id %>/approve" class="grid">
+            <div class="formRow">
+              <div>
+                <label class="small">القرار</label>
+                <select class="input" name="decision" required>
+                  <option value="approved">اعتماد ✅</option>
+                  <option value="rejected">رفض / إعادة للتعديل 🔁</option>
+                </select>
+              </div>
+              <div>
+                <label class="small">تعليق (اختياري)</label>
+                <input class="input" name="comment" placeholder="ملاحظة للمُنفّذ..." />
+              </div>
+            </div>
+            <button class="btn btnGood" type="submit">تسجيل القرار</button>
+          </form>
+        <% } %>
+      <% } %>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 10px 0">المرفقات</h3>
+      <form class="grid noPrint" method="post" action="/tasks/<%= task.id %>/attach" enctype="multipart/form-data">
+        <div>
+          <label class="small">رفع ملف (PDF/صور)</label>
+          <input class="input" type="file" name="file" accept=".pdf,image/*" required />
+          <div class="help">الحد الأعلى: 20MB لكل ملف</div>
+        </div>
+        <button class="btn" type="submit">رفع المرفق</button>
+      </form>
+
+      <div class="hr"></div>
+      <% if (!attachments.length) { %>
+        <div class="small">لا توجد مرفقات.</div>
+      <% } else { %>
+        <div style="overflow:auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>الملف</th>
+                <th>الرافع</th>
+                <th>التاريخ</th>
+                <th class="noPrint">فتح</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% attachments.forEach(a => { %>
+                <tr>
+                  <td class="small"><%= a.original_name %></td>
+                  <td class="small"><%= a.uploaded_by_name || '-' %></td>
+                  <td class="small"><%= fmtDate(a.uploaded_at) %></td>
+                  <td class="noPrint"><a class="btn" href="/uploads/<%= a.stored_filename %>" target="_blank">عرض</a></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="grid grid2">
+    <div class="card">
+      <h3 style="margin:0 0 10px 0">سجل التحديثات</h3>
+      <% if (!updates.length) { %>
+        <div class="small">لا يوجد تحديثات.</div>
+      <% } else { %>
+        <div style="overflow:auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>القيمة</th>
+                <th>الملاحظة</th>
+                <th>بواسطة</th>
+                <th>التاريخ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% updates.forEach(u => { %>
+                <tr>
+                  <td class="small"><%= (u.done_value ?? '-') %></td>
+                  <td class="small"><%= u.note || '-' %></td>
+                  <td class="small"><%= u.created_by_name || '-' %></td>
+                  <td class="small"><%= fmtDate(u.created_at) %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="card">
+      <h3 style="margin:0 0 10px 0">سجل الاعتماد</h3>
+      <% if (!approvals.length) { %>
+        <div class="small">لا يوجد اعتمادات.</div>
+      <% } else { %>
+        <div style="overflow:auto">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>القرار</th>
+                <th>التعليق</th>
+                <th>المعتمد</th>
+                <th>التاريخ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% approvals.forEach(a => { %>
+                <tr>
+                  <td>
+                    <% if (a.decision === 'approved') { %>
+                      <span class="badge bGood">اعتماد</span>
+                    <% } else { %>
+                      <span class="badge bWarn">إرجاع</span>
+                    <% } %>
+                  </td>
+                  <td class="small"><%= a.comment || '-' %></td>
+                  <td class="small"><%= a.approved_by_name || '-' %></td>
+                  <td class="small"><%= fmtDate(a.approved_at) %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,55 @@
+<%- include('partials/header', { pageTitle: 'المستخدمون' }) %>
+
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <h2 style="margin:0">المستخدمون</h2>
+    <a class="btn btnGood" href="/admin/users/new">إضافة مستخدم</a>
+  </div>
+
+  <div class="hr"></div>
+  <div class="help">الأدوار: admin (مدير) • supervisor (مشرف) • employee (موظف)</div>
+
+  <div style="overflow:auto;margin-top:12px">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>الاسم</th>
+          <th>اسم المستخدم</th>
+          <th>البريد</th>
+          <th>الدور</th>
+          <th>النوع</th>
+          <th>دخول</th>
+          <th>التخصص</th>
+          <th>الحالة</th>
+          <th class="noPrint">إجراءات</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (!users.length) { %>
+          <tr><td colspan="9" class="small">لا يوجد مستخدمون.</td></tr>
+        <% } %>
+        <% users.forEach(u => { %>
+          <tr>
+            <td><b><%= u.display_name %></b></td>
+            <td class="small"><%= u.username %></td>
+            <td class="small"><%= u.email || '-' %></td>
+            <td class="small"><%= u.role %></td>
+            <td class="small"><%= u.user_kind || 'employee' %></td>
+            <td class="small"><%= u.can_login ? 'نعم' : 'لا' %></td>
+            <td class="small"><%= u.specialty || '-' %></td>
+            <td>
+              <% if (u.is_active) { %>
+                <span class="badge bGood">نشط</span>
+              <% } else { %>
+                <span class="badge bBad">موقوف</span>
+              <% } %>
+            </td>
+            <td class="noPrint"><a class="btn" href="/admin/users/<%= u.id %>/edit">تعديل</a></td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

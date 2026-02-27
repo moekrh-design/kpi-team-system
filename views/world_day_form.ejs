@@ -1,0 +1,50 @@
+<%- include('partials/header', { pageTitle: item ? 'تعديل يوم عالمي' : 'إضافة يوم عالمي' }) %>
+
+<div class="card">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <h2 style="margin:0"><%= item ? 'تعديل يوم عالمي' : 'إضافة يوم عالمي' %></h2>
+    <a class="btn" href="/world-days">رجوع</a>
+  </div>
+
+  <% if (error) { %>
+    <div class="notice" style="margin-top:12px;border-color:rgba(200,50,50,.4);background:rgba(200,50,50,.08)">
+      <%= error %>
+    </div>
+  <% } %>
+
+  <form method="post" action="<%= item ? ('/world-days/' + item.id + '/edit') : '/world-days/new' %>" style="margin-top:14px">
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <label class="small">اسم اليوم العالمي</label>
+        <input class="input" name="title" required value="<%= item ? item.title : '' %>" placeholder="مثال: اليوم العالمي للغة العربية" />
+      </div>
+      <div>
+        <label class="small">التاريخ</label>
+        <input class="input" type="date" name="day_date" required value="<%= item ? item.day_date : '' %>" />
+      </div>
+      <div>
+        <label class="small">التصنيف (اختياري)</label>
+        <input class="input" name="category" value="<%= item ? (item.category||'') : '' %>" placeholder="مثال: توعوي / وطني / صحي" />
+      </div>
+      <div>
+        <label class="small">الحالة</label>
+        <div style="display:flex;align-items:center;gap:10px;margin-top:8px">
+          <input type="checkbox" id="is_active" name="is_active" <%= (!item || Number(item.is_active)===1) ? 'checked' : '' %> />
+          <label for="is_active" class="small">مُفعّل</label>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:12px">
+      <label class="small">ملاحظات (اختياري)</label>
+      <textarea class="input" name="notes" rows="3" placeholder="ملاحظات مختصرة"><%= item ? (item.notes||'') : '' %></textarea>
+    </div>
+
+    <div style="margin-top:16px" class="rowActions">
+      <button class="btn btnGood" type="submit">حفظ</button>
+      <a class="btn" href="/world-days">إلغاء</a>
+    </div>
+  </form>
+</div>
+
+<%- include('partials/footer') %>

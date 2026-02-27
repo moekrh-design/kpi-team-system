@@ -1,0 +1,59 @@
+<%- include('partials/header', { pageTitle: 'محتوى شاشة العرض' }) %>
+
+<div class="container">
+  <div class="card" style="padding:16px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:6px">محتوى شاشة العرض</div>
+    <div class="help">هنا تدير الأقسام التي تظهر في شاشة العرض (الترحيب، المهام، التقويم الدراسي، الأيام العالمية، الشريط الإخباري، والعبارات التثقيفية).</div>
+
+    <div style="margin-top:14px;overflow:auto">
+      <table class="table" style="min-width:760px">
+        <thead>
+          <tr>
+            <th style="width:220px">القسم</th>
+            <th>الوصف</th>
+            <th style="width:220px">الإجراء</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="font-weight:800">تشغيل العرض</td>
+            <td class="small muted">فتح شاشة العرض بوضع ملء الشاشة.</td>
+            <td><a class="btn btnPrimary" href="/kiosk">فتح شاشة العرض</a></td>
+          </tr>
+          <tr>
+            <td style="font-weight:800">شاشة الترحيب</td>
+            <td class="small muted">تخصيص عبارة الترحيب/عنوان القسم الذي يظهر ضمن دوران شاشة العرض.</td>
+            <td><a class="btn" href="/kiosk-content/welcome">إعداد الترحيب</a></td>
+          </tr>
+          <tr>
+            <td style="font-weight:800">إعدادات المهام</td>
+            <td class="small muted">تحديد ما يظهر بجانب نسبة الإنجاز + سرعة التنقل + إخفاء/إظهار مهام محددة في شاشة العرض.</td>
+            <td><a class="btn" href="/kiosk-content/tasks">إدارة المهام</a></td>
+          </tr>
+          <tr>
+            <td style="font-weight:800">الشريط الإخباري</td>
+            <td class="small muted">إدارة الأخبار اليدوية + إعدادات RSS + التحكم بسرعة الشريط وحجم خطّه.</td>
+            <td><a class="btn" href="/kiosk-content/ticker">إدارة الشريط</a></td>
+          </tr>
+          <tr>
+            <td style="font-weight:800">التقويم الدراسي</td>
+            <td class="small muted">إدارة فعاليات التقويم يدويًا أو الاستيراد من موقع الوزارة مع إعدادات العرض.</td>
+            <td><a class="btn" href="/kiosk-content/calendar">إدارة التقويم</a></td>
+          </tr>
+          <tr>
+            <td style="font-weight:800">الأيام العالمية</td>
+            <td class="small muted">إضافة/تعديل الأيام العالمية، الاستيراد من الإنترنت أو من ملف Excel.</td>
+            <td><a class="btn" href="/world-days">إدارة الأيام</a></td>
+          </tr>
+          <tr>
+            <td style="font-weight:800">العبارات التثقيفية</td>
+            <td class="small muted">إضافة/تفعيل العبارات التي تظهر في شاشة العرض، مع دعم مجموعة عبارات افتراضية.</td>
+            <td><a class="btn" href="/kiosk-content/quotes">إدارة العبارات</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<%- include('partials/footer') %>
