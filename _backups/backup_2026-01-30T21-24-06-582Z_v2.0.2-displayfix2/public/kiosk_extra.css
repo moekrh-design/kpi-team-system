@@ -1,0 +1,79 @@
+/* Extra kiosk styles (welcome screen) */
+
+.kioskWelcomeWrap{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100%;
+  padding:48px 32px;
+}
+
+.kioskWelcomeCard{
+  width:min(1200px, 92vw);
+  text-align:center;
+  padding:46px 40px;
+  border-radius:30px;
+
+  /* Use the same theme colors */
+  border:1px solid color-mix(in srgb, var(--kiosk-accent, var(--primary, #07a869)) 38%, transparent);
+  background:
+    radial-gradient(1000px 360px at 50% -10%, color-mix(in srgb, var(--kiosk-accent2, var(--primary, #07a869)) 20%, transparent), transparent 62%),
+    linear-gradient(180deg, rgba(255,255,255,.10), rgba(255,255,255,.04));
+  box-shadow:0 18px 50px rgba(0,0,0,.22);
+  backdrop-filter: blur(10px);
+}
+
+/* 3-line hierarchy: 1st & 3rd smaller than the main line */
+.kioskWelcomeLine1{
+  font-weight:900;
+  line-height:1.25;
+  font-size:clamp(18px, 2.15vw, 36px);
+  color: var(--kiosk-accent, var(--blue, currentColor));
+  opacity:.92;
+}
+
+.kioskWelcomeLine2{
+  margin-top:10px;
+  font-weight:1000;
+  line-height:1.12;
+  letter-spacing:0;
+  font-size:clamp(44px, 5.6vw, 98px);
+  color: var(--kiosk-accent2, var(--primary, currentColor));
+  text-shadow:0 10px 34px rgba(0,0,0,.30);
+}
+
+.kioskWelcomeLine3{
+  margin-top:14px;
+  font-weight:800;
+  line-height:1.45;
+  font-size:clamp(16px, 2.0vw, 32px);
+  color: var(--kiosk-accent, var(--blue, currentColor));
+  opacity:.82;
+}
+
+.kioskWelcomeLine1:empty,
+.kioskWelcomeLine3:empty{display:none}
+
+.kioskWelcomeGlow{
+  width:240px;
+  height:240px;
+  border-radius:999px;
+  margin:18px auto 0;
+  background:radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--kiosk-accent2, var(--primary, #07a869)) 28%, transparent), rgba(255,255,255,0));
+  opacity:.85;
+}
+
+/* Backward-compat (if any older markup exists) */
+.kioskWelcomeTitle{ font-weight:1000; line-height:1.18; letter-spacing:0; font-size:clamp(34px, 5.2vw, 86px); }
+.kioskWelcomeSub{ margin-top:16px; font-size:clamp(14px, 1.9vw, 26px); opacity:.82; line-height:1.6; }
+.kioskWelcomeSub:empty{display:none}
+
+
+/* v2: hide legacy glow/logo */
+.kioskWelcomeGlow{display:none !important;}
+
+
+/* Urgent/Important ticker mode */
+.kioskNewsItem{ color: var(--kiosk-ticker-color, inherit); }
+.kioskNewsUrgentTag{ font-weight:1000; color: var(--kiosk-ticker-color, #d11a2a); }
+.kioskNewsUrgentSep{ opacity:.85; }

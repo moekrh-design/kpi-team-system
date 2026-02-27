@@ -1,0 +1,37 @@
+دليل التحديث داخل النظام (Update.zip)
+=================================
+
+✅ بعد إضافة ميزة "تحديث النظام" تستطيع لاحقًا تحديث النظام برفع ملف Update.zip من داخل:
+الإعدادات → تحديث النظام
+
+محتويات Update.zip:
+1) manifest.json (في الجذر)
+2) patch/  (الملفات المراد تحديثها)
+3) migrations/ (اختياري) ملفات SQL لترقية قاعدة البيانات
+
+مثال هيكل:
+Update.zip
+- manifest.json
+- patch/views/....
+- patch/public/....
+- migrations/001_any.sql
+
+نموذج manifest.json:
+{
+  "version": "v2.0.0",
+  "restart_required": true,
+  "allow": ["views/","public/","server.js","db.js","migrations/"],
+  "files": [
+    "patch/views/kiosk.ejs",
+    "patch/public/style.css"
+  ],
+  "migrations": [
+    "migrations/001_add_table.sql"
+  ],
+  "notes": "وصف مختصر للتحديث"
+}
+
+ملاحظات مهمة:
+- لا تضع ملفات خارج patch/ ضمن قائمة files.
+- النظام ينشئ نسخة احتياطية تلقائيًا قبل التحديث داخل مجلد: kpi-team-app/_backups
+- سجل التحديثات داخل: kpi-team-app/_updates/update_log.jsonl

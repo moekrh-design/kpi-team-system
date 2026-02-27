@@ -1,0 +1,21 @@
+{
+  "version": "v2.0.1-displayfix1",
+  "restart_required": true,
+  "allow": [
+    "views/",
+    "public/",
+    "server.js",
+    "db.js",
+    "migrations/"
+  ],
+  "files": [
+    "patch/server.js",
+    "patch/db.js",
+    "patch/views/partials/header.ejs",
+    "patch/views/kiosk.ejs",
+    "patch/views/kiosk_ticker.ejs",
+    "patch/public/kiosk_extra.css"
+  ],
+  "migrations": [],
+  "notes": "إصلاح لوحة الترحيب لتستخدم ألوان الثيم وخط كبير (السطر الأوسط أكبر) + إزالة تكرار اليوم في الصفحة الرئيسية + تصحيح عرض التاريخ الهجري في التقويم الدراسي + إضافة وضع عاجل/هام للشريط الإخباري (لون أحمر + وسم قابل للتعديل)."
+}

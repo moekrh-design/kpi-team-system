@@ -1,0 +1,127 @@
+<%- include('partials/header', { pageTitle: 'الشريط الإخباري' }) %>
+
+<div class="container">
+  <% if (msg) { %>
+    <div class="card" style="padding:12px;border-color:rgba(46,204,113,.35)">
+      <b>تم</b> — <%= msg %>
+    </div>
+  <% } %>
+
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">إعدادات الشريط الإخباري</div>
+
+    <form method="POST" action="/kiosk-content/ticker/settings">
+      <div class="formRow">
+        <div style="flex:0 0 260px">
+          <label class="small">مصدر الأخبار</label>
+          <select class="input" name="kiosk_ticker_mode">
+            <option value="manual" <%= (settings.kiosk_ticker_mode || 'manual') === 'manual' ? 'selected' : '' %>>يدوي فقط</option>
+            <option value="rss" <%= (settings.kiosk_ticker_mode || 'manual') === 'rss' ? 'selected' : '' %>>RSS فقط</option>
+            <option value="mixed" <%= (settings.kiosk_ticker_mode || 'manual') === 'mixed' ? 'selected' : '' %>>مختلط (يدوي + RSS)</option>
+          </select>
+        </div>
+
+        <div style="flex:0 0 220px">
+          <label class="small">سرعة الشريط (ثواني/دورة)</label>
+          <input class="input" name="kiosk_ticker_speed" type="number" min="5" max="300" value="<%= settings.kiosk_ticker_speed || 60 %>" />
+          <div class="tiny muted">كلما زادت القيمة أصبح الشريط أبطأ.</div>
+        </div>
+
+        <div style="flex:0 0 220px">
+          <label class="small">حجم خط الشريط</label>
+          <input class="input" name="kiosk_ticker_font_size" type="number" min="12" max="64" value="<%= settings.kiosk_ticker_font_size || 18 %>" />
+        </div>
+      </div>
+
+      <div class="formRow">
+        <div style="flex:0 0 240px">
+          <label class="small">تحديث RSS (بالدقائق)</label>
+          <input class="input" name="kiosk_ticker_refresh_min" type="number" min="1" max="240" value="<%= settings.kiosk_ticker_refresh_min || 15 %>" />
+        </div>
+        <div style="flex:0 0 240px">
+          <label class="small">الحد الأقصى للأخبار</label>
+          <input class="input" name="kiosk_ticker_max_items" type="number" min="5" max="100" value="<%= settings.kiosk_ticker_max_items || 20 %>" />
+        </div>
+        <div style="flex:1 1 520px">
+          <label class="small">روابط RSS (سطر لكل رابط)</label>
+          <textarea class="input" name="kiosk_ticker_rss_urls" rows="4" style="min-height:110px"><%= settings.kiosk_ticker_rss_urls || '' %></textarea>
+          <div class="tiny muted">إذا كان المصدر RSS أو مختلط، ضع روابط RSS هنا (سطر لكل رابط).</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:10px">
+        <button class="btn btnPrimary" type="submit">حفظ الإعدادات</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">إضافة خبر/إعلان يدوي</div>
+
+    <form method="POST" action="/kiosk-content/ticker/add">
+      <div class="formRow">
+        <div style="flex:1 1 520px">
+          <label class="small">النص</label>
+          <input class="input" name="item_text" maxlength="240" placeholder="مثال: تهنئة — مبروك للطلاب الفائزين في مسابقة شهر العلم." required />
+        </div>
+        <div style="flex:0 0 160px">
+          <label class="small">ترتيب</label>
+          <input class="input" name="sort_order" type="number" value="0" />
+        </div>
+        <div style="flex:0 0 150px">
+          <label class="small">تفعيل</label>
+          <select class="input" name="is_active">
+            <option value="1" selected>نعم</option>
+            <option value="0">لا</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="help" style="margin-top:8px">يمكن لاحقًا الاعتماد على RSS من الإعدادات، أو الدمج بين اليدوي وRSS حسب الإعدادات.</div>
+
+      <div style="margin-top:12px;display:flex;gap:10px;justify-content:flex-end">
+        <a class="btn" href="/kiosk-content">رجوع</a>
+        <button class="btn btnGood">حفظ</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" style="padding:16px;margin-top:10px">
+    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">عناصر الشريط</div>
+
+    <% if (!items || !items.length) { %>
+      <div class="help">لا توجد عناصر بعد.</div>
+    <% } else { %>
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="width:90px">الحالة</th>
+            <th>النص</th>
+            <th style="width:100px">ترتيب</th>
+            <th style="width:160px">إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% items.forEach(it => { %>
+            <tr>
+              <td><span class="badge <%= it.is_active ? 'good' : 'bad' %>"><%= it.is_active ? 'مفعل' : 'متوقف' %></span></td>
+              <td><%= it.item_text %></td>
+              <td><%= it.sort_order %></td>
+              <td style="display:flex;gap:8px;flex-wrap:wrap">
+                <form method="POST" action="/kiosk-content/ticker/<%= it.id %>/toggle" style="display:inline">
+                  <button class="btn btnSmall" type="submit"><%= it.is_active ? 'إيقاف' : 'تفعيل' %></button>
+                </form>
+                <form method="POST" action="/kiosk-content/ticker/<%= it.id %>/delete" style="display:inline" onsubmit="return confirm('حذف العنصر؟')">
+                  <button class="btn btnSmall btnBad" type="submit">حذف</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</div>
+
+<%- include('partials/footer') %>

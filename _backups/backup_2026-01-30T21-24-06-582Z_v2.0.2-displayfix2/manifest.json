@@ -1,0 +1,15 @@
+{
+  "version": "v2.0.2-displayfix2",
+  "restart_required": false,
+  "allow": [
+    "views/",
+    "public/"
+  ],
+  "files": [
+    "patch/views/kiosk.ejs",
+    "patch/views/kiosk_ticker.ejs",
+    "patch/public/kiosk_extra.css"
+  ],
+  "migrations": [],
+  "notes": "إصلاح عاجل/هام للشريط الإخباري (لون أحمر فعلي) + تحسين/تثبيت عرض التاريخ في التقويم الدراسي مع إضافة تاريخ اليوم (هجري + ميلادي) + عداد تنازلي لأقرب إجازة + رفع وضوح خط شاشة الترحيب (السطر الأوسط كبير وألوان ثيم)."
+}

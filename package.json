@@ -1,0 +1,28 @@
+{
+  "name": "kpi-team-app",
+  "version": "2.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dayjs": "^1.11.19",
+    "ejs": "^4.0.1",
+    "express": "^5.2.1",
+    "express-session": "^1.18.2",
+    "method-override": "^3.0.0",
+    "multer": "^2.0.2",
+    "session-file-store": "^1.5.0",
+    "bwip-js": "^4.5.1",
+    "qrcode": "^1.5.4",
+    "exceljs": "^4.4.0",
+    "archiver": "^7.0.1",
+    "unzipper": "^0.12.3",
+    "nodemailer": "^6.9.15"
+  }
+}

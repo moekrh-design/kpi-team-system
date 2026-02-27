@@ -1,0 +1,1096 @@
+<%- include('partials/header', { title: 'شاشة العرض', bodyClass: 'kioskMode ' + (kioskSettings.scheme_class || 'kioskTheme-dark_navy') }) %>
+
+<div class="kioskRoot">
+  <div class="kioskTop noPrint">
+    <div class="kioskBrand">
+      <div class="kioskLogo">
+        <% if (kioskSettings && kioskSettings.logo_filename) { %>
+          <img src="/uploads/<%= kioskSettings.logo_filename %>" alt="Logo">
+        <% } else { %>
+          <div class="kioskLogoPlaceholder">KPI</div>
+        <% } %>
+      </div>
+      <div>
+        <div class="kioskOrg"><%= (kioskSettings && kioskSettings.org_name) ? kioskSettings.org_name : 'نظام المهام ومؤشرات الأداء' %></div>
+        <div class="kioskHint">مفتاح <b>M</b> لاختيار ما يظهر • <b>Esc</b> للعودة للنظام • <b>F</b> للملء الشاشة</div>
+      </div>
+    </div>
+
+    <div class="kioskActions">
+      <button class="btn" onclick="openKioskViewChooser()">اختيار العرض</button>
+      <button class="btn" onclick="toggleFullscreen()">ملء الشاشة</button>
+      <button class="btn danger" onclick="exitOrBack()">خروج</button>
+    </div>
+  </div>
+
+  <!-- Minimal controls shown in fullscreen (since the top bar is hidden then) -->
+  <div class="kioskFabWrap noPrint" aria-hidden="true">
+    <button class="kioskFab" onclick="openKioskViewChooser()" title="اختيار العرض" aria-label="اختيار العرض">☰</button>
+    <button class="kioskFab" onclick="toggleFullscreen()" title="ملء الشاشة" aria-label="ملء الشاشة">⛶</button>
+    <button class="kioskFab kioskFabDanger" onclick="exitOrBack()" title="خروج" aria-label="خروج">⟵</button>
+  </div>
+
+  <div class="kioskStage" id="stage"></div>
+
+  <!-- Fixed bottom news ticker (optional) -->
+  <div id="kioskNewsBar" class="kioskNewsBar" aria-hidden="true">
+    <div class="kioskNewsBrand">
+      <div class="kioskNewsBrandLogo">
+        <% if (kioskSettings && kioskSettings.logo_filename) { %>
+          <img src="/uploads/<%= kioskSettings.logo_filename %>" alt="">
+        <% } else { %>
+          <span style="font-weight:1000">🗞️</span>
+        <% } %>
+      </div>
+      <div class="kioskNewsBrandText">الأخبار</div>
+    </div>
+
+    <div class="kioskNewsViewport">
+      <div id="kioskNewsTrack" class="kioskNewsTrack">
+        <div id="kioskNewsChunkA" class="kioskNewsChunk"></div>
+        <div id="kioskNewsChunkB" class="kioskNewsChunk"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chooser Overlay -->
+  <div id="kioskViewChooser" class="kioskChooser" style="display:none">
+    <div class="kioskChooserCard">
+      <div class="kioskChooserTitle">ماذا تريد أن يظهر في شاشة العرض؟</div>
+      <div class="kioskChooserSub">ضع علامة ✓ ثم اضغط "تطبيق". (يُحفظ على هذا الجهاز)</div>
+
+      <div class="kioskChooserGrid">
+        <label class="kioskChoice"><input type="checkbox" id="ch_home"> <span>الواجهة الرئيسية</span></label>
+
+        <label class="kioskChoice" style="<%= Number(kioskSettings.welcome_enabled||0) === 1 ? '' : 'opacity:.45' %>">
+          <input type="checkbox" id="ch_welcome" <%= Number(kioskSettings.welcome_enabled||0) === 1 ? '' : 'disabled' %>>
+          <span>شاشة الترحيب</span>
+        </label>
+
+        <label class="kioskChoice"><input type="checkbox" id="ch_tasks"> <span>المهام</span></label>
+        <label class="kioskChoice"><input type="checkbox" id="ch_days"> <span>الأيام العالمية</span></label>
+        <label class="kioskChoice"><input type="checkbox" id="ch_calendar"> <span>التقويم الدراسي</span></label>
+        <label class="kioskChoice"><input type="checkbox" id="ch_ticker"> <span>الشريط الإخباري (يثبت أسفل الشاشة)</span></label>
+
+      <div class="kioskChooserExtra" style="margin-top:14px">
+        <label class="small" style="display:block;margin-bottom:6px">نمط الساعة (الصفحة الرئيسية)</label>
+        <select class="input" id="sel_clockMode" style="max-width:220px">
+          <option value="cycle">تلقائي — يتغير كل دورة</option>
+          <option value="digital_clean">رقمية — كلاسيك</option>
+          <option value="digital_glow">رقمية — نيون</option>
+          <option value="digital_card">رقمية — بطاقات</option>
+          <option value="digital_outline">رقمية — حدود</option>
+          <option value="digital_split">رقمية — مقسومة</option>
+
+          <option value="analog_classic">كلاسيكية — تقليدية</option>
+          <option value="analog_modern">كلاسيكية — عصرية</option>
+          <option value="analog_minimal">كلاسيكية — بسيطة</option>
+          <option value="analog_ring">كلاسيكية — حلقة</option>
+          <option value="analog_skeleton">كلاسيكية — هيكل</option>
+        </select>
+        <div class="small" style="opacity:.75;margin-top:6px">الاختيار يُحفظ على هذا الجهاز فقط.</div>
+      </div>
+
+
+      </div>
+
+      <div class="kioskChooserActions">
+        <button class="btn" onclick="applyKioskViewChoice()">تطبيق</button>
+        <button class="btn ghost" onclick="closeKioskViewChooser()">إلغاء</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const KSET = <%- JSON.stringify(kioskSettings || {}) %>;
+
+(function applyKioskCssVars(){
+  try{
+    const fs = Number(KSET.ticker_font_size || 18);
+    if (fs) document.documentElement.style.setProperty('--kiosk-ticker-font', fs + 'px');
+  }catch(e){}
+})();
+
+/* ---------------- Theme ---------------- */
+const themeAutoCycle = Number(KSET.theme_auto_cycle || 0) === 1;
+const currentThemeKey = (KSET.color_scheme || 'dark');
+const ALL_THEMES = (KSET.available_themes || [
+  'dark_moe_01',
+  'dark_moe_02',
+  'dark_moe_03',
+  'dark_moe_04',
+  'dark_moe_05',
+  'dark_moe_06',
+  'dark_moe_07',
+  'dark_moe_08',
+  'dark_moe_09',
+  'dark_moe_10',
+  'dark_moe_11',
+  'dark_moe_12',
+  'dark_moe_13',
+  'dark_moe_14',
+  'dark_moe_15',
+  'dark_moe_16',
+  'dark_moe_17',
+  'dark_moe_18',
+  'dark_moe_19',
+  'dark_moe_20',
+  'dark_moe_21',
+  'dark_moe_22',
+  'dark_moe_23',
+  'dark_moe_24',
+  'dark_moe_25',
+  'light_moe_01',
+  'light_moe_02',
+  'light_moe_03',
+  'light_moe_04',
+  'light_moe_05',
+  'light_moe_06',
+  'light_moe_07',
+  'light_moe_08',
+  'light_moe_09',
+  'light_moe_10',
+  'light_moe_11',
+  'light_moe_12',
+  'light_moe_13',
+  'light_moe_14',
+  'light_moe_15',
+  'light_moe_16',
+  'light_moe_17',
+  'light_moe_18',
+  'light_moe_19',
+  'light_moe_20',
+  'light_moe_21',
+  'light_moe_22',
+  'light_moe_23',
+  'light_moe_24',
+  'light_moe_25',
+]);
+
+function isDarkThemeKey(key){
+  const k = String(key || '');
+  return k.startsWith('dark');
+}
+
+const DARK_THEMES = ALL_THEMES.filter(k => isDarkThemeKey(k));
+const LIGHT_THEMES = ALL_THEMES.filter(k => !isDarkThemeKey(k));
+
+function setTheme(key){
+  // Theme classes in CSS are: kioskTheme-<key>
+  const cls = document.body.className.split(/\s+/).filter(x => !x.startsWith('kioskTheme-') && x !== 'kioskDark' && x !== 'kioskLight');
+  cls.push('kioskTheme-' + key);
+  document.body.className = cls.join(' ');
+}
+
+function pickRandom(arr, avoidKey){
+  const pool = arr.filter(k => k !== avoidKey);
+  if (!pool.length) return avoidKey;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+let _themeKey = currentThemeKey;
+setTheme(_themeKey);
+
+function rotateTheme(){
+  if (!themeAutoCycle) return;
+  const wantDark = !isDarkThemeKey(_themeKey);
+  const pool = wantDark ? DARK_THEMES : LIGHT_THEMES;
+  const nextKey = pickRandom(pool, _themeKey);
+  _themeKey = nextKey;
+  setTheme(nextKey);
+}
+
+/* ---------------- Utilities ---------------- */
+function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+function fmtDate(d){
+  if(!d) return '-';
+  const dt = new Date(d);
+  if(isNaN(dt.getTime())) return String(d);
+  return dt.toLocaleDateString('ar-SA-u-nu-latn' );
+}
+
+function badge(status){
+  if(status==='completed') return '<span class="badge bGood">مكتملة</span>';
+  if(status==='pending_approval') return '<span class="badge bWarn">بانتظار اعتماد</span>';
+  if(status==='overdue') return '<span class="badge bBad">متأخرة</span>';
+  if(status==='cancelled') return '<span class="badge">ملغاة</span>';
+  return '<span class="badge bInfo">جارية</span>';
+}
+
+function ring(progress){
+  const p = clamp(Number(progress||0), 0, 100);
+  return `
+    <div class="kioskRing" style="background:conic-gradient(var(--primary) ${p}%, rgba(255,255,255,.14) 0)">
+      <div class="kioskRingInner">
+        <div style="text-align:center">
+          <div class="kioskRingPct">${p}%</div>
+          <div class="kioskRingLabel">إنجاز</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function renderDigitalClockHtml(mode, timeStr){
+  const m = String(mode || 'digital_clean');
+  const raw = String(timeStr || '');
+  if (m === 'digital_split'){
+    const parts = raw.split(/\s+/);
+    const hm = parts[0] || raw;
+    const suffix = parts.slice(1).join(' ');
+    const bits = hm.split(':');
+    const hh = bits[0] || '--';
+    const mm = bits[1] || '--';
+    return `<div class=\"kioskHomeClock clock-${m}\" id=\"homeClock\"><span class=\"dcPart\" id=\"dcH\">${escapeHtml(hh)}</span><span class=\"dcSep\">:</span><span class=\"dcPart\" id=\"dcM\">${escapeHtml(mm)}</span>${suffix ? `<span class=\"dcSuffix\" id=\"dcSuf\">${escapeHtml(suffix)}</span>` : ''}</div>`;
+  }
+  return `<div class=\"kioskHomeClock clock-${m}\" id=\"homeClock\">${escapeHtml(raw)}</div>`;
+}
+
+
+/* ---------------- Data Caches ---------------- */
+let tasks = [];
+let taskIdx = 0;
+let worldData = null;
+let calData = null;
+let hudData = null; // {quote, weather}
+
+/* ---------------- Rotation (Pages) ---------------- */
+const OTHER_SEC = clamp(Number(KSET.other_interval_sec || 12), 6, 180);
+const TASK_SEC  = clamp(Number(KSET.interval_sec || 5), 2, 120);
+
+const LS_PAGES = 'kiosk_pages_override_v1';
+const LS_CLOCK = 'kiosk_clock_mode_v1';
+const LS_CLOCK_IDX = 'kiosk_clock_cycle_idx_v1';
+
+const URL_VIEW = (function(){
+  try {
+    const qs = new URLSearchParams(location.search || '');
+    return String(qs.get('view') || qs.get('mode') || '').trim();
+  } catch (e) { return ''; }
+})();
+
+const CLOCK_STYLES = [
+  'digital_clean','digital_glow','digital_card','digital_outline','digital_split',
+  'analog_classic','analog_modern','analog_minimal','analog_ring','analog_skeleton'
+];
+
+function parseTokens(str){
+  return String(str||'').split(',').map(s => s.trim()).filter(Boolean);
+}
+
+function tokensToPages(tokens){
+  const t = Array.isArray(tokens) ? tokens : parseTokens(tokens);
+  const filtered = (t || []).filter(x => {
+    const k = String(x || '').trim();
+    if (!k) return false;
+    if (k === 'welcome' && Number(KSET.welcome_enabled || 0) !== 1) return false;
+    return true;
+  });
+  const uniq = [...new Set(filtered)];
+  const tickerOn = uniq.includes('ticker');
+  const pages = uniq.filter(x => x !== 'ticker');
+  return { pages: pages.length ? pages : ['tasks'], tickerOn };
+}
+
+function getDefaultTokens(){
+  // Prefer pages_default; fallback to legacy view_mode
+  const pd = parseTokens(KSET.pages_default || '');
+  let out;
+  if (pd.length) {
+    out = pd;
+  } else {
+    const vm = String(KSET.view_mode || 'both');
+    if (vm === 'tasks') out = ['tasks'];
+    else if (vm === 'days') out = ['days'];
+    else out = ['tasks','days'];
+  }
+
+  // If welcome is enabled globally and not explicitly included, prepend it.
+  if (Number(KSET.welcome_enabled || 0) === 1 && !out.includes('welcome')) {
+    out = ['welcome', ...out];
+  }
+  return out;
+}
+
+function getInitialTokens(){
+  // One-off preview via URL: ?view=welcome/tasks/days/both or ?view=home,welcome,...
+  if (URL_VIEW) {
+    const v = URL_VIEW.toLowerCase();
+    if (v === 'welcome') return ['welcome'];
+    if (v === 'tasks') return ['tasks'];
+    if (v === 'days') return ['days'];
+    if (v === 'both') return ['tasks','days'];
+    if (v.includes(',')) return parseTokens(v);
+  }
+
+  try {
+    const saved = parseTokens(localStorage.getItem(LS_PAGES) || '');
+    if (saved.length) return saved;
+  } catch(e) {}
+  return getDefaultTokens();
+}
+
+function getInitialClockChoice(){
+  try{
+    const v = String(localStorage.getItem(LS_CLOCK) || '').trim();
+    const allowed = ['cycle', ...CLOCK_STYLES];
+    if (allowed.includes(v)) return v;
+  }catch(e){}
+  return 'digital_clean';
+}
+
+function getClockCycleIdx(){
+  try{
+    const n = Number(localStorage.getItem(LS_CLOCK_IDX) || 0);
+    if (Number.isFinite(n) && n >= 0) return Math.floor(n);
+  }catch(e){}
+  return 0;
+}
+function setClockCycleIdx(n){
+  try{ localStorage.setItem(LS_CLOCK_IDX, String(Math.max(0, Math.floor(Number(n)||0)))); }catch(e){}
+}
+
+function resolveClockMode(choice){
+  const c = String(choice || 'digital_clean');
+  if (c === 'cycle'){
+    const idx = getClockCycleIdx() % CLOCK_STYLES.length;
+    return CLOCK_STYLES[idx];
+  }
+  return CLOCK_STYLES.includes(c) ? c : 'digital_clean';
+}
+
+let clockChoice = getInitialClockChoice();
+let clockMode = resolveClockMode(clockChoice);
+
+let activeTokens = getInitialTokens();
+let { pages: activePages, tickerOn } = tokensToPages(activeTokens);
+let pageIdx = 0;
+let scene = null;
+let taskTimer = null;
+let sceneTimeout = null;
+let countdownTimer = null;
+let homeClockTimer = null;
+
+function setTickerEnabled(on){
+  const bar = document.getElementById('kioskNewsBar');
+  document.body.classList.toggle('kioskHasNews', !!on);
+  if (bar) {
+    bar.classList.toggle('isOn', !!on);
+    bar.setAttribute('aria-hidden', on ? 'false' : 'true');
+  }
+}
+
+function stopAllTimers(){
+  if (taskTimer) clearInterval(taskTimer);
+  taskTimer = null;
+  if (sceneTimeout) clearTimeout(sceneTimeout);
+  sceneTimeout = null;
+  if (countdownTimer) clearInterval(countdownTimer);
+  countdownTimer = null;
+  if (homeClockTimer) clearInterval(homeClockTimer);
+  homeClockTimer = null;
+}
+
+function goNextPage(){
+  stopAllTimers();
+  if (!activePages.length) activePages = ['tasks'];
+  const nextIdx = (pageIdx + 1) % activePages.length;
+  const wrapped = (nextIdx === 0);
+  if (themeAutoCycle && wrapped) rotateTheme();
+    if (wrapped && clockChoice === 'cycle') { setClockCycleIdx(getClockCycleIdx() + 1); clockMode = resolveClockMode(clockChoice); }
+pageIdx = nextIdx;
+  showPage(activePages[pageIdx]);
+}
+
+function showPage(name){
+  scene = name;
+  stopAllTimers();
+  if (name === 'home') return showHomeScene();
+  if (name === 'welcome') return showWelcomeScene();
+  if (name === 'tasks') return showTasksScene();
+  if (name === 'days') return showDaysScene();
+  if (name === 'calendar') return showCalendarScene();
+  // fallback
+  showTasksScene();
+}
+
+/* ---------------- Scenes ---------------- */
+
+function showWelcomeScene(){
+  const stage = document.getElementById('stage');
+  const raw = String(KSET.welcome_text || '').trim() || 'مرحبا بكم في إدارة التسويق';
+  const lines = raw.split(/\r?\n/).map(s => String(s||'').trim()).filter(Boolean);
+  const org = String(KSET.org_name || '').trim();
+
+  let l1 = '', l2 = '', l3 = '';
+  if (lines.length === 0) {
+    l2 = 'مرحبا بكم';
+    l3 = org;
+  } else if (lines.length === 1) {
+    l2 = lines[0];
+    l3 = org;
+  } else if (lines.length === 2) {
+    l1 = lines[0];
+    l2 = lines[1];
+    l3 = org;
+  } else {
+    l1 = lines[0];
+    l2 = lines[1];
+    l3 = lines.slice(2).join(' • ');
+  }
+
+  stage.innerHTML = `
+    <div class="kioskWelcomeWrap kioskAnim kioskAnim-${(KSET.transition||'fade')}">
+      <div class="kioskWelcomeCard">
+        ${l1 ? `<div class="kioskWelcomeLine1">${escapeHtml(l1)}</div>` : ``}
+        <div class="kioskWelcomeLine2">${escapeHtml(l2)}</div>
+        ${l3 ? `<div class="kioskWelcomeLine3">${escapeHtml(l3)}</div>` : ``}
+      </div>
+    </div>
+  `;
+
+  // Move on like the other panels
+  sceneTimeout = setTimeout(goNextPage, OTHER_SEC * 1000);
+}
+
+
+function renderTasks(){
+  const stage = document.getElementById('stage');
+  if(!tasks.length){
+    stage.innerHTML = `
+      <div class="kioskCard kioskAnim kioskAnim-${(KSET.transition||'fade')}">
+        <div class="kioskTitle">لا توجد مهام للعرض</div>
+        <div class="kioskInfo"><div class="kioskNames">تحقق من التصفية في الإعدادات أو أضف مهام جديدة.</div></div>
+      </div>
+    `;
+    return;
+  }
+
+  const t = tasks[taskIdx];
+  const displayMode = (KSET.display_mode || 'both'); // both | assignee | supervisor | chart_only
+  const showEvent = (Number(KSET.show_event ?? 1) === 1);
+  const showDue = (Number(KSET.show_due ?? 1) === 1);
+  const showStatus = (Number(KSET.show_status ?? 1) === 1);
+  const chartVariant = (KSET.chart_variant || 'ring'); // ring | bar | ring_bar
+
+  const showRing = chartVariant !== 'bar';
+  const showBar  = chartVariant !== 'ring';
+
+  let namesLine = '';
+  const assignee = t.employee_name || '-';
+  const supervisor = t.supervisor_name || '-';
+
+  if(displayMode === 'assignee'){
+    namesLine = `المسند لـ <b>${escapeHtml(assignee)}</b>`;
+  } else if(displayMode === 'supervisor'){
+    namesLine = `المشرف <b>${escapeHtml(supervisor)}</b>`;
+  } else if(displayMode === 'both'){
+    namesLine = `المسند لـ <b>${escapeHtml(assignee)}</b> — المشرف <b>${escapeHtml(supervisor)}</b>`;
+  }
+
+  const metaLine = showEvent ? `المناسبة: <b>${escapeHtml(t.event_title || '-')}</b>` : '';
+  const badges = [
+    showStatus ? badge(t.status) : '',
+    showDue ? `<span class="kioskDue">الاستحقاق: <b>${escapeHtml(fmtDate(t.due_date))}</b></span>` : ''
+  ].filter(Boolean).join(' ');
+  const chartOnly = (displayMode === 'chart_only');
+
+  stage.innerHTML = `
+    <div class="kioskCard kioskAnim kioskAnim-${(KSET.transition||'fade')} ${chartOnly ? 'kioskChartOnly' : ''}">
+      ${metaLine ? `<div class="kioskMeta">${metaLine}</div>` : ''}
+      <div class="kioskTitle">${escapeHtml(t.title)}</div>
+
+      ${(!chartOnly && (namesLine || badges)) ? `
+      <div class="kioskInfo">
+        ${namesLine ? `<div class="kioskNames">${namesLine}</div>` : ''}
+        ${badges ? `<div class="kioskBadges">${badges}</div>` : ''}
+      </div>
+      ` : ''}
+
+      <div class="kioskProgressRow" style="justify-content:${chartOnly ? 'center' : 'space-between'}">
+        ${showBar ? `
+          <div class="kioskBarWrap">
+            <div class="kioskBar"><span style="width:${clamp(Number(t.progress||0),0,100)}%"></span></div>
+          </div>
+        ` : ''}
+
+        ${showRing ? `
+          <div class="kioskRingWrap">
+            ${ring(t.progress||0)}
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function showTasksScene(){
+  taskIdx = 0;
+  renderTasks();
+
+  // If no tasks, don't get stuck: move on after OTHER_SEC
+  if (!tasks.length) {
+    sceneTimeout = setTimeout(goNextPage, OTHER_SEC * 1000);
+    return;
+  }
+
+  taskTimer = setInterval(() => {
+    if (scene !== 'tasks') return;
+    taskIdx += 1;
+    if (taskIdx >= tasks.length) {
+      taskIdx = 0;
+      goNextPage();
+      return;
+    }
+    renderTasks();
+  }, TASK_SEC * 1000);
+}
+
+function fmtCountdown(ms){
+  const s = Math.max(0, Math.floor(ms / 1000));
+  const d = Math.floor(s / 86400);
+  const h = Math.floor((s % 86400) / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return { d, h, m, sec };
+}
+
+function renderWorldDays(){
+  const stage = document.getElementById('stage');
+  const next = worldData && worldData.next ? worldData.next : null;
+  const list = (worldData && worldData.within30 ? worldData.within30 : [])
+    .filter(x => !next || x.id !== next.id)
+    .slice(0, 12);
+
+  if (!next) {
+    stage.innerHTML = `
+      <div class="kioskCard kioskWorld kioskAnim kioskAnim-${(KSET.transition||'fade')}">
+        <div class="kioskWorldLabel">الأيام العالمية</div>
+        <div class="kioskWorldHero">
+          <div class="kioskWorldTitle">لا توجد أيام عالمية مضافة</div>
+          <div class="kioskWorldDate">يمكنك إضافتها من النظام ثم ستظهر هنا تلقائيًا</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const nextDate = new Date(String(next.day_date) + 'T00:00:00');
+  const dateTxt = fmtDate(next.day_date);
+
+  stage.innerHTML = `
+    <div class="kioskCard kioskWorld kioskAnim kioskAnim-${(KSET.transition||'fade')}">
+      <div class="kioskWorldLabel">الأيام العالمية</div>
+      <div class="kioskWorldHero">
+        <div class="kioskWorldTitle">${escapeHtml(next.title)}</div>
+        <div class="kioskWorldDate">${escapeHtml(dateTxt)}</div>
+        <div class="kioskCountdown" data-target="${nextDate.getTime()}">
+          <div class="cdBox"><div class="cdNum" id="cdD">0</div><div class="cdLbl">يوم</div></div>
+          <div class="cdBox"><div class="cdNum" id="cdH">0</div><div class="cdLbl">ساعة</div></div>
+          <div class="cdBox"><div class="cdNum" id="cdM">0</div><div class="cdLbl">دقيقة</div></div>
+          <div class="cdBox"><div class="cdNum" id="cdS">0</div><div class="cdLbl">ثانية</div></div>
+        </div>
+      </div>
+
+      <div class="kioskWorldTicker">
+        <div class="kioskWorldTickerTitle">الأيام خلال 30 يوم القادمة</div>
+        ${list.length ? `
+          <div class="kioskTickerMask">
+            <div id="tickerTrack" class="kioskTickerTrack"></div>
+          </div>
+        ` : `<div class="small" style="opacity:.75">لا توجد أيام أخرى ضمن 30 يوم.</div>`}
+      </div>
+    </div>
+  `;
+
+  if (list.length) {
+    const track = document.getElementById('tickerTrack');
+    if (track) {
+      const rows = list.map(it => {
+        const dt = fmtDate(it.day_date);
+        return `<div class="kioskTickerItem"><span class="kioskTickerDate">${escapeHtml(dt)}</span><span class="kioskTickerTitle">${escapeHtml(it.title)}</span></div>`;
+      });
+      track.innerHTML = rows.concat(rows).join('');
+      const dur = clamp(list.length * 6, 18, 80);
+      track.style.animationDuration = dur + 's';
+    }
+  }
+}
+
+function updateCountdownTick(){
+  const wrap = document.querySelector('.kioskCountdown');
+  if (!wrap) return;
+  const target = Number(wrap.getAttribute('data-target') || 0);
+  if (!target) return;
+  const now = Date.now();
+  const { d, h, m, sec } = fmtCountdown(target - now);
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = String(v); };
+  set('cdD', d);
+  set('cdH', h);
+  set('cdM', m);
+  set('cdS', sec);
+}
+
+function showDaysScene(){
+  renderWorldDays();
+  updateCountdownTick();
+  countdownTimer = setInterval(updateCountdownTick, 1000);
+  sceneTimeout = setTimeout(goNextPage, OTHER_SEC * 1000);
+}
+
+function toArabicTime(now){
+  // Keep it clean: 12-hour without seconds
+  try {
+    return now.toLocaleTimeString('ar-SA-u-nu-latn' , { hour: '2-digit', minute: '2-digit' });
+  } catch(e) {
+    return now.toLocaleTimeString();
+  }
+}
+
+function toHijriDate(now){
+  try {
+    return now.toLocaleDateString('ar-SA-u-ca-islamic-umalqura-nu-latn' , { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  } catch(e) {
+    return now.toLocaleDateString('ar-SA-u-nu-latn' );
+  }
+}
+
+function toGregDate(now){
+  try {
+    return now.toLocaleDateString('ar-SA-u-ca-gregory-nu-latn' , { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  } catch(e) {
+    return now.toLocaleDateString('ar-SA-u-nu-latn' );
+  }
+}
+
+
+function updateAnalogHands(d){
+  const h = d.getHours() % 12;
+  const m = d.getMinutes();
+  const s = d.getSeconds();
+  const hourAngle = (h + (m/60) + (s/3600)) * 30; // 360/12
+  const minAngle  = (m + (s/60)) * 6;            // 360/60
+  const secAngle  = s * 6;
+
+  const hh = document.getElementById('handH');
+  const mh = document.getElementById('handM');
+  const sh = document.getElementById('handS');
+  if (hh) hh.style.transform = `translate(-50%, -100%) rotate(${hourAngle}deg)`;
+  if (mh) mh.style.transform = `translate(-50%, -100%) rotate(${minAngle}deg)`;
+  if (sh) sh.style.transform = `translate(-50%, -100%) rotate(${secAngle}deg)`;
+}
+
+function renderHome(){
+  const stage = document.getElementById('stage');
+  const now = new Date();
+  const time = toArabicTime(now);
+  const h = toHijriDate(now);
+  const g = toGregDate(now);
+
+  const quote = (hudData && hudData.quote) ? hudData.quote : 'نرتّب أولوياتنا… وننجز بثبات.';
+  const weather = (hudData && hudData.weather && hudData.weather.summary) ? hudData.weather.summary : '';
+
+  const isAnalog = String(clockMode || '').startsWith('analog');
+
+  const clockHtml = isAnalog ? `
+    <div class="kioskAnalogWrap">
+      <div class="kioskAnalogClock clock-${clockMode}" aria-label="ساعة كلاسيكية">
+        <div class="kioskAnalogFace"></div>
+        <div class="kioskAnalogHand hour" id="handH"></div>
+        <div class="kioskAnalogHand minute" id="handM"></div>
+        <div class="kioskAnalogHand second" id="handS"></div>
+        <div class="kioskAnalogCenter"></div>
+        <div class="kioskAnalogDigital" id="homeClockAnalog">${escapeHtml(time)}</div>
+      </div>
+    </div>
+  ` : `
+    ${renderDigitalClockHtml(clockMode, time)}
+  `;
+
+  stage.innerHTML = `
+    <div class="kioskCard kioskAnim kioskAnim-${(KSET.transition||'fade')} kioskHome">
+      ${clockHtml}
+      <div class="kioskHomeDates">
+        <div class="kioskHomeDateLine" id="homeHijri">${escapeHtml(h)}</div>
+        <div class="kioskHomeSub" id="homeGreg">${escapeHtml(g)}</div>
+        ${weather ? `<div class="kioskHomeSub" id="homeWeather">${escapeHtml(weather)}</div>` : ''}
+      </div>
+      <div class="kioskHomeQuote" id="homeQuote">${escapeHtml(quote)}</div>
+    </div>
+  `;
+
+  if (isAnalog) updateAnalogHands(now);
+
+  // Live clock update
+  homeClockTimer = setInterval(() => {
+    if (scene !== 'home') return;
+    const n = new Date();
+    const t = toArabicTime(n);
+    if (String(clockMode || '').startsWith('analog')){
+      const el = document.getElementById('homeClockAnalog');
+      if (el) el.textContent = t;
+      updateAnalogHands(n);
+    } else {
+      if (clockMode === 'digital_split'){
+        const parts = String(t||'').split(/\s+/);
+        const hm = parts[0] || String(t||'');
+        const suffix = parts.slice(1).join(' ');
+        const bits = hm.split(':');
+        const hh = bits[0] || '--';
+        const mm = bits[1] || '--';
+        const eh = document.getElementById('dcH');
+        const em = document.getElementById('dcM');
+        const es = document.getElementById('dcSuf');
+        if (eh) eh.textContent = hh;
+        if (em) em.textContent = mm;
+        if (es) es.textContent = suffix;
+      } else {
+        const el = document.getElementById('homeClock');
+        if (el) el.textContent = t;
+      }
+    }
+  }, 1000);
+}
+
+function showHomeScene(){
+  renderHome();
+  sceneTimeout = setTimeout(goNextPage, OTHER_SEC * 1000);
+}
+
+function renderCalendar(){
+  const stage = document.getElementById('stage');
+  const items = (calData && calData.items) ? calData.items : [];
+
+  if (!items.length) {
+    stage.innerHTML = `
+      <div class="kioskCard kioskAnim kioskAnim-${(KSET.transition||'fade')} kioskCal">
+        <div class="kioskWorldLabel">التقويم الدراسي</div>
+        <div class="kioskWorldHero">
+          <div class="kioskWorldTitle">لا توجد بيانات للتقويم</div>
+          <div class="kioskWorldDate">يمكنك تعبئتها يدويًا أو من Excel أو تفعيل مصدر وزارة التعليم من الإعدادات.</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+
+
+  function fmtCalDates(it){
+    // Accept both schemas: {date_hijri/date_greg} or {event_date} (ISO)
+    let dh = (it && (it.date_hijri || it.hijri_date)) ? String(it.date_hijri || it.hijri_date) : '';
+    let dg = (it && (it.date_greg || it.greg_date)) ? String(it.date_greg || it.greg_date) : '';
+    if ((!dh || !dg) && it && it.event_date){
+      const d = new Date(it.event_date);
+      if (!isNaN(d)){
+        if (!dh){
+          try{ dh = d.toLocaleDateString('ar-SA-u-ca-islamic-umalqura-nu-latn' , { year:'numeric', month:'long', day:'numeric' }); }catch(e){}
+        }
+        if (!dg){
+          try{ dg = d.toLocaleDateString('ar-SA-u-ca-gregory-nu-latn' , { year:'numeric', month:'long', day:'numeric' }); }catch(e){}
+        }
+      }
+    }
+    return { dh: dh || '-', dg: dg || '' };
+  }
+
+  const first = items[0];
+  const rest = items.slice(1, 8);
+
+  const title0 = escapeHtml(first.title || first.event_title || '-');
+  const d0 = fmtCalDates(first);
+  const dateH0 = escapeHtml(d0.dh);
+  const dateG0 = escapeHtml(d0.dg);
+
+  const listHtml = rest.map(it => {
+    const t = escapeHtml(it.title || it.event_title || '-');
+    const d1 = fmtCalDates(it);
+    const dh = escapeHtml(d1.dh);
+    const dg = escapeHtml(d1.dg);
+    const dt = dg ? `${dh} • ${dg}` : dh;
+    return `<div class="kioskCalItem"><div class="kioskCalItemTitle">${t}</div><div class="kioskCalItemDate">${dt}</div></div>`;
+  }).join('');
+
+  stage.innerHTML = `
+    <div class="kioskCard kioskAnim kioskAnim-${(KSET.transition||'fade')} kioskCal">
+      <div class="kioskWorldLabel">التقويم الدراسي</div>
+      <div class="kioskCalHero">
+        <div>
+          <div class="kioskCalHeroTitle">${title0}</div>
+          <div class="kioskHomeSub" style="margin-top:8px;opacity:.85">أقرب موعد</div>
+        </div>
+        <div class="kioskCalHeroDate">${dateH0}${dateG0 ? ` • ${dateG0}` : ''}</div>
+      </div>
+      ${rest.length ? `<div class="kioskCalList">${listHtml}</div>` : ''}
+    </div>
+  `;
+}
+
+function showCalendarScene(){
+  renderCalendar();
+  sceneTimeout = setTimeout(goNextPage, OTHER_SEC * 1000);
+}
+
+/* ---------------- Fetching ---------------- */
+async function reloadTasks(){
+  try {
+    const res = await fetch('/api/kiosk/tasks');
+    const data = await res.json();
+    tasks = (data.items || []).filter(x => x.status !== 'cancelled');
+    if (scene === 'tasks') renderTasks();
+  } catch(e) {
+    tasks = [];
+    if (scene === 'tasks') renderTasks();
+  }
+}
+
+async function reloadWorldDays(){
+  try {
+    const res = await fetch('/api/kiosk/world-days');
+    const data = await res.json();
+    worldData = data || null;
+    if (scene === 'days') renderWorldDays();
+  } catch(e) {
+    worldData = null;
+    if (scene === 'days') renderWorldDays();
+  }
+}
+
+async function reloadCalendar(){
+  try {
+    const res = await fetch('/api/kiosk/calendar');
+    const data = await res.json();
+    calData = data || null;
+    if (scene === 'calendar') renderCalendar();
+  } catch(e) {
+    calData = null;
+    if (scene === 'calendar') renderCalendar();
+  }
+}
+
+async function reloadHud(){
+  try {
+    const res = await fetch('/api/kiosk/hud');
+    const data = await res.json();
+    hudData = (data && data.ok) ? data : null;
+    if (scene === 'home') renderHome();
+  } catch(e) {
+    hudData = null;
+    if (scene === 'home') renderHome();
+  }
+}
+
+async function reloadAll(){
+  await Promise.allSettled([
+    reloadTasks(),
+    reloadWorldDays(),
+    reloadCalendar(),
+    reloadHud(),
+  ]);
+}
+
+/* ---------------- Live Updates (SSE) ---------------- */
+let liveES = null;
+let liveDebounce = null;
+
+function scheduleReload(){
+  clearTimeout(liveDebounce);
+  liveDebounce = setTimeout(() => {
+    reloadAll().catch(()=>{});
+  }, 300);
+}
+
+function setupLive(){
+  if (!('EventSource' in window)) return;
+  try {
+    liveES = new EventSource('/api/kiosk/stream');
+    liveES.addEventListener('update', scheduleReload);
+    liveES.addEventListener('hello', scheduleReload);
+    liveES.onmessage = scheduleReload;
+  } catch(e) {}
+}
+
+/* ---------------- News Ticker ---------------- */
+let tickerTimer = null;
+
+function buildSepHtml(){
+  if (KSET.logo_filename) {
+    return `<span class="kioskNewsSep"><img src="/uploads/${encodeURIComponent(KSET.logo_filename)}" alt=""></span>`;
+  }
+  return `<span class="kioskNewsSep" aria-hidden="true"></span>`;
+}
+
+function renderTickerItems(items){
+  const a = document.getElementById('kioskNewsChunkA');
+  const b = document.getElementById('kioskNewsChunkB');
+  const track = document.getElementById('kioskNewsTrack');
+  if (!a || !b || !track) return;
+
+  const list = Array.isArray(items) ? items : [];
+  const sep = buildSepHtml();
+
+  let html = '';
+  if (!list.length) {
+    html = `<span class="kioskNewsItem">لا توجد أخبار/إعلانات الآن</span>`;
+  } else {
+    html = list.map((it, i) => {
+      const rawTitle = (typeof it === 'string') ? it : (it && (it.title || it.text) ? (it.title || it.text) : '');
+      const rawSrc   = (typeof it === 'object' && it && it.source) ? it.source : '';
+      const title = escapeHtml(String(rawTitle || '').trim());
+      const src = escapeHtml(String(rawSrc || '').trim());
+      if (!title) return '';
+      const label = src ? `${title} — ${src}` : title;
+      return `<span class="kioskNewsItem">${label}</span>`;
+    }).filter(Boolean).join(sep);
+  }
+
+  a.innerHTML = html;
+  b.innerHTML = html;
+
+  // Duration (seconds per full lap). Controlled from settings (min 5 seconds).
+  const secPerLap = clamp(Number(KSET.ticker_speed || 60), 5, 300);
+  track.style.animationDuration = secPerLap + 's';
+}
+
+async function refreshTicker(){
+  if (!tickerOn) return;
+  try {
+    const res = await fetch('/api/kiosk/ticker');
+    const data = await res.json();
+    const items = (data && data.items) ? data.items : [];
+    renderTickerItems(items);
+  } catch(e) {
+    renderTickerItems([]);
+  }
+}
+
+function startTicker(){
+  if (tickerTimer) clearInterval(tickerTimer);
+  tickerTimer = null;
+  if (!tickerOn) return;
+  refreshTicker();
+  const min = clamp(Number(KSET.ticker_refresh_min || 5), 1, 60);
+  tickerTimer = setInterval(refreshTicker, min * 60000);
+}
+
+/* ---------------- Chooser ---------------- */
+function openKioskViewChooser(){
+  const el = document.getElementById('kioskViewChooser');
+  if (!el) return;
+  el.style.display = 'flex';
+
+  const has = (t) => activeTokens.includes(t);
+  const set = (id, v) => { const c = document.getElementById(id); if (c) c.checked = !!v; };
+
+  set('ch_home', has('home'));
+  set('ch_welcome', has('welcome'));
+  set('ch_tasks', has('tasks'));
+  set('ch_days', has('days'));
+  set('ch_calendar', has('calendar'));
+  set('ch_ticker', has('ticker'));
+
+  const sel = document.getElementById('sel_clockMode');
+  if (sel) sel.value = (clockChoice || clockMode) || 'digital_clean';
+}
+
+function closeKioskViewChooser(){
+  const el = document.getElementById('kioskViewChooser');
+  if (el) el.style.display = 'none';
+}
+
+function applyKioskViewChoice(){
+  const get = (id) => { const c = document.getElementById(id); return !!(c && c.checked); };
+
+  const nextTokens = [];
+  if (get('ch_home')) nextTokens.push('home');
+  if (get('ch_welcome')) nextTokens.push('welcome');
+  if (get('ch_tasks')) nextTokens.push('tasks');
+  if (get('ch_days')) nextTokens.push('days');
+  if (get('ch_calendar')) nextTokens.push('calendar');
+  if (get('ch_ticker')) nextTokens.push('ticker');
+
+  // At least one page
+  const hasPage = nextTokens.some(t => t !== 'ticker');
+  if (!hasPage) nextTokens.unshift('tasks');
+
+  activeTokens = nextTokens;
+  ({ pages: activePages, tickerOn } = tokensToPages(activeTokens));
+  pageIdx = 0;
+
+  // clock mode
+  const selMode = document.getElementById('sel_clockMode');
+  const choice = selMode ? String(selMode.value || '').trim() : 'digital_clean';
+  clockChoice = (['cycle', ...CLOCK_STYLES].includes(choice)) ? choice : 'digital_clean';
+  try { localStorage.setItem(LS_CLOCK, clockChoice); } catch(e) {}
+  clockMode = resolveClockMode(clockChoice);
+
+try { localStorage.setItem(LS_PAGES, activeTokens.join(',')); } catch(e) {}
+
+  setTickerEnabled(tickerOn);
+  startTicker();
+
+  if (scene === 'home') showHomeScene();
+
+  closeKioskViewChooser();
+  showPage(activePages[0]);
+}
+
+/* ---------------- Fullscreen / Exit ---------------- */
+function toggleFullscreen(){
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    document.exitFullscreen().catch(()=>{});
+  }
+}
+
+function goBackToApp(){
+  window.location.href = '/';
+}
+
+function exitOrBack(){
+  if (document.fullscreenElement) {
+    document.exitFullscreen().catch(()=>{});
+    setTimeout(goBackToApp, 120);
+  } else {
+    goBackToApp();
+  }
+}
+
+document.addEventListener('fullscreenchange', () => {
+  document.body.classList.toggle('kioskFull', !!document.fullscreenElement);
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') exitOrBack();
+  if (e.key === 'm' || e.key === 'M') openKioskViewChooser();
+  if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+  if (e.key === 'Backspace' || e.key === 'b' || e.key === 'B') exitOrBack();
+});
+
+/* ---------------- Init ---------------- */
+async function init(){
+  // initial ticker
+  setTickerEnabled(tickerOn);
+  startTicker();
+
+  // preload data
+  await reloadAll();
+
+  // start first page
+  showPage(activePages[0]);
+
+  // live stream + safety refresh
+  setupLive();
+  setInterval(() => reloadAll().catch(()=>{}), 60000);
+}
+
+init();
+</script>
+
+<%- include('partials/footer') %>
