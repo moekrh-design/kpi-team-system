@@ -423,23 +423,130 @@
     </div>
   </form>
 
+  <!-- ===== النسخ الاحتياطي اليدوي والاستيراد ===== -->
   <div class="card" style="padding:14px;margin-top:14px">
-    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">النسخ الاحتياطي والاستيراد</div>
-
+    <div style="font-weight:900;color:var(--navy);margin-bottom:10px">&#x2935;&#xFE0F; النسخ الاحتياطي اليدوي والاستيراد</div>
     <div class="formRow">
       <div>
         <div class="help" style="margin-bottom:8px">يحفظ نسخة تشمل: قاعدة البيانات + المرفقات (صور/PDF) + الشعار والختم.</div>
-        <a class="btn" href="/admin/backup">⬇️ حفظ نسخة احتياطية (ZIP)</a>
+        <a class="btn" href="/admin/backup">&#x2B07;&#xFE0F; حفظ نسخة احتياطية (ZIP)</a>
       </div>
-
       <div>
         <form method="post" action="/admin/restore" enctype="multipart/form-data" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <input class="input" type="file" name="backupZip" accept=".zip" required />
-          <button class="btn btnDanger" type="submit" onclick="return confirm('تأكيد الاستيراد؟ سيتم استبدال البيانات الحالية بالنسخة المرفوعة.');">⬆️ استيراد نسخة</button>
+          <button class="btn btnDanger" type="submit" onclick="return confirm('تأكيد الاستيراد؟ سيتم استبدال البيانات الحالية بالنسخة المرفوعة.');">&#x2B06;&#xFE0F; استيراد نسخة</button>
         </form>
-        <div class="help" style="margin-top:8px">ملاحظة: يتم أخذ نسخة احتياطية تلقائيًا قبل الاستبدال (app.db.bak-... و uploads.bak-...).</div>
+        <div class="help" style="margin-top:8px">ملاحظة: يتم أخذ نسخة احتياطية تلقائياً قبل الاستبدال.</div>
       </div>
     </div>
+  </div>
+
+  <!-- ===== نظام النسخ الاحتياطية التلقائية الاحترافي ===== -->
+  <div id="auto-backups" class="card" style="padding:18px;margin-top:14px">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px">
+      <div>
+        <div style="font-weight:900;color:var(--navy);font-size:1.08em">&#x1F4BE; نظام النسخ الاحتياطية التلقائية</div>
+        <div class="help" style="margin-top:4px">نسخ فورية بعد كل تغيير &bull; دورية كل 6 ساعات &bull; يومية منتصف الليل &mdash; محفوظة 30 يوماً</div>
+      </div>
+      <form method="post" action="/admin/auto-backup/create" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <input class="input" name="reason" placeholder="سبب النسخة (اختياري)" style="width:200px" />
+        <button class="btn btnGood" type="submit">&#x2795; إنشاء نسخة يدوية الآن</button>
+      </form>
+    </div>
+
+    <% if (typeof auto_backup_ok !== 'undefined' && auto_backup_ok) { %>
+      <div class="notice" style="margin-bottom:12px;border-color:rgba(7,168,105,.35);background:rgba(7,168,105,.10)">تمت العملية بنجاح &#x2705;</div>
+    <% } %>
+    <% if (typeof auto_backup_err !== 'undefined' && auto_backup_err) { %>
+      <div class="notice" style="margin-bottom:12px;border-color:rgba(214,45,58,.35);background:rgba(214,45,58,.10)">خطأ: <%= auto_backup_err %> &#x274C;</div>
+    <% } %>
+
+    <!-- إحصائيات سريعة -->
+    <% if (typeof autoBackupStats !== 'undefined') { %>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px">
+      <div style="background:var(--card-bg,#fff);border:1px solid var(--border,#dde);border-radius:8px;padding:10px 16px;min-width:100px;text-align:center">
+        <div style="font-size:1.6em;font-weight:900;color:var(--navy)"><%= autoBackupStats.total %></div>
+        <div class="help">إجمالي النسخ</div>
+      </div>
+      <div style="background:var(--card-bg,#fff);border:1px solid var(--border,#dde);border-radius:8px;padding:10px 16px;min-width:100px;text-align:center">
+        <div style="font-size:1.6em;font-weight:900;color:#fd7e14"><%= autoBackupStats.instant %></div>
+        <div class="help">فورية</div>
+      </div>
+      <div style="background:var(--card-bg,#fff);border:1px solid var(--border,#dde);border-radius:8px;padding:10px 16px;min-width:100px;text-align:center">
+        <div style="font-size:1.6em;font-weight:900;color:#6f42c1"><%= autoBackupStats.periodic %></div>
+        <div class="help">دورية</div>
+      </div>
+      <div style="background:var(--card-bg,#fff);border:1px solid var(--border,#dde);border-radius:8px;padding:10px 16px;min-width:100px;text-align:center">
+        <div style="font-size:1.6em;font-weight:900;color:#0d6efd"><%= autoBackupStats.daily %></div>
+        <div class="help">يومية</div>
+      </div>
+      <div style="background:var(--card-bg,#fff);border:1px solid var(--border,#dde);border-radius:8px;padding:10px 16px;min-width:100px;text-align:center">
+        <div style="font-size:1.6em;font-weight:900;color:#198754"><%= autoBackupStats.manual %></div>
+        <div class="help">يدوية</div>
+      </div>
+      <div style="background:var(--card-bg,#fff);border:1px solid var(--border,#dde);border-radius:8px;padding:10px 16px;min-width:100px;text-align:center">
+        <div style="font-size:1.6em;font-weight:900;color:var(--navy)"><%= autoBackupStats.total_mb %></div>
+        <div class="help">ميغابايت</div>
+      </div>
+    </div>
+    <% } %>
+
+    <!-- جدول النسخ -->
+    <% if (typeof autoBackupList !== 'undefined' && autoBackupList.length === 0) { %>
+      <div class="help" style="text-align:center;padding:24px;background:rgba(0,0,0,.03);border-radius:8px">
+        لا توجد نسخ احتياطية حتى الآن &mdash; ستظهر بعد أول تغيير في النظام
+      </div>
+    <% } else if (typeof autoBackupList !== 'undefined') { %>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:.92em">
+          <thead>
+            <tr style="background:var(--navy);color:#fff">
+              <th style="padding:9px 12px;text-align:right">#</th>
+              <th style="padding:9px 12px;text-align:right">التاريخ والوقت</th>
+              <th style="padding:9px 12px;text-align:right">النوع</th>
+              <th style="padding:9px 12px;text-align:right">سبب النسخة</th>
+              <th style="padding:9px 12px;text-align:right">المستخدم</th>
+              <th style="padding:9px 12px;text-align:center">الحجم</th>
+              <th style="padding:9px 12px;text-align:center">إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% autoBackupList.forEach(function(b, idx) { %>
+            <tr style="border-bottom:1px solid var(--border,#dde);<%= idx % 2 !== 0 ? 'background:rgba(0,0,0,.025)' : '' %>">
+              <td style="padding:8px 12px;color:#999;font-size:.85em"><%= autoBackupList.length - idx %></td>
+              <td style="padding:8px 12px;white-space:nowrap">
+                <div style="font-weight:600"><%= new Date(b.date).toLocaleDateString('ar-SA', {weekday:'short',year:'numeric',month:'short',day:'numeric'}) %></div>
+                <div class="help"><%= new Date(b.date).toLocaleTimeString('ar-SA', {hour:'2-digit',minute:'2-digit'}) %></div>
+              </td>
+              <td style="padding:8px 12px">
+                <span style="background:<%= b.badge_color %>;color:#fff;padding:3px 10px;border-radius:12px;font-size:.83em;white-space:nowrap;font-weight:600"><%= b.badge %></span>
+              </td>
+              <td style="padding:8px 12px;max-width:220px">
+                <div style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="<%= b.reason %>"><%= b.reason || '&mdash;' %></div>
+              </td>
+              <td style="padding:8px 12px;white-space:nowrap"><%= b.user || '&mdash;' %></td>
+              <td style="padding:8px 12px;text-align:center;white-space:nowrap;font-weight:600"><%= b.size_mb %> MB</td>
+              <td style="padding:8px 12px;text-align:center">
+                <div style="display:flex;gap:5px;justify-content:center;flex-wrap:wrap">
+                  <a href="/admin/auto-backup/download/<%= b.id %>" class="btn" style="padding:4px 10px;font-size:.82em" title="تنزيل النسخة">&#x2B07;&#xFE0F; تنزيل</a>
+                  <form method="post" action="/admin/auto-backup/restore/<%= b.id %>" style="display:inline" onsubmit="return confirm('استرجاع هذه النسخة؟
+سيتم أخذ نسخة احتياطية من الوضع الحالي أولاً.')">
+                    <button class="btn btnDanger" style="padding:4px 10px;font-size:.82em" title="استرجاع">&#x21A9;&#xFE0F; استرجاع</button>
+                  </form>
+                  <form method="post" action="/admin/auto-backup/delete/<%= b.id %>" style="display:inline" onsubmit="return confirm('حذف هذه النسخة نهائياً؟')">
+                    <button class="btn" style="padding:4px 10px;font-size:.82em;background:#888;color:#fff" title="حذف">&#x1F5D1;&#xFE0F;</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      <div class="help" style="margin-top:10px;text-align:center">تظهر آخر 30 يوم &mdash; يتم التنظيف التلقائي للنسخ القديمة</div>
+    <% } %>
+
   </div>
 
 </div>
